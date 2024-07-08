@@ -5,7 +5,52 @@ format: html
 editor: visual
 ---
 
+## Introduction
+
+![Example of the @Hedstrom1998a (HP98) and @Roesch2001 (RW01) parameterizations for the calculation of unloading and drip rates with increasing air temperature. Wind speed for the RW01 parameterization was set to zero. Note that the HP98 parameterization does not differentiate unloading processes (i.e., metamorphasism, wind-induced, melt) while the RW01 parameterization here calculates unloading and drip of canopy snow due to warming and melt alone and their wind-induced parameterization is shown separately.](figs/examples/unloading_drip_hp98_rw01.png){#fig-unl-ex-temp}
+
+![Example of the @Roesch2001 (RW01) parameterization for the calculation of wind-induced unloading. Here the air temperature has been set to a constant of -10°C to set the unloading rate due to warming to zero. The parameterization was run for a range of canopy snow loads (5, 10, 15, and 20 mm).](figs/examples/roesch_unloading.png){#fig-unl-ex-wind}
+## Methods
+
+$$
+  residual = weighed\ tree \ ablation - measured\ unloading
+$$
+  
+  A positive residual here equates to canopy snow that was ablated and was not accounted for by measured unloading (lysimeters) or modelled sublimation. This is inferred here at unloading by drip, wind redistribution, and measurement error. A negative residual means more snow was either measured in the lysimeters and/or modelled sublimation in CRHM than was actually ablated from the weighed tree.
+
+Partition canopy snow ablation in the above graph into unloading, sublimation, and a residual.
+
+To investigate the influence of individual processes on canopy snow unloading, the subcanopy lysimeters were used. The probability of unloading was calculated as:
+
+$$
+p_{unld} = \frac{n}{N}
+$$
+
+where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloading events that occurred in a particular met bin, and $N$ is the total number of occurrences of that met bin. 
+
+
 ## Results 
+
+### Dominant Ablative Processes Observed
+
+![](figs/results/canopy_snow_ablation_partition_global.png){#fig-glob-unl-part}
+
+![](figs/results/canopy_snow_ablation_partition_vs_air_temp.png){#fig-glob-unl-temp}
+
+![](figs/results/canopy_snow_ablation_partition_vs_mid_canopy_wind.png){#fig-glob-unl-wind}
+
+### The Influence of Meterology on Unloading
+
+-   Possible evidence here for thresholding behaviour below -3 deg. C where there is less liquid water in the canopy snow clumps and more suspeptible to wind induced unloadings
+- when its cold below we could use the sparse trough because it does not matter it leaks in these temps..  
+
+![](figs/results/probability_of_unloading_wind_air_temp.png){#fig-glob-prob-unl}
+
+![](figs/results/frequency_of_unloading_wind_air_temp.png){#fig-glob-freq-unl}
+
+![](figs/results/binned_unloading_rate_and_t_air_class_canopy_load.png){#fig-low-wind-qunl}
+
+![](figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png){#fig-cold-w-wind-qunl}
 
 ### Unloading
 

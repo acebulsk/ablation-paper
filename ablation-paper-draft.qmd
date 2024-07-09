@@ -10,13 +10,26 @@ editor: visual
 ![Example of the @Hedstrom1998a (HP98) and @Roesch2001 (RW01) parameterizations for the calculation of unloading and drip rates with increasing air temperature. Wind speed for the RW01 parameterization was set to zero. Note that the HP98 parameterization does not differentiate unloading processes (i.e., metamorphasism, wind-induced, melt) while the RW01 parameterization here calculates unloading and drip of canopy snow due to warming and melt alone and their wind-induced parameterization is shown separately.](figs/examples/unloading_drip_hp98_rw01.png){#fig-unl-ex-temp}
 
 ![Example of the @Roesch2001 (RW01) parameterization for the calculation of wind-induced unloading. Here the air temperature has been set to a constant of -10°C to set the unloading rate due to warming to zero. The parameterization was run for a range of canopy snow loads (5, 10, 15, and 20 mm).](figs/examples/roesch_unloading.png){#fig-unl-ex-wind}
+
+## Theory
+
+@Roesch2001 proposed a parameterization to calculate the unloading and drip rate of snow intercepted in the canopy. The @Roesch2001 parameterization couples the unloading and drip rates into one equation. However, by isolating the wind-induced unloading function and using the @Storck2002 mass clump unloading parameterization (without drip) an unloading parameterization due to melt and wind can be developed as:
+
+$$
+q_{unld} = q_{unld}^{melt} + q_{unld}^{wind}
+$$
+
+where $q_{unld}^{wind}$ is the @Roech2001 method to unload snow as a function of wind speed and $q_{unld}^{melt}$ is the @Storck2002 method to unload mass clumps of snow due to melt. See @Cebulski2024b for a detailed description of the @Roesch2001 and @Storck2002 parameterizations.
+
 ## Methods
+
+Our lysimeters measure $q_{unld}$ + $q_{drip}$.
 
 $$
   residual = weighed\ tree \ ablation - measured\ unloading
 $$
-  
-  A positive residual here equates to canopy snow that was ablated and was not accounted for by measured unloading (lysimeters) or modelled sublimation. This is inferred here at unloading by drip, wind redistribution, and measurement error. A negative residual means more snow was either measured in the lysimeters and/or modelled sublimation in CRHM than was actually ablated from the weighed tree.
+
+A positive residual here equates to canopy snow that was ablated and was not accounted for by measured unloading (lysimeters) or modelled sublimation. This is inferred here at unloading by drip, wind redistribution, and measurement error. A negative residual means more snow was either measured in the lysimeters and/or modelled sublimation in CRHM than was actually ablated from the weighed tree.
 
 Partition canopy snow ablation in the above graph into unloading, sublimation, and a residual.
 
@@ -26,23 +39,25 @@ $$
 p_{unld} = \frac{n}{N}
 $$
 
-where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloading events that occurred in a particular met bin, and $N$ is the total number of occurrences of that met bin. 
+where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloading events that occurred in a particular met bin, and $N$ is the total number of occurrences of that met bin.
 
-
-## Results 
+## Results
 
 ### Dominant Ablative Processes Observed
 
+@fig-glob-unl-part shows that unloading and drip were the dominant ablative processes observed over two winter seasons for all periods with snow in the canopy and no atmospheric precipitation. Simulated sublimation rates also make up a significant portion of canopy snow ablation and accounted for most of the residual measured ablation. This suggests that for the average conditions in this wind-exposed subalpine forest, wind redistribution of snow intercepted in the canopy is a relatively small component.
+
 ![](figs/results/canopy_snow_ablation_partition_global.png){#fig-glob-unl-part}
 
-![](figs/results/canopy_snow_ablation_partition_vs_air_temp.png){#fig-glob-unl-temp}
+@fig-glob-unl-part shows a large increase in the ablation residual with wind speeds above 3.5 m s^-1^ and little association with air temperature. The increase in the residual at high wind speeds is attributed to higher ablation rates measured by the weighed tree due to an associated increase in wind redistribution and sublimation rates. Difficulties in measuring wind redistribution and sublimation rates at this study site limit the ability to partition the residual into these two processes. Modelled sublimation rates shown in @fig-glob-unl-part suggest that for wind speeds above 3.5 m s^-1^ the difference between the residual and modelled sublimation could be attributed to wind redistribution. However, the sublimation parameterization in this simulation has not been tested in wind-exposed forest and may be an underestimate of true sublimation rates at high wind speeds.
 
-![](figs/results/canopy_snow_ablation_partition_vs_mid_canopy_wind.png){#fig-glob-unl-wind}
+![](figs/results/canopy_snow_ablation_partition_cowplot_temp_wind.png){#fig-glob-unl-part-met}
 
-### The Influence of Meterology on Unloading
+### The Influence of Meteorology on Unloading
 
--   Possible evidence here for thresholding behaviour below -3 deg. C where there is less liquid water in the canopy snow clumps and more suspeptible to wind induced unloadings
-- when its cold below we could use the sparse trough because it does not matter it leaks in these temps..  
+-   Possible evidence here for thresholding behaviour below -3 deg. C where there is less liquid water in the canopy snow clumps and more suspeptible to wind induced unloadings. However we also have less frequency of observations here and may limit the interpretation of these results.
+-   Less unloading and drip observed for above zero temperatures with wind speeds above 1 m/s which may be attributed to some evaporative cooling.
+-   when its cold below we could use the sparse trough because it does not matter it leaks in these temps..
 
 ![](figs/results/probability_of_unloading_wind_air_temp.png){#fig-glob-prob-unl}
 
@@ -88,16 +103,13 @@ Below is using heavily filtered data, all of the observations of the ice bulb te
 
 ![](figs/fortress_windy_events_bin_wind_pwl_wind_3cup_avg_unloading.bmp)
 
-
 \pagebreak
 
-## Conclusions 
+## Conclusions
 
--   The canopy snow ablation residual increased substantially with increasing wind speed and
-is attributed to an associated increase in the wind resuspension and sublimation rates.
--   Observed unloading rates attributed to warming were higher at sub-zero temperatures when
-the canopy was loaded compared to the HP98 and SA09 models.
--   The observed association between wind speed, canopy load and unloading was similar to
-the RW01 model. However, at warmer temperatures wind induced unloading was reduced.
+-   Over two winter seasons wind redistribution of snow intercepted in the canopy was found to be negligible.
+-   Canopy snow unloading, drip and sublimation were found to be the primary ablative processes.
+-   Observed unloading and drip rates attributed to warming were higher at sub-zero temperatures when the canopy was loaded compared to the HP98 and SA09 models.
+-   The observed association between wind speed, canopy load and unloading was similar to the RW01 model. However, at warmer temperatures wind induced unloading was reduced.
 
 # References

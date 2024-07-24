@@ -2,7 +2,7 @@
 title: "Paper Draft: The influence of Meteorology on Canopy Snow Ablation"
 author: "Alex Cebulski & John Pomeroy"
 format: html
-editor: visual
+editor: source
 ---
 
 ## Introduction

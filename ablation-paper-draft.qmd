@@ -67,6 +67,23 @@ where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloa
 
 ![](figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png){#fig-cold-w-wind-qunl}
 
+### Modelling Canopy Snow Unloading 
+
+Less confidence in the temperature unloading model, maybe better suited to use a physically based snowmelt model. The wind unloading model aligns well with the observations although, only two canopy snow load bins were used. This model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships. 
+
+![](figs/results/modelled_temp_unloading_w_obs.png){#fig-mod-temp-unld}
+
+![](figs/results/modelled_wind_unloading_w_obs.png){#fig-mod-wind-unld}
+```{r}
+wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') |> 
+  mutate(model = 'wind_model')
+temp_err_tbl <- readRDS('data/modelled_temp_unloading_error_table.rds') |> 
+  mutate(model = 'temp_model')
+
+rbind(wind_err_tbl, temp_err_tbl)
+
+```
+
 ### Unloading
 
 Snow unloading was investigated during periods of time where snow was in the canopy and no above canopy precipitation was observed. Higher unloading rates were associated with high wind speed or high ice bulb temperature or a combination of both factors. Ice bulb temperature was observed to have a stronger relationship with unloading rates compared to air temperature since the ice bulb temperature is strongly related to sublimation and snowmelt rates which both influence the cohesion and adhesion of snow clumps in the canopy. There was also a negative association of ice-bulb temperature on wind speed. Where an increase in ice-bulb temperature reduced the effectiveness of wind removing snow from the canopy.

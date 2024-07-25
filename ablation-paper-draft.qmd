@@ -55,6 +55,8 @@ where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloa
 
 ### The Influence of Meteorology on Unloading
 
+Snow unloading was investigated during periods of time where snow was in the canopy and no above canopy precipitation was observed. Higher unloading rates were associated with high wind speed or high ice bulb temperature or a combination of both factors. Ice bulb temperature was observed to have a stronger relationship with unloading rates compared to air temperature since the ice bulb temperature is strongly related to sublimation and snowmelt rates which both influence the cohesion and adhesion of snow clumps in the canopy. There was also a negative association of ice-bulb temperature on wind speed. Where an increase in ice-bulb temperature reduced the effectiveness of wind removing snow from the canopy.
+
 -   Possible evidence here for thresholding behaviour below -3 deg. C where there is less liquid water in the canopy snow clumps and more suspeptible to wind induced unloadings. However we also have less frequency of observations here and may limit the interpretation of these results.
 -   Less unloading and drip observed for above zero temperatures with wind speeds above 1 m/s which may be attributed to some evaporative cooling.
 -   when its cold below we could use the sparse trough because it does not matter it leaks in these temps..
@@ -62,10 +64,9 @@ where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloa
 ![](figs/results/probability_of_unloading_wind_air_temp.png){#fig-glob-prob-unl}
 
 ![](figs/results/frequency_of_unloading_wind_air_temp.png){#fig-glob-freq-unl}
+Removing periods above these thresholds, i.e., air temperature less than -6 °C and wind speed less than 2 m/s, shows that the probability of unloading increases based on the duration snow is intercepted in the canopy. The probability of unloading starts at around 0.5 when snow is newly intercepted in the canopy, followed by a decline to around 0.1 after about 10 hours, and following 24 hours the probability of unloading increases steeply up to near 1.0 at 100 hours.
 
-![](figs/results/binned_unloading_rate_and_t_air_class_canopy_load.png){#fig-low-wind-qunl}
-
-![](figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png){#fig-cold-w-wind-qunl}
+![](figs/results/probability_of_unloading_w_time_rm_warm_windy_periods.png){#fig-low-wind-qunl}
 
 ### Modelling Canopy Snow Unloading 
 
@@ -84,49 +85,11 @@ rbind(wind_err_tbl, temp_err_tbl)
 
 ```
 
-### Unloading
-
-Snow unloading was investigated during periods of time where snow was in the canopy and no above canopy precipitation was observed. Higher unloading rates were associated with high wind speed or high ice bulb temperature or a combination of both factors. Ice bulb temperature was observed to have a stronger relationship with unloading rates compared to air temperature since the ice bulb temperature is strongly related to sublimation and snowmelt rates which both influence the cohesion and adhesion of snow clumps in the canopy. There was also a negative association of ice-bulb temperature on wind speed. Where an increase in ice-bulb temperature reduced the effectiveness of wind removing snow from the canopy.
-
-![The probability of canopy snow unloading shown at different observed ice-bulb temperatures and 5 m wind speeds.](../../analysis/unloading/figs/probability/fingerprint_plot_icebulb_wind_probability_unloading_avg_troughs.png){#fig-unl-prob}
-
-![The rate of canopy snow unloading within each ice-bulb and wind speed bin over two winter seasons.](../../analysis/unloading/figs/binned_multivariate/fingerprint_plot_icebulb_wind_q_unl_snow_in_canopy_avg_trough.png){#fig-unl-rate}
-
-![The number of canopy snow unloading events within each ice-bulb and wind speed bin over two winter seasons.](../../analysis/unloading/figs/probability/fingerprint_plot_icebulb_wind_frequency_unloading_avg_troughs.png){#fig-unl-freq}
-
-![Cumulative unloaded canopy snow measured over two winter seasons.](../../analysis/unloading/figs/binned_multivariate/fingerprint_plot_icebulb_wind_cuml_unl_snow_in_canopy_avg_trough.png){#fig-unl-cuml} \#### Regression
-
-To describe the reduced wind induced snow unloading at warmer temperatures we can use a multivariate regression.
-
-f \<- function(temp, wind, a, b1, b2, b3) {a \* exp(temp*b1)* exp(wind*b2)* exp(wind*temp*-b3)}
-
-##### Check normality
-
-![Histogram of the log canopy snow unloading rate.](../../analysis/unloading/figs/binned_multivariate/histogram_log_unloading_rate.png){#fig-qunl} ![Histogram of ice-bulb temperature measurements.](../../analysis/unloading/figs/binned_multivariate/histogram_ice_bulb_temp.png){#fig-temp} ![Histogram of wind speed measurements.](../../analysis/unloading/figs/binned_multivariate/histogram_wind_speed.png){#fig-wnd}
-
-##### Show regression results
-
-![Comparison of different non-linear least squares regression models fit to two years of binned canopy snow unloading meausrements.](../../analysis/unloading/figs/binned_multivariate/multivariate_q_unld_wind_w_neg_tempwind_lm_nls_model_compare.png){#fig-unl-reg-binned}
-
-![Observed canopy snow unloading meausrements binned into wind speed and ice bulb temperature.](../../analysis/unloading/figs/binned_multivariate/wind_bin_vs_q_unl_colour_temp.png){#fig-unl-obs-bins} \### Select Events
-
-Below is using heavily filtered data, all of the observations of the ice bulb temp plot have low wind speeds and all of the obs in the within canopy wind speed plot have low temperatures. John suggested it would be better to use a multivariate regression here if possible.
-
--   Ice Bulb Temperature
-
-![](figs/fortress_warm_events_bin_temp_avg_unloading.bmp)
-
--   Within Canopy Wind Speed
-
-![](figs/fortress_windy_events_bin_wind_pwl_wind_3cup_avg_unloading.bmp)
-
-\pagebreak
-
 ## Conclusions
 
--   Over two winter seasons wind redistribution of snow intercepted in the canopy was found to be negligible.
--   Canopy snow unloading, drip and sublimation were found to be the primary ablative processes.
--   Observed unloading and drip rates attributed to warming were higher at sub-zero temperatures when the canopy was loaded compared to the HP98 and SA09 models.
--   The observed association between wind speed, canopy load and unloading was similar to the RW01 model. However, at warmer temperatures wind induced unloading was reduced.
+-   Over two winter seasons, the primary processes contributing to canopy snow ablation were identified as unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a negligible component of the mass balance. 
+-   The probability of unloading was observed to increase with air temperature, wind speed, and the duration that snow is intercepted in the canopy. 
+-   Exponential relationships were observed between both air temperature and wind speed with unloading and drip, which were also dependent on the amount of snow intercepted in the canopy. In comparison to existing models, this discontinuous forest exhibited unloading and drip due to warming at lower air temperatures. Conversely, wind-induced unloading occurred at higher wind speeds than predicted by current models.
+
 
 # References

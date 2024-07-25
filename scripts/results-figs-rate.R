@@ -10,7 +10,7 @@ met_unld_cold_windy <- met_unld |>
   filter(
     name %in% scl_names,
     q_unl < 7,
-    # q_unl > min_qunld,
+    q_unl > min_qunld,
     t < -6,
     tree_mm >= min_canopy_snow
   ) |> 
@@ -28,7 +28,7 @@ met_unld_all_temps_limit_wind <- met_unld |>
   filter(
     name %in% scl_names,
     q_unl < 7,
-    # q_unl > min_qunld,
+    q_unl > min_qunld,
     wind_labs <= 2,
     tree_mm > min_canopy_snow) |> 
   mutate(`Canopy Load (mm)` = case_when(
@@ -39,6 +39,37 @@ met_unld_all_temps_limit_wind <- met_unld |>
 
 ## PLOTS ---- 
 
+### canopy snow load vs unloading rate ---- 
+
+met_unld_tree_smry <- met_unld |> 
+  filter(is.na(tree_labs) == F) |> 
+  group_by(tree_labs) |> 
+  summarise(q_unl_avg = mean(q_unl, na.rm = T),
+            q_unl_sd = sd(q_unl, na.rm = T),
+            sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
+            sd_hi = q_unl_avg + q_unl_sd,
+            ci_low = quantile(q_unl,0.05),
+            ci_hi = quantile(q_unl, 0.95),
+            n = n()) |> 
+  filter(n > 10)
+
+ggplot(met_unld_tree_smry, 
+       aes(x = tree_labs, y = q_unl_avg)) + 
+  # geom_point(data = met_unld, aes(tree_labs, q_unl), alpha = 0.1, colour = 'black') +
+  # ylim(c(0, 1.5)) +
+  geom_errorbar(aes(
+    x = tree_labs, 
+    ymax = sd_hi,
+    ymin = sd_low
+    
+  ), width = 0.2) +
+  geom_point(size = 3) +
+  ylab(bin_unl_ax_lab) +
+  xlab('Canopy Snow Load (mm)') +
+  theme_bw() 
+
+
+### wind vs unloading rate ----
 met_unld_cold_windy_smry <- met_unld_cold_windy |> 
   group_by(wind_labs, `Canopy Load (mm)`, avg_w_tree) |> 
   summarise(q_unl_avg = mean(q_unl, na.rm = T),
@@ -66,7 +97,7 @@ ggplot(met_unld_cold_windy_smry,
   # theme_bw(base_size = 14) +
   theme(legend.position = 'bottom') +
   # ylim(NA, 3.1) +
-  xlim(NA, 4) +
+  xlim(NA, 3.5) +
   scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Mean Canopy Load (mm)')
 
@@ -158,7 +189,7 @@ wts <- met_unld_all_temps_limit_wind_smry$q_unl_avg^2
 
 # apply weights iteratively
 for (i in 1:max_iter) {
-  model_nlswi <- nls(q_unl_avg ~ a  * avg_w_tree * exp(b * temp_labs),
+  model_nlswi <- nls(q_unl_avg ~ a * avg_w_tree * exp(b * temp_labs),
                      data = met_unld_all_temps_limit_wind_smry,
                      weights = wts,
                      start = c(a = coefs_old[1],
@@ -217,7 +248,7 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 
 # Look at the different models for the warm events 
 ex_temp_labs <- seq(-35,5,0.25)
-ex_avg_w_tree <- c(4, seq(5, 30, by = 5))
+ex_avg_w_tree <- c(4, 5, 10, 11, seq(15, 30, by = 5))
 temp_ex_df <- expand.grid(temp_labs = ex_temp_labs, avg_w_tree = ex_avg_w_tree)
 new_predicted_y <- predict(model_nls, newdata = temp_ex_df)
 
@@ -280,7 +311,7 @@ saveRDS(q_unl_temp_model_err_tbl,
 
 # wind induced unloading model ----
 
-# fit a linear model
+### fit a linear model ----
 # plot(met_unld_cold_windy_smry$wind_labs, met_unld_cold_windy_smry$log_q_unl)
 met_unld_cold_windy_smry$log_q_unl_avg <- 
   log(met_unld_cold_windy_smry$q_unl_avg)
@@ -291,7 +322,8 @@ summary(model_lm)
 a_lm <- exp(coefs[1])
 b_lm <- coefs[2]
 
-## Fit a non linear least squares model
+### Fit a non linear least squares model ----
+
 # use starting values from the linear model 
 model_nls <- nls(q_unl_avg ~ a * avg_w_tree * exp(b * wind_labs), 
                  data = met_unld_cold_windy_smry, 
@@ -304,13 +336,13 @@ rsq_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
 
 modelr::rsquare(model_nls, met_unld_cold_windy_smry) # check is the same as our manually defined method
 
-## Fit a non linear least squares model with weights iteratively 
-# give small values a higher weight
+### Fit a non linear least squares model with weights iteratively ----
+# give large values a higher weight
 
 max_iter <- 1000
 tol <- 1e-6
 
-coefs_old <- as.numeric(c(a_lm, b_lm))
+coefs_old <- as.numeric(coef(model_nls))
 wts <- met_unld_cold_windy_smry$q_unl_avg^2
 
 # apply weights iteratively
@@ -328,8 +360,6 @@ for (i in 1:max_iter) {
   yp <- predict(model_nlswi)
   wts <- yp^2
 }
-
-#summary(model_nls)
 
 RSS.p <- sum(residuals(model_nlswi)^2)  # Residual sum of squares
 TSS <- sum((met_unld_cold_windy_smry$q_unl_avg - mean(met_unld_cold_windy_smry$q_unl_avg))^2)  # Total sum of squares
@@ -374,7 +404,7 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 
 # Look at the different models for the warm events 
 ex_wind_labs <- seq(0,4,0.25)
-ex_avg_w_tree <- c(4, seq(5, 30, by = 5))
+ex_avg_w_tree <- c(4, 5, 10, 11, seq(15, 30, by = 5))
 wind_ex_df <- expand.grid(wind_labs = ex_wind_labs, avg_w_tree = ex_avg_w_tree)
 new_predicted_y <- predict(model_nls, newdata = wind_ex_df)
 

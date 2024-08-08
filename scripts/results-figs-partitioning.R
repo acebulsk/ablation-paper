@@ -1,17 +1,131 @@
 # Script to reproduce figures for the results section on partitioning
+# So far showing ocassionally large residuals, potentially due to poor modelled sublimation / wind redistriubtion and misaslignment between troughs and tree
+
+total_abl_fltr <- 1 # minimum snow ablated to include the event
 
 ## tidy data ----
+
+
+
+labs <- data.frame(partition_type = c('q_unl', 'obs_tree_mod_subl_cpy', 'residual'),
+                   plot_name = c('Unloading + Drip', 'Simulated Sublimation', 'Residual + error'))
+
+# PLOTS ---- 
+
+## cumulative partitioning by event
+events_fltr <- canopy_snow_events |> 
+  filter(quality < 3, # these have all around bad ablation data
+         weighed_tree_quality < 3) |>  # these have bad weighed tree observations and thus do not have sublimation measurements for the following paritioning equations, useful to look at these events later on when just looking at the rates
+  pull(event_id)
+
+fltr_for_events <- met_unld |> 
+  left_join(q_unld_tree) |> 
+  filter(
+    name %in% scl_names,
+    event_id %in% events_fltr)
+
+fltr_by_event <- fltr_for_events |> 
+  select(datetime,
+         event_id,
+         value,
+         name,
+         tree_mm,
+         q_unl,
+         q_tree_ablation,
+         obs_tree_mod_subl_cpy,
+         t,
+         u) |>
+  group_by(event_id, name) |> # group by name since we dont want to sum over different troughs
+  mutate(
+    n = n(),
+    cuml_unld_by_event = max(value) - min(value),
+    cuml_cpy_abl_by_event = max(tree_mm - min(tree_mm)),
+    cuml_subl_by_event = sum(obs_tree_mod_subl_cpy/4),
+    residual_by_event = cuml_cpy_abl_by_event - (cuml_unld_by_event + cuml_subl_by_event)) |> 
+  filter(n > 4) |> 
+  group_by(event_id) |>  # now avg over the troughs
+  summarise(
+    event_t = mean(t),
+            event_u = mean(u),
+            cuml_unld_by_event = mean(cuml_unld_by_event),
+            cuml_subl_by_event = mean(cuml_subl_by_event),
+            cuml_cpy_abl_by_event = mean(cuml_cpy_abl_by_event),
+            residual_by_event = mean(residual_by_event),
+            cuml_unld_plus_subl = cuml_unld_by_event + cuml_subl_by_event,
+            frac_unld = cuml_unld_by_event / cuml_cpy_abl_by_event,
+            frac_resid = residual_by_event/cuml_cpy_abl_by_event,
+            frac_subl =  cuml_subl_by_event/cuml_cpy_abl_by_event,
+            check_sum = frac_unld + frac_resid + frac_subl) |> 
+  ungroup() |> 
+  as.data.frame()
+
+y_axis_fracs <- 'Fraction of Event Weighed Tree Ablation (-)'
+wind_axis <- 'Mean Event Wind Speed (m/s)'
+temp_axis <- 'Mean Event Air Temperature (°C)'
+
+ggplot(fltr_by_event |> 
+         filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
+         filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
+         pivot_longer(frac_unld:frac_subl), aes(event_u, value, fill = name)) +
+  geom_bar(stat = 'identity', position = 'stack', width = .1, colour = 'black')
+
+ggplot(fltr_by_event |> 
+         filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
+         filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
+         pivot_longer(frac_unld:frac_subl),
+       aes(event_t, value, fill = name)) +
+  geom_bar(stat = 'identity', position = 'stack', width = 1, colour = 'black')
+
+ggplot(fltr_by_event |> 
+         filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
+         pivot_longer(c(cuml_unld_plus_subl, cuml_cpy_abl_by_event)),
+       aes(event_u, value, fill = name)) +
+  geom_bar(stat = 'identity', position = 'dodge', width = .1, colour = 'black')
+
+fltr_by_event_long <- fltr_by_event |> 
+  filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
+  pivot_longer(cuml_unld_by_event:residual_by_event) 
+
+ggplot(fltr_by_event_long, aes(event_t, value, fill = name)) +
+  geom_bar(stat = 'identity', position = 'stack', width = 1, colour = 'black')
+
+ggplot(fltr_by_event_long, aes(event_u, value, fill = name)) +
+  geom_bar(stat = 'identity', position = 'stack', width = .1, colour = 'black')
+
+# or by point
+
+fltr_by_event_long <- fltr_by_event |> 
+  filter(cuml_cpy_abl_by_event > 2.5) |> 
+  pivot_longer(
+    c(
+      cuml_unld_plus_subl,
+      cuml_cpy_abl_by_event,
+      cuml_subl_by_event,
+      cuml_unld_by_event,
+      residual_by_event
+    )
+  )
+
+ggplot(fltr_by_event_long, aes(event_t, value, colour = name)) +
+  geom_point() +
+  facet_grid(vars(name), scales = 'free')
+
+## avg 15-min rates for the entire 2 years ---- 
+
 fltr <- met_unld |> 
   left_join(q_unld_tree) |> 
   mutate(residual = q_tree_ablation - q_unl) |> 
   filter(
+    residual >= -5, # removes a couple large residuals just due to mismatched timing 
+    residual <= 5, 
     name %in% scl_names,
-    # q_unl < 7,
-    q_unl > min_qunld,
-    tree_mm > min_canopy_snow) 
+    # name %in% 'medium_density_forest',
+    q_unl < 7,
+    q_tree_ablation > min_qunld,
+    q_unl > min_qunld) 
 
-labs <- data.frame(partition_type = c('q_unl', 'obs_tree_mod_subl_cpy', 'residual'),
-                   plot_name = c('Unloading + Drip', 'Simulated Sublimation', 'Residual + error'))
+
+unld_partition_lims <- c(-0.05, 1.1)
 
 measured_df <- fltr |> 
   pivot_longer(c(q_unl, residual), names_to = 'partition_type', values_to = 'partition_value') |> 
@@ -35,55 +149,6 @@ sim_df <- fltr |>
             n = n(), 
             group = 'Measured + Simulated')
 
-# Data Summary ---- 
-
-# could add on here the portion of snow redistributed to the pluvio during high winds (i.e. a rectangle around part of the top wind speed bar)
-
-low_wind_events <- c('2023-02-28', '2023-03-14', '2022-12-21')
-entrainment_events <- c('2021-12-19', '2022-12-01', '2023-02-24')
-events <- c(entrainment_events, low_wind_events)
-
-ffr_met |> 
-  pivot_longer(!datetime) |> 
-  left_join(canopy_snow_long) |>
-  filter(storm_id %in% low_wind_events) |> 
-  ggplot(aes(datetime, value, colour = name)) + 
-  geom_line() +
-  facet_grid(name~storm_id, scales = 'free')
-
-ffr_met |> 
-  pivot_longer(!datetime) |> 
-  left_join(canopy_snow_long) |>
-  filter(storm_id %in% entrainment_events) |> 
-  ggplot(aes(datetime, value, colour = name)) + 
-  geom_line() +
-  facet_grid(name~storm_id, scales = 'free')
-
-pcp_events <- ffr_met |> 
-  left_join(canopy_snow_long) |> 
-  filter(storm_id %in% events,
-         p > 0,
-         p < 0.2) 
-
-ggplot(pcp_events, aes(u, p*4)) + 
-  geom_point() +
-  ylim(c(0, NA)) +
-  xlim(c(0, NA)) +
-  ylab('Wind Redistribution (mm/hr)') +
-  xlab('Wind Speed (m/s)') +
-  geom_smooth(method = 'lm', se = F)
-
-lm_mod <- lm(p*4~u, data = pcp_events)
-summary(lm_mod)
-
-# sig. relationship but its not physically realistic ... we are getting too high
-# wind redistribution at low wind speeds also looking at the partitioning bar
-# graph we can see that wind redistribution does not make up a significant
-# portion of ablation in a wind exposed forest
-
-# PLOTS ---- 
-
-unld_partition_lims <- c(-0.05, 1.1)
 
 p <- rbind(measured_df, sim_df) |> 
   left_join(labs, by = 'partition_type') |> 
@@ -127,6 +192,8 @@ wind_p <- fltr |>
   ylim(unld_partition_lims)  +
   scale_fill_manual(values = c("lightgray", "#f89540"))
 
+wind_p
+
 ggsave(
   'figs/results/canopy_snow_ablation_partition_vs_mid_canopy_wind.png',
   device = png,
@@ -162,6 +229,7 @@ temp_p <- fltr |>
         legend.position = 'bottom') +
   ylim(unld_partition_lims) +
   scale_fill_manual(values = c("lightgray", "#f89540"))
+temp_p
 
 ggsave(
   'figs/results/canopy_snow_ablation_partition_vs_air_temp.png',

@@ -5,14 +5,13 @@
 met_unld$binary_unl <- ifelse(met_unld$q_unl > min_qunld, 1, 0)
 
 prob_unl_df <- met_unld |> 
-  filter(name %in% scl_names,
-         inst_type == 'subcanopy trough') |> # this one is redundant but pedantic!  
   group_by(temp_labs, wind_labs) |> 
   summarise(n_unld_events = sum(binary_unl),
             N_condition = n(),
             prob_unl_df = n_unld_events/N_condition) |> 
   filter(N_condition > 0,
-         n_unld_events > 0)
+         n_unld_events > 0,
+         !is.na(temp_labs))
 
 ggplot(prob_unl_df, aes(x = wind_labs, y = temp_labs, fill = prob_unl_df)) +
   geom_raster() +

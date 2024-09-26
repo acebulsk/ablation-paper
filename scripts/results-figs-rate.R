@@ -14,10 +14,10 @@ met_unld_time_fltr <- met_unld |>
          t < -6,
          q_unl < 7) |> 
   mutate(`Canopy Load (mm)` = case_when(
-    tree_mm >= 6.5 ~ '>= 6.5',
+    obs_canopy_load >= 6.5 ~ '>= 6.5',
     TRUE  ~ '< 6.5'
   )) |> group_by(`Canopy Load (mm)`) |> 
-  mutate(avg_w_tree = mean(tree_mm, na.rm = T))
+  mutate(avg_w_tree = mean(obs_canopy_load, na.rm = T))
 
 met_unld_time_smry <- met_unld_time_fltr |> 
   group_by(duration_labs, avg_w_tree) |> 
@@ -94,18 +94,18 @@ met_unld_all_winds_cold <- met_unld |>
     q_unl < 7,
     q_unl > min_qunld,
     t < -6,
-    # tree_mm >= min_canopy_snow # this reduces our data by like 25%, and removes some good obs of temp unloading near 5 deg. C
+    # obs_canopy_load >= min_canopy_snow # this reduces our data by like 25%, and removes some good obs of temp unloading near 5 deg. C
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
-    tree_mm >= 6.5 ~ '>= 6.5',
-    is.na(tree_mm) ~ 'NA',
+    obs_canopy_load >= 6.5 ~ '>= 6.5',
+    is.na(obs_canopy_load) ~ 'NA',
     TRUE  ~ '< 6.5'
   )) |> group_by(`Canopy Load (mm)`) |> 
-  mutate(avg_w_tree = mean(tree_mm))
+  mutate(avg_w_tree = mean(obs_canopy_load))
 
 met_unld_all_winds_cold |> 
   group_by(`Canopy Load (mm)`) |> 
-  summarise(avg_w_tree = mean(tree_mm))
+  summarise(avg_w_tree = mean(obs_canopy_load))
 
 met_unld_all_winds_cold_smry <- met_unld_all_winds_cold |> 
   group_by(wind_labs, `Canopy Load (mm)`, avg_w_tree) |> 
@@ -154,14 +154,14 @@ met_unld_all_temps_limit_wind <- met_unld |>
     q_unl < 7,
     q_unl > min_qunld,
     u <= 2,
-    #tree_mm > min_canopy_snow # this reduces our data by like 25%
+    #obs_canopy_load > min_canopy_snow # this reduces our data by like 25%
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
-    tree_mm >= 6.5 ~ '>= 6.5',
-    is.na(tree_mm) ~ 'NA',
+    obs_canopy_load >= 6.5 ~ '>= 6.5',
+    is.na(obs_canopy_load) ~ 'NA',
     TRUE  ~ '< 6.5'
   )) |> group_by(`Canopy Load (mm)`) |> 
-  mutate(avg_w_tree = mean(tree_mm))
+  mutate(avg_w_tree = mean(obs_canopy_load))
 
 met_unld_all_temps_limit_wind_smry <- met_unld_all_temps_limit_wind |> 
   group_by(temp_labs, `Canopy Load (mm)`, avg_w_tree) |> 
@@ -714,27 +714,27 @@ tol <- 1e-6
 coefs_old <- as.numeric(coef(model_nls))
 wts <- met_unld_tree_smry$q_unl_avg^2
 
-# apply weights iteratively
-for (i in 1:max_iter) {
-  model_nlswi <- nls(q_unl_avg ~ a * exp(b * tree_labs),
-                     data = met_unld_tree_smry,
-                     weights = wts,
-                     start = c(a = coefs_old[1],
-                               b = coefs_old[2]),
-                     control = nls.control(maxiter = 1000))
-  coefs <- as.numeric(coef(model_nlswi))
-  max_change <- max(abs((coefs - coefs_old)/coefs_old))
-  if (max_change < tol) break
-  coefs_old <- coefs
-  yp <- predict(model_nlswi)
-  wts <- yp^2
-}
+# # apply weights iteratively
+# for (i in 1:max_iter) {
+#   model_nlswi <- nls(q_unl_avg ~ a * exp(b * tree_labs),
+#                      data = met_unld_tree_smry,
+#                      weights = wts,
+#                      start = c(a = coefs_old[1],
+#                                b = coefs_old[2]),
+#                      control = nls.control(maxiter = 1000))
+#   coefs <- as.numeric(coef(model_nlswi))
+#   max_change <- max(abs((coefs - coefs_old)/coefs_old))
+#   if (max_change < tol) break
+#   coefs_old <- coefs
+#   yp <- predict(model_nlswi)
+#   wts <- yp^2
+# }
 
-RSS.p <- sum(residuals(model_nlswi)^2)  # Residual sum of squares
-TSS <- sum((met_unld_tree_smry$q_unl_avg - mean(met_unld_tree_smry$q_unl_avg))^2)  # Total sum of squares
-rsq_nlswi <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
+# RSS.p <- sum(residuals(model_nlswi)^2)  # Residual sum of squares
+# TSS <- sum((met_unld_tree_smry$q_unl_avg - mean(met_unld_tree_smry$q_unl_avg))^2)  # Total sum of squares
+# rsq_nlswi <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
 
-modelr::rsquare(model_nlswi, met_unld_tree_smry) # check is the same as our manually defined method
+# modelr::rsquare(model_nlswi, met_unld_tree_smry) # check is the same as our manually defined method
 
 lm <- data.frame(
   mod_name = 'lm',
@@ -748,16 +748,16 @@ nls <- data.frame(
   resids = residuals(model_nls, type = "pearson")
 )
 
-nlswi <- data.frame(
-  mod_name = 'nlswi',
-  preds = predict(model_nlswi),
-  resids = residuals(model_nlswi, type = "pearson")
-)
+# nlswi <- data.frame(
+#   mod_name = 'nlswi',
+#   preds = predict(model_nlswi),
+#   resids = residuals(model_nlswi, type = "pearson")
+# )
 
 resids_df <- rbind(
   lm,
-  nls,
-  nlswi
+  nls
+  # nlswi
 )
 
 # Look at the Q-Q plot and residuals for the warm events 
@@ -830,3 +830,4 @@ q_unl_time_model_err_tbl <- met_unld_tree_smry |>
 
 saveRDS(q_unl_time_model_err_tbl,
         'data/modelled_canopyload_unloading_error_table.rds')
+

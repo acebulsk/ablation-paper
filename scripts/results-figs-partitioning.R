@@ -1,35 +1,92 @@
 # Script to reproduce figures for the results section on partitioning
-# So far showing ocassionally large residuals, potentially due to poor modelled sublimation / wind redistriubtion and misaslignment between troughs and tree
+# So far showing occasionally large residuals, potentially due to poor modelled sublimation / wind redistriubtion and misaslignment between troughs and tree
 
+# NOTES:
+# getting better aggreement with w tree and troughs for 2021/2022 yr vs 2022/2023 possibly due to different tree cals
 total_abl_fltr <- 1 # minimum snow ablated to include the event
 
 ## tidy data ----
-
-
 
 labs <- data.frame(partition_type = c('q_unl', 'obs_tree_mod_subl_cpy', 'residual'),
                    plot_name = c('Unloading + Drip', 'Simulated Sublimation', 'Residual + error'))
 
 # PLOTS ---- 
 
-## cumulative partitioning by event
+# less unloading measured by troughs than expected for these events, these were classified based on the figs under figs/supplement/load_plots
+
+# might expect moore loss from tree compared to troughs anyway due to diff in inst. location so these might not be valid...
+possible_wind_redistribution <- c('2021-12-27',
+                                  '2022-02-04', # large increase in wind coincides with loss of snow in weighed tree but large increase not seen in troughs
+                                  # '2023-02-24', # tree only higher by 2.5 mm so 10% wind redistribution
+                                  '2023-03-27', # on the edge between wind redistribution or just mismatch between tree and troughs
+                                  '2023-04-03' # this one more likely to be both wind redist and sublimation underestimation, peak winds up to 4 m/s
+                                  
+                                  ) 
+
+events_bad_sublimation <- c('2022-03-04',
+                            '2022-03-09', # 100% humidity!! NOT WINDY modelled sublimation may be underestimating, due to high humidity observed at mid canopy which may be a result of canopy sublimation...
+                            '2022-03-29', # peak avg wind 1.5 m/s - likely underestimate mod sub, little unloading to troughs here
+                            '2022-04-21', # NOT WINDY modelled sublimation may be underestimating, low humidity herre!! 
+                            '2022-04-23', # NOT WINDY modelled sublimation may be underestimating, due to high humidity observed at mid canopy which may be a result of canopy sublimation...
+                            '2022-06-23', # based on the data looks like wind redistribution but timelapse imagery shows clear sublimation, maybe poor handling of liquid water sublimation/ 0-4 deg. C temps.... peak avg wind speed 3.5 m/s coincides with canopy snow ablation thats not explained by sublimation or unloading to troughs
+                            '2022-06-24', # very warm up to 5 deg. C could be bad sublimation or just diff between tree and troughs
+                            '2022-12-01', # NOT WINDY modelled sublimation may be underestimating, due to high humidity observed at mid canopy which may be a result of canopy sublimation...
+                            '2023-03-25', # sublimation overestimated here possibly tree = troughs
+                            '2023-04-17' # possibly over estimate mod subl or tree undercaled
+                            ) 
+
+events_good_sublimation <- c('2022-03-24',
+                            '2023-04-03')
+
+
 events_fltr <- canopy_snow_events |> 
   filter(quality < 3, # these have all around bad ablation data
          weighed_tree_quality < 3) |>  # these have bad weighed tree observations and thus do not have sublimation measurements for the following paritioning equations, useful to look at these events later on when just looking at the rates
   pull(event_id)
 
-fltr_for_events <- met_unld |> 
+fltr_for_events <- q_unld_scl |> 
   left_join(q_unld_tree) |> 
+  left_join(q_subl) |> 
+  left_join(ft_met) |> 
+  mutate(
+    obs_tree_mod_subl_cpy = ifelse(
+      obs_tree_mod_subl_cpy > q_tree_ablation,
+      q_tree_ablation,
+      obs_tree_mod_subl_cpy
+    )
+  ) |> # limit modelled sublimation to what was actually removed from the weighed tree, this still may over estimate as does not consider the concurrent unloading/drip but we dont have 100% confidence in the timining to do that subtraction
   filter(
-    name %in% scl_names,
     event_id %in% events_fltr)
+
+# plot time series 
+fltr_for_events |> 
+  # filter(event_id == events_fltr[16]) |> 
+  filter(event_id == '2022-03-16') |> 
+  select(datetime,
+         event_id,
+         trough_name = name,
+         q_unl,
+         q_tree_ablation,
+         obs_tree_mod_subl_cpy) |>
+  mutate(q_unl_plus_subl = q_unl + obs_tree_mod_subl_cpy) |> 
+  pivot_longer(c(
+    q_unl,
+    q_tree_ablation,
+    obs_tree_mod_subl_cpy,
+    q_unl_plus_subl
+  )) |>
+  group_by(name, trough_name) |> 
+  mutate(value = cumsum(value/4)) |>  # mm/hr to mm/interval
+  ggplot(aes(datetime, value, colour = name)) +
+  geom_line() +
+  facet_wrap(~event_id+trough_name, scales = 'free')
 
 fltr_by_event <- fltr_for_events |> 
   select(datetime,
          event_id,
          value,
          name,
-         tree_mm,
+         obs_canopy_load,
          q_unl,
          q_tree_ablation,
          obs_tree_mod_subl_cpy,
@@ -38,8 +95,8 @@ fltr_by_event <- fltr_for_events |>
   group_by(event_id, name) |> # group by name since we dont want to sum over different troughs
   mutate(
     n = n(),
-    cuml_unld_by_event = max(value) - min(value),
-    cuml_cpy_abl_by_event = max(tree_mm - min(tree_mm)),
+    cuml_unld_by_event = sum(q_unl/4),
+    cuml_cpy_abl_by_event = sum(q_tree_ablation/4),
     cuml_subl_by_event = sum(obs_tree_mod_subl_cpy/4),
     residual_by_event = cuml_cpy_abl_by_event - (cuml_unld_by_event + cuml_subl_by_event)) |> 
   filter(n > 4) |> 
@@ -59,22 +116,30 @@ fltr_by_event <- fltr_for_events |>
   ungroup() |> 
   as.data.frame()
 
+# remove outlier events 
+fltr_by_event <- fltr_by_event |> 
+  filter(!event_id %in% possible_wind_redistribution,
+         !event_id %in% events_bad_sublimation,
+         cuml_cpy_abl_by_event > 2
+         )
+
+
 y_axis_fracs <- 'Fraction of Event Weighed Tree Ablation (-)'
 wind_axis <- 'Mean Event Wind Speed (m/s)'
 temp_axis <- 'Mean Event Air Temperature (°C)'
 
 ggplot(fltr_by_event |> 
          filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
-         filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
+         # filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
          pivot_longer(frac_unld:frac_subl), aes(event_u, value, fill = name)) +
-  geom_bar(stat = 'identity', position = 'stack', width = .1, colour = 'black')
+  geom_bar(stat = 'identity', position = 'stack', width = .025, colour = 'black')
 
 ggplot(fltr_by_event |> 
          filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
-         filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
+         # filter(abs(frac_resid) < .5) |> # negative residuals we know our weighed tree and lysimeters are not lining up
          pivot_longer(frac_unld:frac_subl),
        aes(event_t, value, fill = name)) +
-  geom_bar(stat = 'identity', position = 'stack', width = 1, colour = 'black')
+  geom_bar(stat = 'identity', position = 'stack', width = 0.25, colour = 'black')
 
 ggplot(fltr_by_event |> 
          filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
@@ -87,15 +152,15 @@ fltr_by_event_long <- fltr_by_event |>
   pivot_longer(cuml_unld_by_event:residual_by_event) 
 
 ggplot(fltr_by_event_long, aes(event_t, value, fill = name)) +
-  geom_bar(stat = 'identity', position = 'stack', width = 1, colour = 'black')
+  geom_bar(stat = 'identity', position = 'stack', width = .2, colour = 'black')
 
 ggplot(fltr_by_event_long, aes(event_u, value, fill = name)) +
-  geom_bar(stat = 'identity', position = 'stack', width = .1, colour = 'black')
+  geom_bar(stat = 'identity', position = 'stack', width = .015, colour = 'black')
 
 # or by point
 
 fltr_by_event_long <- fltr_by_event |> 
-  filter(cuml_cpy_abl_by_event > 2.5) |> 
+  filter(cuml_cpy_abl_by_event > total_abl_fltr) |> 
   pivot_longer(
     c(
       cuml_unld_plus_subl,
@@ -110,15 +175,21 @@ ggplot(fltr_by_event_long, aes(event_t, value, colour = name)) +
   geom_point() +
   facet_grid(vars(name), scales = 'free')
 
+ggplot(fltr_by_event_long, aes(event_u, value, colour = name)) +
+  geom_point() +
+  facet_grid(vars(name), scales = 'free')
+
 ## avg 15-min rates for the entire 2 years ---- 
 
-fltr <- met_unld |> 
-  left_join(q_unld_tree) |> 
+fltr <- fltr_for_events |> 
+  left_join(ft_met_binned, by = 'datetime') |> 
   mutate(residual = q_tree_ablation - q_unl) |> 
   filter(
     residual >= -5, # removes a couple large residuals just due to mismatched timing 
     residual <= 5, 
     name %in% scl_names,
+    !event_id %in% possible_wind_redistribution,
+    !event_id %in% events_bad_sublimation,
     # name %in% 'medium_density_forest',
     q_unl < 7,
     q_tree_ablation > min_qunld,
@@ -165,6 +236,7 @@ p
 ggsave('figs/results/canopy_snow_ablation_partition_global.png', device = png, width = int_fig_width+4, height = int_fig_height, units = "in")
 
 wind_p <- fltr |> 
+  filter(t < -6) |>
   group_by(wind_labs) |>
   # group_by(tau_labs = tau_top_labs) |>
   summarise(`Unloading + Drip` = mean(q_unl, na.rm = T),
@@ -203,6 +275,7 @@ ggsave(
 )
 
 temp_p <- fltr |> 
+  filter(u < 2) |>
   group_by(temp_labs) |>
   # group_by(tau_labs = tau_top_labs) |>
   summarise(`Unloading + Drip` = mean(q_unl, na.rm = T),
@@ -246,3 +319,4 @@ ggsave(
   width = 8,
   height = 5
 )
+

@@ -1,0 +1,4 @@
+﻿name,Mean Bias,MAE,RMS Error,R,r^2
+Baseline,-8.82,43.45,53.84,0.93,0.85
+Updated,-13.22,41.22,52.77,0.93,0.86
+

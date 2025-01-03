@@ -1,5 +1,5 @@
 ---
-title: "Paper Draft: The influence of Meteorology on Canopy Snow Ablation Processes"
+title: "Paper Draft: The Influence of Meteorology on Canopy Snow Ablation Processes"
 format: 
   docx:
     reference-doc: ../config/word_template_hp.docx
@@ -27,7 +27,8 @@ csl: '../../papers/bibtex/csl-styles/apa-disable-disambiguate-add-names.csl'
 library(dplyr)
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.align='center')
 
-source('scripts/results-figs-setup.R')
+source('scripts/00-results-figs-setup.R')
+source('scripts/get-manuscript-values.R')
 
 # met averages for periods snow was in the canopy w/o precip
 mean_t <- mean(met_unld$t) |> round(1)
@@ -119,29 +120,89 @@ where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloa
 
 ![](figs/results/canopy_snow_ablation_partition_global.png){#fig-glob-unl-part}
 
-@fig-wind-temp-unl-part shows a large increase in the ablation residual with wind speeds above 3.5 m s^-1^ and little association with air temperature. The increase in the residual at high wind speeds is attributed to higher ablation rates measured by the weighed tree due which were not accounted for by corresponding increase in the unloading + drip rates. The difference between the residual + error term and the modelled sublimation rate is attributed to both an increase in horizontal wind redistribution of snow intercepted in the canopy and instrument error. Difficulties in measuring horizontal wind redistribution and quantify the instrument error limit the ability to partition the residual into these two processes. If it is assumed that the instrument error is constant across wind speeds, it could be determined that the increase in the residual + error term is primarily attributed to horizontal wind redistribution. However, since the sublimation parameterization in this simulation has not been tested in wind-exposed forest and may be an underestimate of true sublimation rates at high wind speeds. Therefore the increase in residual, compared to modelled sublimation could also be attributed to an increase in actual sublimation rate compared to the model. While these data could be used to parameterise a horizontal wind redistribution function, the uncertainty behind this residual term due to the aforementioned issues prove any resultant model to be too speculative. 
+@fig-wind-temp-unl-part shows a large increase in the ablation residual with wind speeds above 3.5 m s^-1^ and little association with air temperature. The increase in the residual at high wind speeds is attributed to higher ablation rates measured by the weighed tree due which were not accounted for by corresponding increase in the unloading + drip rates. The difference between the residual + error term and the modelled sublimation rate is attributed to both an increase in horizontal wind redistribution of snow intercepted in the canopy and instrument error. Difficulties in measuring horizontal wind redistribution and quantify the instrument error limit the ability to partition the residual into these two processes. However, since the sublimation parameterization in this simulation has not been tested in wind-exposed forest and may be an underestimate of true sublimation rates at high wind speeds. Therefore the increase in residual, compared to modelled sublimation could also be attributed to an increase in actual sublimation rate compared to the model. While these data could be used to parameterise a horizontal wind redistribution function, the uncertainty behind this residual term due to the aforementioned issues prove any resultant model to be too speculative. 
 
 ![](figs/results/canopy_snow_ablation_partition_cowplot_temp_wind.png){#fig-wind-temp-unl-part}
 
 ### The Influence of Meteorology on Unloading
 
-@fig-glob-prob-unl shows the association between the probability of unloading + drip with air temperature and wind speed. The probability of unloading + drip was found to be high (close to 1) for air temperatures above 1 °C and above wind speeds of 2.5 m s^-1^. For wind speeds bins less than 1 m s^-1^ the probability of unloading was found to positively associated with air temperatures. However at higher wind speeds this association was observed to weaken, potentially due to some evaporative cooling. For air temperatures less than -6 °C a positive association between the probability of unloading + drip and wind speed was observed. Above -6 °C the reduced association between wind speed and probability of unloading + drip may be attributed to increased cohesion and adhesion of snow intercepted in the canopy attributed to an increase in liquid water content in the snow clumps. The low frequency of observations shown in @fig-glob-freq-unl, for low and high air temperatures and wind speeds may limit the interpretation of these results.
+@fig-glob-prob-unl shows the association between the probability of unloading + drip with air temperature and wind speed. The probability of unloading + drip was found to be high (close to 1) for air temperatures above 1 °C and above wind speeds of 2.5 m s^-1^. For wind speeds bins less than 1 m s^-1^ the probability of unloading was found to positively associated with air temperatures. However at higher wind speeds this association of unloading with air temperature was observed to weaken, potentially due to some evaporative cooling. For air temperatures less than -6 °C a positive association between the probability of unloading + drip and wind speed was observed. Above -6 °C the reduced association between wind speed and probability of unloading + drip may be attributed to increased cohesion and adhesion of snow intercepted in the canopy attributed to an increase in liquid water content in the snow clumps. The low frequency of observations shown in @fig-glob-freq-unl, for low and high air temperatures and wind speeds may limit the interpretation of these results.
 
 ![](figs/results/probability_of_unloading_wind_air_temp.png){#fig-glob-prob-unl}
 
 ![](figs/results/frequency_of_unloading_wind_air_temp.png){#fig-glob-freq-unl}
-Removing periods above these thresholds, i.e., air temperature less than -6 °C and wind speed less than 2 m/s, shows that the probability of unloading increases based on the duration snow is intercepted in the canopy. The probability of unloading starts at around 0.5 when snow is newly intercepted in the canopy, followed by a decline to around 0.1 after about 10 hours, and following 24 hours the probability of unloading increases steeply up to near 1.0 at 100 hours.
+The probability of unloading was found to start around 0.5 when snow is newly intercepted in the canopy, followed by a decline to around 0.1 after about 10 hours, and following 24 hours the probability of unloading increases up to near 1.0 at 100 hours.
 
-![](figs/results/probability_of_unloading_w_time_rm_warm_windy_periods.png){#fig-low-wind-qunl}
+![The probability of unloading with increasing duration that snow is intercepted in the canopy.](figs/results/probability_of_unloading_w_time_rm_warm_windy_periods.png){#fig-low-wind-qunl}
 
 ### Modelling Canopy Snow Unloading 
+
+The canopy snow unloading rate to to wind speed, duration, and air temperature can be represented by:
+
+$$
+\frac{dL}{dt} = L_0 \cdot [f(T_a) + f(u) + f(t)]
+$$
+
+A corresponding analytical solution for the above is:
+
+$$
+L^{t+\Delta t} = L^t e^{-\kappa_{unld} \Delta t}
+$$
+
+where:
+
+$$
+\kappa_{unld} = f(T_a) + f(u) + f(t)
+$$
+
+Or for just the unloading rate:
+
+$$
+\Delta L = L(t) - L(t+\Delta t)
+
+Substitute \(L(t+\Delta t)\) from the analytical solution:
+\[
+L(t+\Delta t) = L(t) \cdot \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right),
+\]
+
+\[
+\Delta L = L(t) - L(t) \cdot \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right).
+\]
+
+Factor out \(L(t)\):
+\[
+\Delta L = L(t) \cdot \left[1 - \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right)\right].
+\]
+
+Final Expression for Positive \(\Delta L\):
+\[
+\Delta L = L(t) \cdot \left[1 - \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right)\right].
+\]
+$$
 
 Less confidence in the temperature unloading model, maybe better suited to use a physically based snowmelt model. The wind unloading model aligns well with the observations although, only two canopy snow load bins were used. This model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships. 
 
 ![](figs/results/modelled_temp_unloading_w_obs.png){#fig-mod-temp-unld}
+
+The equation to represent the model shown in @fig-mod-temp-unld is:
+
+$$
+f(T) = a_T \cdot e^{b_T\cdot T_a}
+$$
+
+where $a_T$ is a constant of `r mod_coef_temp[['a']]` (s^-1^) and $b_T$ is a constant of `r mod_coef_temp[['b']]` (°C^-1^).
+
 The slight decline in unloading rate at 3.5 m s^-1^ for the 11 mm canopy snow load group is attributed to a single event where snow had been intercepted in the canopy for over 30 hours and may have been slightly more resistant to unloading compared to other events prior to this. Although lots of other obs with durations close to 30 hours and no obvious melt/refreeze so possibly more related to concurrent sublimation / wind redistribution. Although minimal wind redistribution observed at the pluvio. Could check disdrometer.
 
 ![](figs/results/modelled_wind_unloading_w_obs.png){#fig-mod-wind-unld}
+
+The equation to represent the model shown in @fig-mod-wind-unld is:
+
+$$
+f(u) = u \cdot a_u \cdot e^{b_u\cdot u}
+$$
+
+where $a_u$ is a constant of `r mod_coef_wind[['a']]` (m^-1^) and $b_u$ is a constant of `r mod_coef_wind[['b']]` (m^-1^).
 
 ```{r}
 wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') |> 
@@ -153,9 +214,17 @@ rbind(wind_err_tbl, temp_err_tbl)
 
 ```
 
-@fig-mod-time-unld and @fig-mod-cpy-load-unld show the decrease in unloading associated with increased duration in the canopy and increased unloading with increasing canopy snow load respectively. These figures show periods with snow intercepted in the canopy and filtered to below -6 °C and 2 m s^-1^ wind speed, where unloading attributed to these processes are observed to be reduced in @fig-mod-wind-unld and @fig-mod-temp-unld.
+@fig-mod-time-unld and @fig-mod-cpy-load-unld show the decrease in unloading associated with increased duration in the canopy and increased unloading with increasing canopy snow load respectively. These figures show periods with snow intercepted in the canopy and filtered to below -6 °C and 1 m s^-1^ wind speed, where unloading attributed to these processes are observed to be reduced in @fig-mod-wind-unld and @fig-mod-temp-unld. The canopy snow load bin with 10 mm of snow intercepted in the canopy experienced some larger mass unloading events around 50 hours and were determine to be not representative of duration based unloading which was expected to decline over time as snow is subject to equitemeprature metamorphasism and increases cohesion. So the resulting model was just fit to the 4 mm canopy snow load dataset.
 
 ![](figs/results/modelled_duration_unloading_w_obs.png){#fig-mod-time-unld}
+
+To model the curve shown in @fig-mod-time-unld fit to the dataset which had an average of 4 mm of canopy snow load is:
+
+$$
+f(t) = a_t \cdot e^{b_t \cdot t}
+$$
+
+where $a_{t}$ is a constant of `r mod_coef_duration[['a']]`, $b_t$ is a constant of `r mod_coef_duration[['b']]`, and $t$ is the duration that snow has been intercepted in the canopy. 
 
 ![](figs/results/modelled_canopy_snowload_unloading_w_obs.png){#fig-mod-cpy-load-unld}
 

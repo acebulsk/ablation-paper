@@ -9,14 +9,15 @@ x_lab <- 'Duration Snow Intercepted in Canopy (Hours)'
 
 met_unld_time <- met_unld |> 
   filter(name %in% scl_names,
-         inst_type == 'subcanopy trough', # this one is redundant but pedantic!  
+         # inst_type == 'subcanopy trough', # this one is redundant but pedantic!  
          q_unl < 7,
          # q_unl > min_qunld,
          t < -6,
-         u <= 2,
-         tree_mm >= min_canopy_snow) |> 
+         u < 2,
+         !(time_elapsed_bin_labs == 54 & q_unl > 2)
+         obs_canopy_load >= min_canopy_snow) |> 
   mutate(binary_unl = ifelse(q_unl > min_qunld, 1, 0)) |> # timesteps are 15 minutes
-  select(event_id, datetime, t, time_elapsed_event, binary_unl, q_unl)
+  select(datetime, t, time_elapsed_event, binary_unl, q_unl)
 
 min_bin <- 0
 max_bin <- round(
@@ -223,11 +224,11 @@ ggplot(prob_unl_df) +
   geom_point(aes(time_elapsed_bin_labs, prob_unl)) +
   ylab(y_lab) +
   xlab(x_lab) +
-  # ylim(c(0,2)) +
+  ylim(c(0,1)) +
   theme_bw() 
 
 ggsave(
-  'figs/results/modelled_wind_unloading_w_obs.png',
+  'figs/results/modelled_wind_unloading_w_obs_breakpoint.png',
   width = 6,
   height = 4
 )

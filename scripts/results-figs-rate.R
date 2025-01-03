@@ -2,6 +2,7 @@
 # temperature and wind speed. The data are filtered to produced these in an
 # attempt to isolate temperature induced unloading and wind induced unloading.
 
+snow_load_th <- 7
 temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
 
 ## PLOTS ---- 
@@ -10,12 +11,14 @@ temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
 met_unld_time_fltr <- met_unld |> 
   filter(is.na(duration_labs) == F,
          name %in% scl_names,
-         u < 2,
+         u <= 1,
          t < -6,
-         q_unl < 7) |> 
+         q_unl < 7,
+         !(time_elapsed_bin_labs == 54 & q_unl > 2)
+         ) |> # removes outlier at 54 hours to some extent
   mutate(`Canopy Load (mm)` = case_when(
-    obs_canopy_load >= 6.5 ~ '>= 6.5',
-    TRUE  ~ '< 6.5'
+    obs_canopy_load >= snow_load_th ~ 'Heavy',
+    TRUE  ~ 'Low'
   )) |> group_by(`Canopy Load (mm)`) |> 
   mutate(avg_w_tree = mean(obs_canopy_load, na.rm = T))
 
@@ -97,9 +100,9 @@ met_unld_all_winds_cold <- met_unld |>
     # obs_canopy_load >= min_canopy_snow # this reduces our data by like 25%, and removes some good obs of temp unloading near 5 deg. C
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
-    obs_canopy_load >= 6.5 ~ '>= 6.5',
+    obs_canopy_load >= 7 ~ 'Heavy',
     is.na(obs_canopy_load) ~ 'NA',
-    TRUE  ~ '< 6.5'
+    TRUE  ~ 'Low'
   )) |> group_by(`Canopy Load (mm)`) |> 
   mutate(avg_w_tree = mean(obs_canopy_load))
 
@@ -116,7 +119,9 @@ met_unld_all_winds_cold_smry <- met_unld_all_winds_cold |>
             ci_low = quantile(q_unl,0.05),
             ci_hi = quantile(q_unl, 0.95),
             n = n()) |> 
-  filter(n >= 3)
+  filter(n >= 3,
+         !is.na(`Canopy Load (mm)`),
+         !is.na(avg_w_tree))
 
 ggplot(met_unld_all_winds_cold_smry, 
        aes(x = wind_labs, y = q_unl_avg, colour = as.character(round(avg_w_tree)))) + 
@@ -153,13 +158,13 @@ met_unld_all_temps_limit_wind <- met_unld |>
     name %in% scl_names,
     q_unl < 7,
     q_unl > min_qunld,
-    u <= 2,
+    u <= 1,
     #obs_canopy_load > min_canopy_snow # this reduces our data by like 25%
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
-    obs_canopy_load >= 6.5 ~ '>= 6.5',
+    obs_canopy_load >= snow_load_th ~ 'Heavy',
     is.na(obs_canopy_load) ~ 'NA',
-    TRUE  ~ '< 6.5'
+    TRUE  ~ 'Low'
   )) |> group_by(`Canopy Load (mm)`) |> 
   mutate(avg_w_tree = mean(obs_canopy_load))
 
@@ -172,7 +177,9 @@ met_unld_all_temps_limit_wind_smry <- met_unld_all_temps_limit_wind |>
             ci_low = quantile(q_unl,0.05),
             ci_hi = quantile(q_unl, 0.95),
             n = n()) |>
-  filter(n > 10)
+  filter(n > 3,
+         !is.na(`Canopy Load (mm)`),
+         !is.na(avg_w_tree))
 
 ggplot(met_unld_all_temps_limit_wind_smry) + 
   geom_point(data = met_unld_all_temps_limit_wind,
@@ -219,6 +226,14 @@ b_lm <- coefs[2]
 
 ## Fit a non linear least squares model
 # use starting values from the linear model 
+
+# per second for model
+model_nls <- nls(q_unl_avg/(60*60) ~ a * avg_w_tree * exp(b * temp_labs), 
+                 data = met_unld_all_temps_limit_wind_smry, 
+                 start = list(a = a_lm, b = b_lm))
+saveRDS(coef(model_nls), 'data/model_coef_temp_unld_per_second.rds')
+
+# per hour for plotting
 model_nls <- nls(q_unl_avg ~ a * avg_w_tree * exp(b * temp_labs), 
                  data = met_unld_all_temps_limit_wind_smry, 
                  start = list(a = a_lm, b = b_lm))
@@ -299,10 +314,10 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 
 
 # Look at the different models for the warm events 
-ex_temp_labs <- seq(-35,5,0.25)
-ex_avg_w_tree <- c(3, 5, 10, 11, seq(15, 30, by = 5))
+ex_temp_labs <- seq(-25,5,0.25)
+ex_avg_w_tree <- c(3, 10)
 temp_ex_df <- expand.grid(temp_labs = ex_temp_labs, avg_w_tree = ex_avg_w_tree)
-new_predicted_y <- predict(model_nls, newdata = temp_ex_df)
+temp_ex_df$new_predicted_y <- predict(model_nls, newdata = temp_ex_df)
 
 ggplot(temp_ex_df) +
   geom_line(aes(temp_labs, new_predicted_y, colour = factor(avg_w_tree))) +
@@ -320,23 +335,29 @@ ggplot(temp_ex_df) +
   ylab('Unloading + Drip Rate (mm/hr)') +
   xlab('Air Temperature (°C)') +
   # ylim(c(0,2)) +
-  theme_bw() +
-  scale_color_viridis_d() +
-  labs(colour = 'Canopy Snow\nLoad (mm)')
+  # theme_bw() +
+  # scale_color_manual(values = c("#E69F00", "#009E73", "#56B4E9")) +
+  scale_color_viridis_d(begin = 0, end = 0.8) +
+  labs(colour = 'Canopy Snow\nLoad (mm)') +
+  theme(legend.position = 'none')
 
 ggsave(
   'figs/results/modelled_temp_unloading_w_obs.png',
-  width = 6,
+  width = 4.5,
   height = 4
 )
 
 met_unld_all_temps_limit_wind_smry$pred_q_unl <- 
   predict(model_nls, met_unld_all_temps_limit_wind_smry)
+# test what predict is doing 
+met_unld_all_temps_limit_wind_smry$pred_q_unl_test <- 
+  coef(model_nls)[['a']] * met_unld_all_temps_limit_wind_smry$avg_w_tree * exp(coef(model_nls)[['b']] * met_unld_all_temps_limit_wind_smry$temp_labs)
 
 met_unld_all_temps_limit_wind_smry |> 
   ggplot(aes(temp_labs, colour = factor(round(avg_w_tree)), group = factor(avg_w_tree))) + 
   geom_point(aes(y = q_unl_avg)) +
-  geom_line(aes(y = pred_q_unl))
+  # geom_line(aes(y = pred_q_unl)) +
+  geom_line(aes(y = pred_q_unl_test), linetype = 'dashed')
 
 ## temperature based unloading error table ----
 
@@ -378,10 +399,28 @@ b_lm <- coefs[2]
 ### Fit a non linear least squares model ----
 
 # use starting values from the linear model 
-model_nls <- nls(q_unl_avg ~ a * avg_w_tree * exp(b * wind_labs), 
+# per second for model
+# wind labs in here twice sets to 0 when wind is 0, dont need this for other params
+model_nls <- nls(q_unl_avg/(60*60) ~ wind_labs * a * avg_w_tree * exp(b * wind_labs), 
                  data = met_unld_all_winds_cold_smry, 
                  start = list(a = a_lm, b = b_lm))
+nls_coefs <- coef(model_nls)
+saveRDS(nls_coefs, 'data/model_coef_wind_unld_per_second.rds')
+
+met_unld_all_winds_cold_smry <- met_unld_all_winds_cold_smry |> 
+  mutate(
+    model_nls_pred = wind_labs * nls_coefs[[1]] * avg_w_tree * exp(nls_coefs[[2]]* wind_labs) # Linear model prediction
+  )
+# Create ggplot
+ggplot(met_unld_all_winds_cold_smry, aes(x = wind_labs, y = model_nls_pred)) +
+  # Observed vs NLS model
+  geom_point(aes(color = "Observed vs NLS"), size = 2) 
 # summary(model_nls)
+
+# per hour for plotting
+model_nls <- nls(q_unl_avg ~ wind_labs * a * avg_w_tree * exp(b * wind_labs), 
+                 data = met_unld_all_winds_cold_smry, 
+                 start = list(a = a_lm, b = b_lm))
 
 RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
 TSS <- sum((met_unld_all_winds_cold_smry$q_unl_avg - mean(met_unld_all_winds_cold_smry$q_unl_avg))^2)  # Total sum of squares
@@ -457,7 +496,7 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 
 # Look at the different models for the warm events 
 ex_wind_labs <- seq(0,5,0.1)
-ex_avg_w_tree <- c(3, 5, 10, 11, seq(15, 30, by = 5))
+ex_avg_w_tree <- c(3, 9)
 wind_ex_df <- expand.grid(wind_labs = ex_wind_labs, avg_w_tree = ex_avg_w_tree)
 new_predicted_y <- predict(model_nls, newdata = wind_ex_df)
 
@@ -476,9 +515,9 @@ ggplot(wind_ex_df) +
              size = 2) +
   ylab('Unloading + Drip Rate (mm/hr)') +
   xlab('Wind Speed (m/s)') +
-  # xlim(c(0,3.5)) +
-  theme_bw() +
-  scale_color_viridis_d() +
+  xlim(c(0,5)) + # removes outlier at 6 m/s
+  # theme_bw() +
+  scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = 'Canopy Snow\nLoad (mm)')
 
 ggsave(
@@ -528,17 +567,49 @@ saveRDS(q_unl_temp_model_err_tbl,
 met_unld_time_smry$log_q_unl_avg <- 
   log(met_unld_time_smry$q_unl_avg)
 
+### Fit a non linear least squares model ----
+
+# use starting values from the linear model 
+
+# per second for model
+met_unld_time_smry$log_q_unl_avg_sec <- 
+  log(met_unld_time_smry$q_unl_avg/(60*60))
+met_unld_time_smry$q_unl_avg_sec <- 
+  met_unld_time_smry$q_unl_avg/(60*60)
+met_unld_time_smry$duration_labs_sec <- 
+  met_unld_time_smry$duration_labs*(60*60)
+
+model_lm <- lm(log_q_unl_avg_sec ~ duration_labs_sec, data = met_unld_time_smry)
+coefs <- coef(model_lm) |> as.numeric()
+summary(model_lm)
+a_lm <- exp(coefs[1])
+b_lm <- coefs[2]
+model_nls <- nls(q_unl_avg_sec ~ avg_w_tree* a * exp(b *  duration_labs_sec), # adding w_tree here adds 10% to the R^2 here
+                 data = met_unld_time_smry |> filter(avg_w_tree < 5, duration_labs < 75), 
+                 start = list(a = a_lm, b = b_lm))
+nls_coefs <- coef(model_nls)
+saveRDS(nls_coefs, 'data/model_coef_duration_unld_per_second.rds')
+
+# Data preparation for ggplot
+met_unld_time_smry <- met_unld_time_smry |> 
+  mutate(
+    model_nls_pred = avg_w_tree*nls_coefs[[1]] * exp(nls_coefs[[2]] * duration_labs_sec) # Linear model prediction
+  )
+
+# Create ggplot
+ggplot(met_unld_time_smry, aes(x = duration_labs_sec, y = model_nls_pred, colour = avg_w_tree)) +
+  # Observed vs NLS model
+  geom_point() 
+
+# per hour for plotting 
 model_lm <- lm(log_q_unl_avg ~ duration_labs, data = met_unld_time_smry)
 coefs <- coef(model_lm) |> as.numeric()
 summary(model_lm)
 a_lm <- exp(coefs[1])
 b_lm <- coefs[2]
 
-### Fit a non linear least squares model ----
-
-# use starting values from the linear model 
-model_nls <- nls(q_unl_avg ~ a * exp(b * duration_labs), 
-                 data = met_unld_time_smry, 
+model_nls <- nls(q_unl_avg ~ a * exp(b * duration_labs), # adding w_tree here adds 10% to the R^2 here
+                 data = met_unld_time_smry |> filter(avg_w_tree < 5, duration_labs < 75), 
                  start = list(a = a_lm, b = b_lm))
 # summary(model_nls)
 
@@ -558,26 +629,26 @@ coefs_old <- as.numeric(coef(model_nls))
 wts <- met_unld_time_smry$q_unl_avg^2
 
 # apply weights iteratively
-for (i in 1:max_iter) {
-  model_nlswi <- nls(q_unl_avg ~ a * exp(b * duration_labs),
-                     data = met_unld_time_smry,
-                     weights = wts,
-                     start = c(a = coefs_old[1],
-                               b = coefs_old[2]),
-                     control = nls.control(maxiter = 1000))
-  coefs <- as.numeric(coef(model_nlswi))
-  max_change <- max(abs((coefs - coefs_old)/coefs_old))
-  if (max_change < tol) break
-  coefs_old <- coefs
-  yp <- predict(model_nlswi)
-  wts <- yp^2
-}
+# for (i in 1:max_iter) {
+#   model_nlswi <- nls(q_unl_avg ~ a * exp(b * duration_labs),
+#                      data = met_unld_time_smry,
+#                      weights = wts,
+#                      start = c(a = coefs_old[1],
+#                                b = coefs_old[2]),
+#                      control = nls.control(maxiter = 1000))
+#   coefs <- as.numeric(coef(model_nlswi))
+#   max_change <- max(abs((coefs - coefs_old)/coefs_old))
+#   if (max_change < tol) break
+#   coefs_old <- coefs
+#   yp <- predict(model_nlswi)
+#   wts <- yp^2
+# }
 
-RSS.p <- sum(residuals(model_nlswi)^2)  # Residual sum of squares
-TSS <- sum((met_unld_time_smry$q_unl_avg - mean(met_unld_time_smry$q_unl_avg))^2)  # Total sum of squares
-rsq_nlswi <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
+# RSS.p <- sum(residuals(model_nlswi)^2)  # Residual sum of squares
+# TSS <- sum((met_unld_time_smry$q_unl_avg - mean(met_unld_time_smry$q_unl_avg))^2)  # Total sum of squares
+# rsq_nlswi <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
 
-modelr::rsquare(model_nlswi, met_unld_time_smry) # check is the same as our manually defined method
+# modelr::rsquare(model_nlswi, met_unld_time_smry) # check is the same as our manually defined method
 
 lm <- data.frame(
   mod_name = 'lm',
@@ -591,16 +662,16 @@ nls <- data.frame(
   resids = residuals(model_nls, type = "pearson")
 )
 
-nlswi <- data.frame(
-  mod_name = 'nlswi',
-  preds = predict(model_nlswi),
-  resids = residuals(model_nlswi, type = "pearson")
-)
+# nlswi <- data.frame(
+#   mod_name = 'nlswi',
+#   preds = predict(model_nlswi),
+#   resids = residuals(model_nlswi, type = "pearson")
+# )
 
 resids_df <- rbind(
   lm,
-  nls,
-  nlswi
+  nls
+  # nlswi
 )
 
 # Look at the Q-Q plot and residuals for the warm events 
@@ -636,8 +707,8 @@ ggplot(ex_df) +
   ylab('Unloading + Drip Rate (mm/hr)') +
   xlab('Duration Snow Intercepted in Canopy (Hours)') +
   # ylim(c(0,2)) +
-  theme_bw() +
-  scale_color_viridis_d() +
+  # theme_bw() +
+  scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = 'Canopy Snow\nLoad (mm)')
 
 ggsave(
@@ -791,8 +862,8 @@ ggplot(ex_df) +
   ylab('Unloading + Drip Rate (mm/hr)') +
   xlab('Canopy Snow Load (mm)') +
   # ylim(c(0,2)) +
-  theme_bw() +
-  scale_color_viridis_d() +
+  # theme_bw() +
+  scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = 'Canopy Snow\nLoad (mm)')
 
 ggsave(
@@ -831,3 +902,6 @@ q_unl_time_model_err_tbl <- met_unld_tree_smry |>
 saveRDS(q_unl_time_model_err_tbl,
         'data/modelled_canopyload_unloading_error_table.rds')
 
+# Plot models together ---- 
+
+model_obs_df <- rbind(temp_ex_df, wind_ex_df)

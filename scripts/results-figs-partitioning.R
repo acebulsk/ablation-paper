@@ -228,12 +228,13 @@ p <- rbind(measured_df, sim_df) |>
   ylab('Ablation Rate (mm/hr)') +
   xlab(element_blank()) +
   theme_bw(base_size = 13) +
-  theme(legend.title = element_blank()) +
+  theme(legend.title = element_blank(),
+        legend.position = 'bottom') +
   scale_fill_manual(values = c("lightgray", "#f89540", "#0072B2"))
 
 p 
 
-ggsave('figs/results/canopy_snow_ablation_partition_global.png', device = png, width = int_fig_width+4, height = int_fig_height, units = "in")
+ggsave('figs/results/canopy_snow_ablation_partition_global.png', device = png, width = int_fig_width, height = int_fig_height, units = "in")
 
 wind_p <- fltr |> 
   filter(t < -6) |>

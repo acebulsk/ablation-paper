@@ -225,3 +225,104 @@ ggsave(
   height = int_fig_height,
   units = "in"
 )
+
+# Show over discrete time intervals ----
+
+# over time HP98
+L0 <- 20
+time_forcing <- data.frame(
+  time = seq(1:24),
+  u = 2,
+  Ta = -10,
+  L_crhm = NA,
+  L_analytical = NA,
+  L_ode = NA
+)
+
+time_forcing$L_crhm[1] <- L0
+time_forcing$L_analytical[1] <- L0
+time_forcing$L_ode[1] <- L0
+dt <- 60*60*24*7 # seconds 
+k_unld_cold_crhm <- -log(c) / ((7*24*60*60)/(dt)) # per hour, unloading coefficient for cold snow 
+k_unld <- -log(c) / (7*24*60*60) # per hour, unloading coefficient for cold snow 
+
+for (i in 1:nrow(time_forcing)) {
+  time_forcing$L_analytical[i+1] <- time_forcing$L_analytical[i] * exp(-k_unld*dt)
+  time_forcing$L_crhm[i+1] <- time_forcing$L_crhm[i] - (time_forcing$L_crhm[i] * k_unld_cold_crhm)
+  time_forcing$L_ode[i+1] <- time_forcing$L_ode[i] - (time_forcing$L_ode[i] * k_unld)*dt
+  
+}
+
+time_forcing |> pivot_longer(starts_with("L_")) |> 
+ggplot(aes(time, value, colour = name)) + geom_point()
+plotly::ggplotly()
+
+# New fortress parameterisations
+a_T = 2.584003e-05 # Cebulski & Pomeroy coef from exponential function of unloading + drip and air temp measurements at Fortress mountain when wind speed <= 1 m/s.
+b_T = 1.646875e-01 # Cebulski & Pomeroy coef from exponential function of unloading + drip and air temp measurements at Fortress mountain when wind speed <= 1 m/s.
+a_u = 5.204024e-06      # Cebulski & Pomeroy coef from exponential function of unloading + drip and wind speed measurements at Fortress mountain when air temp < -6 C.
+b_u = 7.363594e-02     # Cebulski & Pomeroy coef from exponential function of unloading + drip and wind speed measurements at Fortress mountain when air temp < -6 C.
+a_t = 2.058989e-06  # Cebulski & Pomeroy coef from exponential function of unloading + drip and duration snow has been intercepted in the canopy at Fortress mountain when wind speed <= 1 m/s and air temperature < -6 C.
+b_t = -1.188307e-05 # Cebulski & Pomeroy coef from exponential function of unloading + drip and duration snow has been intercepted in the canopy at Fortress mountain when wind speed <= 1 m/s and air temperature < -6 C.
+
+L0 <- 20
+dt <- 60*15 # seconds 
+time_forcing <- data.frame(
+  time = seq(as.POSIXct('2024-01-01 00:00:00'), as.POSIXct('2024-01-07 00:00:00'), by = dt),
+  u = 2,
+  Ta = -10,
+  L_analytical = NA,
+  L_ode = NA
+)
+
+time_forcing$L_analytical[1] <- L0
+time_forcing$L_ode[1] <- L0
+t_snow_in_canopy <- dt
+
+for (i in 1:nrow(time_forcing)) {
+  t_snow_in_canopy <- t_snow_in_canopy + dt
+  fT = a_T * exp(b_T * time_forcing$Ta[i]) # unloading rate based on warming of snow in the canopy (s-1), still need to partition out the portion of this that is drip vs mass unloading
+  fu = time_forcing$u[i] * a_u * exp(b_u * time_forcing$u[i]) # unloading rate due to wind (s-1)
+  ft = a_t * exp(b_t * t_snow_in_canopy) # unloading due to time in canopy
+  
+  k_unld <- fT + fu + ft
+  time_forcing$L_analytical[i+1] <- time_forcing$L_analytical[i] - (time_forcing$L_analytical[i] * (1-exp(-k_unld*dt)))
+  # time_forcing$L_analytical[i+1] <- time_forcing$L_analytical[i] * exp(-k_unld*dt) ## same as above
+  time_forcing$L_ode[i+1] <- time_forcing$L_ode[i] - (time_forcing$L_ode[i] * k_unld)*dt
+}
+time_forcing_15min <- time_forcing |> 
+  mutate(group = '15min')
+
+dt <- 60*60 # seconds 
+time_forcing <- data.frame(
+  time = seq(as.POSIXct('2024-01-01 00:00:00'), as.POSIXct('2024-01-07 00:00:00'), by = dt),
+  u = 2,
+  Ta = -10,
+  L_analytical = NA,
+  L_ode = NA
+)
+
+time_forcing$L_analytical[1] <- L0
+time_forcing$L_ode[1] <- L0
+t_snow_in_canopy <- dt
+
+for (i in 1:nrow(time_forcing)) {
+  t_snow_in_canopy <- t_snow_in_canopy + dt
+  fT = a_T * exp(b_T * time_forcing$Ta) # unloading rate based on warming of snow in the canopy (s-1), still need to partition out the portion of this that is drip vs mass unloading
+  fu = time_forcing$u * a_u * exp(b_u * time_forcing$u) # unloading rate due to wind (s-1)
+  ft = a_t * exp(b_t * t_snow_in_canopy) # unloading due to time in canopy
+  
+  k_unld <- fT + fu + ft
+  time_forcing$L_analytical[i+1] <- time_forcing$L_analytical[i] * exp(-k_unld*dt)
+  time_forcing$L_ode[i+1] <- time_forcing$L_ode[i] - (time_forcing$L_ode[i] * k_unld)*dt
+}
+
+time_forcing_60min <- time_forcing |> 
+  mutate(group = '60min')
+
+rbind(time_forcing_15min,
+      time_forcing_60min) |> pivot_longer(starts_with("L_")) |> 
+  ggplot(aes(time, value, colour = group, linetype = name)) +
+  geom_line()
+plotly::ggplotly()
+

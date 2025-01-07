@@ -60,8 +60,15 @@ filter_times <- c(
       as.POSIXct('2023-03-19 22:30:00', tz = 'Etc/GMT+6'),
       by = 60*15))
 
+load_suffix <- 'fsd_closed_0.88'
+
+# weighed tree zeroed prior to snowfall events
 obs_tree <-
-  readRDS('../../analysis/ablation/data/unloading_events_zero_weighed_tree_mm_pre_post_cnpy_snow.rds') |> 
+  readRDS(
+    paste0(
+      '../../analysis/ablation/data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
+      load_suffix,
+      '.rds')) |> 
   select(datetime, event_id, Observed = value) |> 
   filter(event_id %in% select_events,
          !datetime %in% filter_times)

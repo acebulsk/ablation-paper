@@ -4,7 +4,9 @@
 
 # Select at commit id c785571b37c1f567ab9590d3e0cb106b1bd46ff3 on branch ablation-test-obs-tree
 # where I added the observed weighed tree to initilize canopy snowmelt
-path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-02-10-04-04_weighed_tree_vector_based_new_ablation_psp_output.txt"
+# path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-02-10-04-04_weighed_tree_vector_based_new_ablation_psp_output.txt"
+path <- "../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-44-49_closed_canopy_cc0.88_vector_based_new_ablation_psp_warm_events_init_obs_tree_output.txt"
+
 crhm_output_tree <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6'

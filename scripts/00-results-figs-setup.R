@@ -182,7 +182,7 @@ met_unld <- q_unld_scl |>
 # warm tree specific events
 
 obs_tree_warm_events <-
-  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_mm_post_cnpy_snow.rds')
+  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds')
 
 # load tipping bucket data
 tb_data <-

@@ -1,4 +1,7 @@
 # This script zeros the weighed tree data already converted to kg/m2 
+
+library(tidyverse)
+
 to_long <- function(from,
                     to,
                     class,
@@ -22,9 +25,15 @@ to_long <- function(from,
   return(out)
 }
 
+load_suffix <- 'fsd_closed_0.88'
+
 # weighed tree zeroed prior to snowfall events
 weighed_tree_df <-
-  readRDS('../../analysis/ablation/data/unloading_events_zero_weighed_tree_mm_pre_post_cnpy_snow.rds')
+  readRDS(
+    paste0(
+      '../../analysis/ablation/data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
+      load_suffix,
+      '.rds'))
 
 canopy_snow_events <- 
   read.csv('../../analysis/ablation/data/snow_in_canopy_post_snowfall.csv') |> 
@@ -37,7 +46,6 @@ events_fltr <- canopy_snow_events
 events_fltr_long <-
   purrr::pmap_dfr(events_fltr, to_long) |> 
   select(-quality)
-
 
 # check we have weighed tree obs for our new events
 # warm_tree_events_long$new_event_flag <- warm_tree_events_long$datetime %in% weighed_tree_df$datetime
@@ -54,5 +62,9 @@ plotly::ggplotly()
 
 saveRDS(
   weighed_tree_df_fltr,
-  'data/clean-data/all_tree_events_zero_weighed_tree_mm_post_cnpy_snow.rds'
+  paste0(
+    'data/clean-data/all_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )
 )

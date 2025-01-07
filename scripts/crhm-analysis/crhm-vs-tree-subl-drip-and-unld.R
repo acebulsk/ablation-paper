@@ -2,7 +2,7 @@
 # This is for cold/warm events
 
 obs_tree <-
-  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_mm_post_cnpy_snow.rds') |> 
+  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds.rds') |> 
   select(datetime, event_id, observed = value)
 
 # Select model run with all unloading events weighed tree snow load assimilated

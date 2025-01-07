@@ -4,28 +4,33 @@
 # these are generally cold events used to paramerterise the unloading fns 
 cold_events <- c('2022-12-01', '2022-03-09')
 obs_tree_cold <-
-  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_mm_post_cnpy_snow.rds') |> 
+  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
   select(datetime, event_id, observed = value) |> 
   filter(event_id %in% cold_events)
 
 # Select model run with all unloading events weighed tree snow load assimilated
 # where I added the observed weighed tree to initilize canopy snowmelt
-path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt"
+# path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt"
+path <- "../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-56-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_all_events_init_obs_tree_output.txt"
 crhm_output_tree_cold <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree_cold$datetime)
+
+# need to keep the warm/cold datasets separate as there are some overlaps between events
 
 # WARM EVENTS ----
 # these are generally cold events used to paramerterise the unloading fns 
 warm_events <- c('2022-06-14', '2022-04-23', '2023-06-21')
 obs_tree_warm <-
-  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_mm_post_cnpy_snow.rds') |> 
+  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
   select(datetime, event_id, observed = value) |> 
   filter(event_id %in% warm_events)
 
 # Select at commit id c785571b37c1f567ab9590d3e0cb106b1bd46ff3 on branch ablation-test-obs-tree
 # where I added the observed weighed tree to initilize canopy snowmelt
-path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-02-10-04-04_weighed_tree_vector_based_new_ablation_psp_output.txt"
+# path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-02-10-04-04_weighed_tree_vector_based_new_ablation_psp_output.txt"
+path <- "../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-44-49_closed_canopy_cc0.88_vector_based_new_ablation_psp_warm_events_init_obs_tree_output.txt"
+
 crhm_output_tree_warm <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6'

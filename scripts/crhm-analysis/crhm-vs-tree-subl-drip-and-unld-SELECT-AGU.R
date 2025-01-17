@@ -11,6 +11,7 @@ obs_tree_cold <-
 # Select model run with all unloading events weighed tree snow load assimilated
 # where I added the observed weighed tree to initilize canopy snowmelt
 # path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt"
+# updated run with rescaled tree
 path <- "../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-56-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_all_events_init_obs_tree_output.txt"
 crhm_output_tree_cold <- CRHMr::readOutputFile(
   path,
@@ -29,6 +30,7 @@ obs_tree_warm <-
 # Select at commit id c785571b37c1f567ab9590d3e0cb106b1bd46ff3 on branch ablation-test-obs-tree
 # where I added the observed weighed tree to initilize canopy snowmelt
 # path <- "../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-02-10-04-04_weighed_tree_vector_based_new_ablation_psp_output.txt"
+# updated run with rescaled tree
 path <- "../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-44-49_closed_canopy_cc0.88_vector_based_new_ablation_psp_warm_events_init_obs_tree_output.txt"
 
 crhm_output_tree_warm <- CRHMr::readOutputFile(

@@ -180,9 +180,40 @@ met_unld <- q_unld_scl |>
   left_join(q_subl)
 
 # warm tree specific events
+warm_events <- c(
+  '2022-04-21',
+  '2022-04-23',
+  '2022-06-14',
+  '2022-06-24',
+  '2023-03-14',
+  '2023-03-25',
+  '2023-03-26',
+  '2023-03-28',
+  '2023-05-08',
+  '2023-06-15',
+  '2023-06-21'
+)
 
-obs_tree_warm_events <-
-  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds')
+obs_tree_warm <-
+  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  filter(event_id %in% warm_events)
+
+# cold tree events
+cold_events <- c(
+  '2022-03-02', 
+  '2022-03-09',
+  '2022-03-20', 
+  '2022-03-24',  
+  '2022-03-29',  
+  '2022-12-01',
+  '2023-01-28',
+  '2023-02-24',
+  '2023-02-26'
+  #'2023-04-12' could add back if filter to start later.. also removed jjst so have clean 20 events
+)
+obs_tree_cold <-
+  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  filter(event_id %in% cold_events)
 
 # load tipping bucket data
 tb_data <-
@@ -191,7 +222,8 @@ tb_events <-
   read.csv('../../analysis/ablation/data/tipping_bucket_evets_post.csv', skip = 1) |>
   filter(quality < 3) |> 
   mutate(
-    across(unloading_start_date:end_date, ~as.POSIXct(.x, tz = 'Etc/GMT+6')),
+    unloading_start_date = as.POSIXct(unloading_start_date, tz = 'Etc/GMT+6'),
+    end_date = as.POSIXct(end_date, tz = 'Etc/GMT+6'),
     event_id = as.Date(unloading_start_date, tz = 'Etc/GMT+6'))
 tb_events_long <-
   purrr::pmap_dfr(tb_events |>

@@ -234,12 +234,17 @@ The inclusion of processes that ablate snow intercepted in the canopy is prevale
 
 A new unloading routine could be established based on these observations after filtering to remove temperature and wind induced unloading which show the probability of unloading after this filtering is high after initial loading of snow intercepted in the canopy, followed by a decline in probability until around 15 hours, and increases afterwards. This could be combined with the unloading rate which was observed to be high as the snow was initially loaded in the canopy and then declines steadily with increasing duration. 
 
+Based on the canopy snowmelt model, the @Storck2002 ratio based melt based unloading parameterization over estimates drip. It could also be that the parv snowmelt model is underestimating the canopy snow temperature. 
+
 ## Conclusions
 
 -   Over two winter seasons, the primary processes contributing to canopy snow ablation were unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a small component of the mass balance. 
 -   The probability of unloading was observed to increase with air temperature and wind speed. However, the probability of wind induced unloading was observed to decrease at warmer air temperatures. The probability of unloading due to warming was also observed to decline when wind speeds were above 1 m s^-1^. The increase in cohesion and adhesion of snow in the canopy at warmer temperatures and cooling due to wind-induced evaporation may contribute to the interaction multivariate interaction between air temperature, wind speed and canopy snow unloading.  
 -   The duration that snow is intercepted in the canopy was found to first decrease the probability of unloading exponentially for the first 15 hours, followed by an exponential increase in the probability of unloading for the remaining duration that snow is intercepted in the canopy. 
 -   Exponential relationships were observed between both air temperature and wind speed with unloading and drip, which were also dependent on the amount of snow intercepted in the canopy. In comparison to existing models, this discontinuous forest exhibited unloading and drip due to warming at lower air temperatures. Conversely, wind-induced unloading occurred at higher wind speeds than predicted by current models.
+
+-   The canopy snow exposure coef from existing studies was found to be too small at this site and needed to be increased substantially 
+-   The amount of drip compared to mass release of canopy snow was found to be significatnly less in this study compared to previous studies which suggested primarily drip
 
 
 # References

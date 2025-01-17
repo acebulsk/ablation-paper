@@ -5,15 +5,22 @@
 obs_tree_events <- obs_tree |>
   left_join(ft_met |> 
               select(datetime, t:p)) |> 
-  inner_join(obs_tree_warm_events) |> 
   # filter(weighed_tree_quality < 2) |> 
-  select(datetime, event_id, t:p, weighed_tree)
+  select(datetime, event_id, t:p, weighed_tree = observed)
+
+stats_tbl <- obs_tree_events |> 
+  group_by(event_id) |> 
+  summarise(across(t:weighed_tree,
+                   list(mean = mean, min = min, max = max),
+                   .names = "{col}_{fn}"),
+            p_sum = sum(p)) |> 
+  select(event_id:Qsi_max, p_sum, weighed_tree_min, weighed_tree_max)
+
+saveRDS(stats_tbl, 'data/ablation_event_met_summary.rds')
 
 obs_tree_events_long <- pivot_longer(obs_tree_events, t:weighed_tree)
 
-p <- obs_tree |>
-  left_join(ft_met |> 
-              select(datetime, t:p)) |> 
+p <- obs_tree_events |> 
   pivot_longer(!c(datetime, event_id)) |> 
   ggplot(aes(datetime, value, colour = name)) +
   geom_line() +
@@ -38,7 +45,7 @@ for (event in obs_tree_events_long$event_id |> unique()) {
     
     ggsave(
       paste0(
-        'figs/supplement/w_tree_plots_met/warm_melt_events/weighed_tree_w_met_',
+        'figs/supplement/w_tree_plots_met/mod_forcing/weighed_tree_w_met_',
         as.Date(event),
         '.png'
       ),

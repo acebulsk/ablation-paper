@@ -1,0 +1,21 @@
+"","event_id","runtag","Mean Bias","MAE","RMS Error","NRMSE","R","r^2"
+"1",2022-03-02,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.602,0.605,0.666,0.128,0.989,0.977
+"2",2022-03-09,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-1.015,1.312,1.822,0.725,0.924,0.854
+"3",2022-03-20,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.022,0.127,0.157,0.092,0.995,0.991
+"4",2022-03-24,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.464,0.655,0.829,0.298,0.979,0.958
+"5",2022-03-29,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.584,0.6,0.782,0.47,0.934,0.873
+"6",2022-04-21,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.356,0.458,0.575,0.205,0.979,0.959
+"7",2022-04-23,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.872,0.909,1.343,0.447,0.956,0.914
+"8",2022-06-14,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.648,1.672,1.987,0.284,0.989,0.978
+"9",2022-06-24,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.157,0.348,0.451,0.117,0.994,0.988
+"10",2022-12-01,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",2.854,2.854,3.47,0.313,0.979,0.959
+"11",2023-01-28,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",3.582,3.582,3.938,0.625,0.884,0.782
+"12",2023-02-24,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-2.407,3.682,5.137,0.43,0.945,0.892
+"13",2023-02-26,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",0.648,0.648,0.8,0.137,0.912,0.832
+"14",2023-03-14,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",3.138,3.138,3.668,0.565,0.937,0.879
+"15",2023-03-25,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-1.187,1.207,1.593,0.1,0.979,0.958
+"16",2023-03-26,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-2.563,2.563,3.353,0.28,0.948,0.898
+"17",2023-03-28,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-1.437,1.445,1.819,0.132,0.995,0.99
+"18",2023-05-08,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.221,0.48,0.555,0.164,0.984,0.967
+"19",2023-06-15,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.606,0.97,1.237,0.216,0.969,0.939
+"20",2023-06-21,"added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2",-0.544,0.854,1.126,0.223,0.975,0.95

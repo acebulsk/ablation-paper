@@ -13,7 +13,7 @@ crhm_output_tree <- CRHMr::readOutputFile(
 )
 
 # get the mod and obs canopy snow load
-obs_tree <- obs_tree_warm_events |> 
+obs_tree <- obs_tree_warm |> 
   select(datetime, event_id, observed = value)
 mod_tree <- crhm_output_tree |> 
   select(datetime, simulated = Snow_load.1)

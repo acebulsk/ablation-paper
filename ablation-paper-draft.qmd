@@ -236,6 +236,18 @@ A new unloading routine could be established based on these observations after f
 
 Based on the canopy snowmelt model, the @Storck2002 ratio based melt based unloading parameterization over estimates drip. It could also be that the parv snowmelt model is underestimating the canopy snow temperature. 
 
+Generally, model over estimates canopy snow wind induced unloading when wind speed < 1 m/s (see weighed tree events 2023-02-26, 2023-01-28). Under estimates when wind speed > 1 m/s (see events 2023-02-24).  
+
+Sometimes the overestimate of wind unloading for < 1 m/s is associated with higher canopy snow loads (see 2023-02-24 at the start, and 2023-03-14 at the start). But not necessarily for 2022-12-01 and 2023-03-25/26/28 which both either underestimate $q_unld^wind$ or have good performance with high canopy snow loads.
+
+Underestimates canopy snow melt for colder/near 0 events (see 2023-03-25)
+
+2023-03-26 not sure why ablation late on the 26th, as high humidity (~100%) and not too high wind speeds (~1m/s)
+
+The wind dominated ablation events have much poorer performance, aside from 2022-12-01 which aligns well on average. 
+
+The sublimation or snowmelt dominated events, which are less influenced by wind have the best performance.
+
 ## Conclusions
 
 -   Over two winter seasons, the primary processes contributing to canopy snow ablation were unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a small component of the mass balance. 

@@ -8,11 +8,11 @@ obs_tree <- rbind(obs_tree_cold  |>
                     select(datetime, event_id, observed = value)) 
 
 # Select model run with all unloading events weighed tree snow load assimilated
-prj <- "closed_canopy_cc0.88_vector_based_new_ablation_psp"
+prj <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag <- "added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2"
+run_tag <- "after_new_gap_filling_and_RH_corr"
 
 path <- list.files(
   paste0(
@@ -46,7 +46,7 @@ mod_tree <- crhm_output |>
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 
 # plot weighed tree obs vs. sim facet by event ----
-
+#TODO change to mark 00 at at least every midnight
 obs_mod_tree |> 
   pivot_longer(!c(datetime, event_id)) |> 
   ggplot(aes(datetime, value, 
@@ -55,7 +55,9 @@ obs_mod_tree |>
   facet_wrap(~event_id, scales = 'free') +
   ylab(expression("Canopy Snow Load (kg m"^-2*")")) +
   xlab(element_blank()) +
-  labs(linetype = 'Data Type')
+  labs(linetype = 'Data Type') +
+  theme(legend.position = 'bottom') +
+  scale_x_datetime(date_labels = "%H")
 
 ggsave(paste0(
   'figs/crhm-analysis/subl_drip_unld/select_post_agu_events/',
@@ -100,6 +102,14 @@ event_error_met |>
   ggplot(aes(t_mean, `Mean Bias`, colour = rh_mean)) + 
   geom_point()
 
+event_error_met |> 
+  ggplot(aes(rh_mean, `Mean Bias`, colour = t_mean)) + 
+  geom_point()
+
+event_error_met |> 
+  ggplot(aes(u_mean, `Mean Bias`, colour = rh_mean)) + 
+  geom_point()
+
 # show ablation processes separately facet by event ----- 
 
 # get the mod ablation partition
@@ -141,7 +151,9 @@ mod_cml_dU |>
                                  "snowmelt" = "Snowmelt")) +
   labs(colour = "Process") +
   ylab(expression("Canopy Snow Ablation (kg m"^-2*")")) +
-  xlab(element_blank())
+  xlab(element_blank()) +
+  scale_x_datetime(date_labels = "%H") +
+  theme(legend.position = 'bottom')
 
 ggsave(paste0(
   'figs/crhm-analysis/subl_drip_unld/select_post_agu_events/',

@@ -532,3 +532,456 @@
 2025-01-06_17:58:08 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-56-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_all_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
 2025-01-06_17:58:13 makeRegular obs:output 
 2025-01-06_17:58:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-44-49_closed_canopy_cc0.88_vector_based_new_ablation_psp_warm_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-09_15:40:06 makeRegular obs:output 
+2025-01-09_15:40:06 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-09-15-32-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-09_15:40:52 makeRegular obs:output 
+2025-01-09_15:40:52 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-09-15-32-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-09_15:47:45 makeRegular obs:output 
+2025-01-09_15:47:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-56-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_all_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-09_15:47:53 makeRegular obs:output 
+2025-01-09_15:47:53 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-06-17-44-49_closed_canopy_cc0.88_vector_based_new_ablation_psp_warm_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-09_15:53:50 makeRegular obs:output 
+2025-01-09_15:53:50 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-09-15-32-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_12:17:21 makeRegular obs:output 
+2025-01-13_12:17:21 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_12:17:28 makeRegular obs:output 
+2025-01-13_12:17:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_12:18:17 makeRegular obs:output 
+2025-01-13_12:18:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_12:41:32 makeRegular obs:output 
+2025-01-13_12:41:33 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_12:42:18 makeRegular obs:output 
+2025-01-13_12:42:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_14:53:48 makeRegular obs:output 
+2025-01-13_14:53:48 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-13_14:54:00 makeRegular obs:output 
+2025-01-13_14:54:00 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-13_14:56:19 makeRegular obs:output 
+2025-01-13_14:56:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-13_15:05:11 makeRegular obs:output 
+2025-01-13_15:05:11 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-12-16-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_output.txt Timezone:Etc/GMT+6 
+2025-01-13_15:08:31 makeRegular obs:output 
+2025-01-13_15:08:31 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-14_13:30:58 makeRegular obs:output 
+2025-01-14_13:31:00 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-14_13:31:27 makeRegular obs:output 
+2025-01-14_13:31:27 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-13-29-46_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-14_13:34:46 makeRegular obs:output 
+2025-01-14_13:34:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-13-33-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-14_13:37:25 makeRegular obs:output 
+2025-01-14_13:37:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-13-29-46_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-14_13:37:38 makeRegular obs:output 
+2025-01-14_13:37:38 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-13-33-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-14_16:44:17 makeRegular obs:output 
+2025-01-14_16:44:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-16-41-46_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-14_16:48:31 makeRegular obs:output 
+2025-01-14_16:48:32 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-16-45-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:18:35 makeRegular obs:output 
+2025-01-14_17:18:36 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-17-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:18:54 makeRegular obs:output 
+2025-01-14_17:18:54 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-17-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:19:27 makeRegular obs:output 
+2025-01-14_17:19:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-17-37_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:20:57 makeRegular obs:output 
+2025-01-14_17:20:58 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:21:01 makeRegular obs:output 
+2025-01-14_17:21:01 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-20-22_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:24:43 makeRegular obs:output 
+2025-01-14_17:24:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-23-29_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:26:41 makeRegular obs:output 
+2025-01-14_17:26:41 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-25-56_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_1.2_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:28:14 makeRegular obs:output 
+2025-01-14_17:28:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-27-41_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_exp_output.txt Timezone:Etc/GMT+6 
+2025-01-14_17:34:59 makeRegular obs:output 
+2025-01-14_17:34:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-14-17-33-47_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_changed_melt_mass_unloading_to_ratio_linear_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:14:52 makeRegular obs:output 
+2025-01-15_10:14:52 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:15:20 makeRegular obs:output 
+2025-01-15_10:15:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:15:33 makeRegular obs:output 
+2025-01-15_10:15:34 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:18:16 makeRegular obs:output 
+2025-01-15_10:18:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:18:25 makeRegular obs:output 
+2025-01-15_10:18:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:20:05 makeRegular obs:output 
+2025-01-15_10:20:05 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:21:25 makeRegular obs:output 
+2025-01-15_10:21:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:21:26 makeRegular obs:output 
+2025-01-15_10:21:26 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:21:27 makeRegular obs:output 
+2025-01-15_10:21:27 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:21:29 makeRegular obs:output 
+2025-01-15_10:21:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:21:29 makeRegular obs:output 
+2025-01-15_10:21:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:23:14 makeRegular obs:output 
+2025-01-15_10:23:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:23:16 makeRegular obs:output 
+2025-01-15_10:23:16 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:23:16 makeRegular obs:output 
+2025-01-15_10:23:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:23:17 makeRegular obs:output 
+2025-01-15_10:23:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:23:19 makeRegular obs:output 
+2025-01-15_10:23:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:03 makeRegular obs:output 
+2025-01-15_10:24:03 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:04 makeRegular obs:output 
+2025-01-15_10:24:04 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:05 makeRegular obs:output 
+2025-01-15_10:24:05 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:06 makeRegular obs:output 
+2025-01-15_10:24:06 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:07 makeRegular obs:output 
+2025-01-15_10:24:07 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:42 makeRegular obs:output 
+2025-01-15_10:24:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:44 makeRegular obs:output 
+2025-01-15_10:24:44 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:45 makeRegular obs:output 
+2025-01-15_10:24:45 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:46 makeRegular obs:output 
+2025-01-15_10:24:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:24:47 makeRegular obs:output 
+2025-01-15_10:24:48 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:25:15 makeRegular obs:output 
+2025-01-15_10:25:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:25:16 makeRegular obs:output 
+2025-01-15_10:25:16 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:25:17 makeRegular obs:output 
+2025-01-15_10:25:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:25:18 makeRegular obs:output 
+2025-01-15_10:25:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:25:19 makeRegular obs:output 
+2025-01-15_10:25:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:47 makeRegular obs:output 
+2025-01-15_10:28:47 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:48 makeRegular obs:output 
+2025-01-15_10:28:48 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:49 makeRegular obs:output 
+2025-01-15_10:28:49 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:50 makeRegular obs:output 
+2025-01-15_10:28:50 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:51 makeRegular obs:output 
+2025-01-15_10:28:51 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:53 makeRegular obs:output 
+2025-01-15_10:28:53 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:28:53 makeRegular obs:output 
+2025-01-15_10:28:54 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:20 makeRegular obs:output 
+2025-01-15_10:47:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:21 makeRegular obs:output 
+2025-01-15_10:47:21 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:22 makeRegular obs:output 
+2025-01-15_10:47:22 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:23 makeRegular obs:output 
+2025-01-15_10:47:23 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:24 makeRegular obs:output 
+2025-01-15_10:47:24 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:25 makeRegular obs:output 
+2025-01-15_10:47:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:26 makeRegular obs:output 
+2025-01-15_10:47:26 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:27 makeRegular obs:output 
+2025-01-15_10:47:27 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:47:28 makeRegular obs:output 
+2025-01-15_10:47:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:07 makeRegular obs:output 
+2025-01-15_10:48:07 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:08 makeRegular obs:output 
+2025-01-15_10:48:08 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:09 makeRegular obs:output 
+2025-01-15_10:48:09 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:10 makeRegular obs:output 
+2025-01-15_10:48:10 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:11 makeRegular obs:output 
+2025-01-15_10:48:11 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:12 makeRegular obs:output 
+2025-01-15_10:48:12 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:13 makeRegular obs:output 
+2025-01-15_10:48:13 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:14 makeRegular obs:output 
+2025-01-15_10:48:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:48:15 makeRegular obs:output 
+2025-01-15_10:48:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:31 makeRegular obs:output 
+2025-01-15_10:49:31 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:32 makeRegular obs:output 
+2025-01-15_10:49:32 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:33 makeRegular obs:output 
+2025-01-15_10:49:33 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:34 makeRegular obs:output 
+2025-01-15_10:49:34 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:35 makeRegular obs:output 
+2025-01-15_10:49:35 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:36 makeRegular obs:output 
+2025-01-15_10:49:37 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:38 makeRegular obs:output 
+2025-01-15_10:49:38 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:38 makeRegular obs:output 
+2025-01-15_10:49:39 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:40 makeRegular obs:output 
+2025-01-15_10:49:40 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:49:41 makeRegular obs:output 
+2025-01-15_10:49:41 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:43 makeRegular obs:output 
+2025-01-15_10:54:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:44 makeRegular obs:output 
+2025-01-15_10:54:44 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:45 makeRegular obs:output 
+2025-01-15_10:54:45 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:46 makeRegular obs:output 
+2025-01-15_10:54:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:47 makeRegular obs:output 
+2025-01-15_10:54:47 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:48 makeRegular obs:output 
+2025-01-15_10:54:48 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:48 makeRegular obs:output 
+2025-01-15_10:54:48 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:50 makeRegular obs:output 
+2025-01-15_10:54:50 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:51 makeRegular obs:output 
+2025-01-15_10:54:51 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:51 makeRegular obs:output 
+2025-01-15_10:54:52 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:54:52 makeRegular obs:output 
+2025-01-15_10:54:52 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-54-17_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:55:59 makeRegular obs:output 
+2025-01-15_10:55:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:55:59 makeRegular obs:output 
+2025-01-15_10:55:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:00 makeRegular obs:output 
+2025-01-15_10:56:00 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:04 makeRegular obs:output 
+2025-01-15_10:56:04 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:05 makeRegular obs:output 
+2025-01-15_10:56:05 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:06 makeRegular obs:output 
+2025-01-15_10:56:06 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:07 makeRegular obs:output 
+2025-01-15_10:56:07 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:08 makeRegular obs:output 
+2025-01-15_10:56:08 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:09 makeRegular obs:output 
+2025-01-15_10:56:09 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:10 makeRegular obs:output 
+2025-01-15_10:56:10 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:11 makeRegular obs:output 
+2025-01-15_10:56:11 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:12 makeRegular obs:output 
+2025-01-15_10:56:12 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:13 makeRegular obs:output 
+2025-01-15_10:56:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:15 makeRegular obs:output 
+2025-01-15_10:56:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-54-17_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:56:15 makeRegular obs:output 
+2025-01-15_10:56:16 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-55-32_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:28 makeRegular obs:output 
+2025-01-15_10:57:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:28 makeRegular obs:output 
+2025-01-15_10:57:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:29 makeRegular obs:output 
+2025-01-15_10:57:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:30 makeRegular obs:output 
+2025-01-15_10:57:30 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:31 makeRegular obs:output 
+2025-01-15_10:57:31 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:32 makeRegular obs:output 
+2025-01-15_10:57:32 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:33 makeRegular obs:output 
+2025-01-15_10:57:33 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:34 makeRegular obs:output 
+2025-01-15_10:57:34 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:35 makeRegular obs:output 
+2025-01-15_10:57:35 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:37 makeRegular obs:output 
+2025-01-15_10:57:37 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:38 makeRegular obs:output 
+2025-01-15_10:57:38 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-54-17_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:39 makeRegular obs:output 
+2025-01-15_10:57:39 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-55-32_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:57:40 makeRegular obs:output 
+2025-01-15_10:57:40 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-56-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:22 makeRegular obs:output 
+2025-01-15_10:58:22 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:23 makeRegular obs:output 
+2025-01-15_10:58:23 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:24 makeRegular obs:output 
+2025-01-15_10:58:24 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:24 makeRegular obs:output 
+2025-01-15_10:58:24 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:25 makeRegular obs:output 
+2025-01-15_10:58:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:27 makeRegular obs:output 
+2025-01-15_10:58:27 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:28 makeRegular obs:output 
+2025-01-15_10:58:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:28 makeRegular obs:output 
+2025-01-15_10:58:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:29 makeRegular obs:output 
+2025-01-15_10:58:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:30 makeRegular obs:output 
+2025-01-15_10:58:30 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:31 makeRegular obs:output 
+2025-01-15_10:58:31 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-54-17_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:32 makeRegular obs:output 
+2025-01-15_10:58:32 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-55-32_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:33 makeRegular obs:output 
+2025-01-15_10:58:33 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-56-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_10:58:34 makeRegular obs:output 
+2025-01-15_10:58:34 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-58-00_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_45_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:07 makeRegular obs:output 
+2025-01-15_11:02:08 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-03_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_1_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:08 makeRegular obs:output 
+2025-01-15_11:02:08 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-31_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_2_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:09 makeRegular obs:output 
+2025-01-15_11:02:09 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-03-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:10 makeRegular obs:output 
+2025-01-15_11:02:10 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-30_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:11 makeRegular obs:output 
+2025-01-15_11:02:11 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-04-55_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:12 makeRegular obs:output 
+2025-01-15_11:02:12 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-04_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_6_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:13 makeRegular obs:output 
+2025-01-15_11:02:13 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-28-27_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_7_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:14 makeRegular obs:output 
+2025-01-15_11:02:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-42-48_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:15 makeRegular obs:output 
+2025-01-15_11:02:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-43-12_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_5_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:16 makeRegular obs:output 
+2025-01-15_11:02:16 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-49-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_5_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:17 makeRegular obs:output 
+2025-01-15_11:02:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-54-17_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_25_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:18 makeRegular obs:output 
+2025-01-15_11:02:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-55-32_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_3_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:19 makeRegular obs:output 
+2025-01-15_11:02:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-10-56-34_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_4_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:02:20 makeRegular obs:output 
+2025-01-15_11:02:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-11-01-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_45_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:06:05 makeRegular obs:output 
+2025-01-15_11:06:06 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-11-01-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_45_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:09:20 makeRegular obs:output 
+2025-01-15_11:09:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-13-14-44-28_closed_canopy_cc0.88_vector_based_new_ablation_psp_agu24_events_init_obs_tree_turn_off_duration_based_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-15_11:11:19 makeRegular obs:output 
+2025-01-15_11:11:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-11-01-11_closed_canopy_cc0.88_vector_based_new_ablation_psp_cal_melt_mass_unloading_to_ratio_4_45_output.txt Timezone:Etc/GMT+6 
+2025-01-15_12:50:55 makeRegular obs:output 
+2025-01-15_12:50:55 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-12-50-02_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-15_12:51:25 makeRegular obs:output 
+2025-01-15_12:51:25 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-12-50-02_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:35:45 makeRegular obs:output 
+2025-01-15_14:35:45 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:35:46 makeRegular obs:output 
+2025-01-15_14:35:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:35:47 makeRegular obs:output 
+2025-01-15_14:35:47 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:36:00 makeRegular obs:output 
+2025-01-15_14:36:00 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:36:01 makeRegular obs:output 
+2025-01-15_14:36:02 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:36:02 makeRegular obs:output 
+2025-01-15_14:36:02 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:38:57 makeRegular obs:output 
+2025-01-15_14:38:57 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:38:58 makeRegular obs:output 
+2025-01-15_14:38:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:38:59 makeRegular obs:output 
+2025-01-15_14:38:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:39:56 makeRegular obs:output 
+2025-01-15_14:39:56 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:39:58 makeRegular obs:output 
+2025-01-15_14:39:58 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:39:59 makeRegular obs:output 
+2025-01-15_14:39:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-15_14:40:29 makeRegular obs:output 
+2025-01-15_14:40:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-12-50-02_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-15_16:34:07 makeRegular obs:output 
+2025-01-15_16:34:07 readOutputFile outputFile:../../analysis/crhm-analysis/output/fortress_powerline_clearing_snowsurveytransect_pspnew/2024-12-02-13-01-21_fortress_powerline_clearing_snowsurveytransect_pspnew_output.txt Timezone:Etc/GMT+6 
+2025-01-15_16:54:15 makeRegular obs:output 
+2025-01-15_16:54:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-15-12-50-02_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_output.txt Timezone:Etc/GMT+6 
+2025-01-16_15:48:20 readObsFile obsFile:../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs.obs datetype:discrete timezone:Etc/GMT+6 
+2025-01-16_15:57:13 writeObsFile dataframe:ft_obs .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_15:57:28 writeObsFile dataframe:pwl_obs .obs file: ../../analysis/crhm-analysis/obs/pwl_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_16:34:01 writeObsFile dataframe:ft_obs .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_16:37:49 writeObsFile dataframe:ft_obs .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_16:37:53 writeObsFile dataframe:pwl_obs .obs file: ../../analysis/crhm-analysis/obs/pwl_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_16:40:19 makeRegular obs:output 
+2025-01-16_16:40:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-16-16-38-00_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_updated_ft_obs_output.txt Timezone:Etc/GMT+6 
+2025-01-16_16:47:24 makeRegular obs:output 
+2025-01-16_16:47:24 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-16_16:47:26 makeRegular obs:output 
+2025-01-16_16:47:26 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-16_16:47:27 makeRegular obs:output 
+2025-01-16_16:47:28 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-16_17:39:51 writeObsFile dataframe:ft_obs .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_17:39:53 writeObsFile dataframe:pwl_obs .obs file: ../../analysis/crhm-analysis/obs/pwl_crhm_modelling_obs_w_asm_data.obs 
+2025-01-16_17:42:53 makeRegular obs:output 
+2025-01-16_17:42:53 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-16-17-40-18_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_09:58:12 makeRegular obs:output 
+2025-01-17_09:58:13 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_09:58:14 makeRegular obs:output 
+2025-01-17_09:58:14 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_09:58:15 makeRegular obs:output 
+2025-01-17_09:58:15 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_09:58:17 makeRegular obs:output 
+2025-01-17_09:58:17 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-16-17-40-18_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:37:58 writeObsFile dataframe:ft_obs .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs 
+2025-01-17_10:37:59 writeObsFile dataframe:pwl_obs .obs file: ../../analysis/crhm-analysis/obs/pwl_crhm_modelling_obs_w_asm_data.obs 
+2025-01-17_10:38:43 makeRegular obs:output 
+2025-01-17_10:38:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-10-38-16_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_updated_ft_obs3_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:40:43 makeRegular obs:output 
+2025-01-17_10:40:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:40:44 makeRegular obs:output 
+2025-01-17_10:40:44 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:40:45 makeRegular obs:output 
+2025-01-17_10:40:46 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:40:47 makeRegular obs:output 
+2025-01-17_10:40:47 readOutputFile outputFile:../../analysis/crhm-analysis/output/closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-16-17-40-18_closed_canopy_cc0.88_vector_based_new_ablation_psp_added_many_events_w_cald_melt_drip_ratio_updated_ft_obs2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_10:54:43 makeRegular obs:output 
+2025-01-17_10:54:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-10-54-05_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:02:56 makeRegular obs:output 
+2025-01-17_11:02:56 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:02:58 makeRegular obs:output 
+2025-01-17_11:02:58 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:02:58 makeRegular obs:output 
+2025-01-17_11:02:59 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:03:00 makeRegular obs:output 
+2025-01-17_11:03:00 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-10-54-05_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:20:18 makeRegular obs:output 
+2025-01-17_11:20:18 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:20:19 makeRegular obs:output 
+2025-01-17_11:20:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:20:20 makeRegular obs:output 
+2025-01-17_11:20:20 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:38:43 makeRegular obs:output 
+2025-01-17_11:38:43 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-33-01_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:38:47 makeRegular obs:output 
+2025-01-17_11:38:47 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-33-01_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:38:53 makeRegular obs:output 
+2025-01-17_11:38:53 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-33-01_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:40:19 makeRegular obs:output 
+2025-01-17_11:40:19 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:40:20 makeRegular obs:output 
+2025-01-17_11:40:21 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:40:21 makeRegular obs:output 
+2025-01-17_11:40:22 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:40:22 makeRegular obs:output 
+2025-01-17_11:40:22 readOutputFile outputFile:../../analysis/crhm-analysis/output/pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-33-01_pwl_closed_canopy_cc0.88_vector_based_new_ablation_psp_PWL_met2_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:47:29 makeRegular obs:output 
+2025-01-17_11:47:29 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:47:30 makeRegular obs:output 
+2025-01-17_11:47:30 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:47:32 makeRegular obs:output 
+2025-01-17_11:47:32 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:47:38 makeRegular obs:output 
+2025-01-17_11:47:38 readOutputFile outputFile:../../analysis/crhm-analysis/output/ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-46-47_ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp_after_new_gap_filling_and_RH_corr_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:48:21 makeRegular obs:output 
+2025-01-17_11:48:22 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp/2024-12-03-17-28-48_weighed_tree_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:48:23 makeRegular obs:output 
+2025-01-17_11:48:23 readOutputFile outputFile:../../analysis/crhm-analysis/output/weighed_tree_vector_based_baseline_ablation/2024-12-02-16-51-04_weighed_tree_vector_based_baseline_ablation_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:48:24 makeRegular obs:output 
+2025-01-17_11:48:24 readOutputFile outputFile:../../analysis/crhm-analysis/output/2024-11-28-18-13-13_scl_avg_closed_mixed_vector_based_new_ablation_psp_output.txt Timezone:Etc/GMT+6 
+2025-01-17_11:48:26 makeRegular obs:output 
+2025-01-17_11:48:26 readOutputFile outputFile:../../analysis/crhm-analysis/output/ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp/2025-01-17-11-46-47_ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp_after_new_gap_filling_and_RH_corr_output.txt Timezone:Etc/GMT+6 
+2025-01-17_13:16:07 writeObsFile dataframe:filter(ft_obs, datetime %in% event_select_datetime) .obs file: ../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data_fltr_event.obs 

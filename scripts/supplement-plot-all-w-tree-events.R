@@ -1,14 +1,14 @@
 # Script to plot weighed tree accumulation and ablation events w met
 
 # weighed tree zeroed prior to snowfall events
-weighed_tree_df <-
-  readRDS('../../analysis/ablation/data/unloading_events_zero_weighed_tree_mm_pre_post_cnpy_snow.rds') |> 
-  select(datetime, event_id, weighed_tree = value)
-
+weighed_tree_df <- rbind(obs_tree_cold  |> 
+                    select(datetime, event_id, weighed_tree = value),
+                  obs_tree_warm |> 
+                    select(datetime, event_id, weighed_tree = value)) 
 obs_tree_events <- weighed_tree_df |>
-  left_join(ft_met |> 
-              select(datetime, t:p)) |> 
-  select(datetime, event_id, t:p, weighed_tree)
+  left_join(pwl_met |> 
+              select(datetime, t:ppt)) |> 
+  select(datetime, event_id, t:ppt, weighed_tree)
 
 obs_tree_events_long <- pivot_longer(obs_tree_events, t:weighed_tree)
 
@@ -21,7 +21,7 @@ p <- obs_tree_events |>
   theme(legend.position = 'none')
 
 plotly::ggplotly(p)
-event <- unique(obs_tree_events$event_id)[1]
+event <- unique(obs_tree_events$event_id)[2]
 for (event in obs_tree_events$event_id |> unique()) {
   
   df_fltr <- obs_tree_events_long |> filter(event_id == event)
@@ -37,7 +37,7 @@ for (event in obs_tree_events$event_id |> unique()) {
     
     ggsave(
       paste0(
-        'figs/supplement/w_tree_plots_met/accum_ablate_events/weighed_tree_w_met_',
+        'figs/supplement/w_tree_plots_met/accum_ablate_events/pwl_met/weighed_tree_w_met_',
         as.Date(event),
         '.png'
       ),

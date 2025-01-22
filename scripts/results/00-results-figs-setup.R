@@ -43,35 +43,34 @@ palette.colors(palette = "Okabe-Ito")
 
 ## axis labels ----
 temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
-bin_unl_ax_lab <- "Unloading + Drip Rate (mm/hr)"
+bin_unl_ax_lab <- "Unloading Rate (mm/hr)"
+bin_unl_drip_ax_lab <- "Unloading + Drip Rate (mm/hr)"
 bin_wnd_ax_lab <- "Wind Speed Bins (m/s)"
 
 ## thresholds and filters ----
+snow_load_th <- 7
 min_canopy_snow <- 1.5 # min mm in weighed tree for ablation analysis
 min_qunld <- 0.025 # changes below this appear to be due to noise
 manual_t_ice_th <- -7.5 # observed in the trough data for inc in unloading above ice bulb temp of -6 
 manual_tau_th <- 0.05 # observed increase in trough unloading above this threshold
-scl_names <- c('medium_density_forest', 'dense_forest') # removed sparse trough here because was obviously leaking
+scl_names <- c('mixed', 'closed') # removed sparse trough here because was obviously leaking
 
 ## load data ----
 
-ft_met_xtra <- 
-  readRDS('../../analysis/met-data-processing/data/1000x_wnd_irtc.rds') |> 
-  mutate(wind_flag = ifelse(USWindSpeed_Max > 10, T, F),
-         USWindSpeed_Max = ifelse(wind_flag, NA, USWindSpeed_Max),
-         USWindSpeed_Std = ifelse(wind_flag, NA, USWindSpeed_Std))
+load_suffix <- 'fsd_cal_for_each_trough'
 
 ft_met <- 
-  readRDS('../../analysis/met-data-processing/data/ffr_crhm_modelling_obs.rds') |> 
-  left_join(ft_met_xtra |> select(datetime, u_max = USWindSpeed_Max, u_std = USWindSpeed_Std))
+  readRDS('../../analysis/met-data-processing/data/ffr_crhm_modelling_obs.rds') 
+
+pwl_met <- 
+  readRDS('../../analysis/met-data-processing/data/pwl_crhm_modelling_obs.rds') 
 
 ft_met_binned <- 
-  readRDS('../../analysis/ablation/data/met_binned_for_unloading_analysis.rds') |> 
-  ungroup() |> 
-  select(datetime, time_elapsed_event, ends_with('labs'))
+  readRDS('data/clean-data/met_binned_for_unloading_analysis.rds') |> 
+  ungroup()
 
 canopy_snow_events <- 
-  read.csv('../../analysis/ablation/data/snow_in_canopy_post_snowfall.csv') |> 
+  read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
          event_id = as.Date(from, tz = 'Etc/GMT+6')) 
@@ -84,20 +83,16 @@ events_fltr_long <-
   select(-quality)
 
 q_unld_tree <-
-  readRDS('../../analysis/ablation/data/weighed_tree_ablation_15min.rds') |> 
+  readRDS('data/clean-data/ft_w_tree_data_del_15_min.rds') |> 
   left_join(events_fltr_long |> select(datetime, weighed_tree_quality, notes), by = 'datetime') |> 
   filter(weighed_tree_quality < 3)
 
 q_unld_scl <- 
-  readRDS('../../analysis/ablation/data/ft_lysimeter_data_del_15_min.rds') |> 
-  filter(name != 'tree_mm') |> 
-  select(-inst_type) |> 
+  readRDS('data/clean-data/ft_scl_data_del_15_min.rds') |> 
   inner_join(events_fltr_long |> select(datetime, event_id, bad_troughs), by = 'datetime') |> 
   # remove some of the unloading obs where we observed one of the instruments to be faulty
   mutate(value_flag = name == bad_troughs) |> # this is not a bug!
-  filter(!value_flag, 
-         name != 'sparse_forest'
-         )
+  filter(!value_flag)
 
 q_unld_scl_cml_event <- q_unld_scl |> 
   group_by(event_id, name) |> 
@@ -168,16 +163,17 @@ crhm_output_scl <- CRHMr::readOutputFile(
 # )
 
 # this is already restricted to custom pre/post event periods 
-q_subl <- 
-  readRDS('../../analysis/ablation/data/obs_mod_canopy_load_and_sublimation_cnpy_snow.rds') 
+# q_subl <- 
+#   readRDS('data/clean-data/obs_mod_canopy_load_and_sublimation_cnpy_snow.rds') |> 
+#   select()
 obs_tree <-
-  readRDS('../../analysis/ablation/data/unloading_events_zero_weighed_tree_mm_pre_post_cnpy_snow.rds') |> 
-  select(datetime, obs_tree = value)
+  readRDS(paste0(
+    'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
+    load_suffix,
+    '.rds'
+  )) 
 
-met_unld <- q_unld_scl |> 
-  left_join(ft_met) |> 
-  left_join(ft_met_binned) |> 
-  left_join(q_subl)
+q_unld_met_scl <- readRDS('data/clean-data/unloading_data_with_met_15min.rds')
 
 # warm tree specific events
 warm_events <- c(
@@ -195,7 +191,11 @@ warm_events <- c(
 )
 
 obs_tree_warm <-
-  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  readRDS(paste0(
+    'data/clean-data/warm_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
   filter(event_id %in% warm_events)
 
 # cold tree events
@@ -212,7 +212,11 @@ cold_events <- c(
   #'2023-04-12' could add back if filter to start later.. also removed jjst so have clean 20 events
 )
 obs_tree_cold <-
-  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  readRDS(paste0(
+    'data/clean-data/all_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
   filter(event_id %in% cold_events)
 
 # load tipping bucket data

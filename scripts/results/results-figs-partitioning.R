@@ -190,7 +190,7 @@ fltr <- fltr_for_events |>
     name %in% scl_names,
     !event_id %in% possible_wind_redistribution,
     !event_id %in% events_bad_sublimation,
-    # name %in% 'medium_density_forest',
+    # name %in% 'mixed',
     q_unl < 7,
     q_tree_ablation > min_qunld,
     q_unl > min_qunld) 

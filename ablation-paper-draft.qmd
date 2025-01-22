@@ -137,70 +137,37 @@ The probability of unloading was found to start around 0.5 when snow is newly in
 
 ### Modelling Canopy Snow Unloading 
 
-The canopy snow unloading rate to to wind speed, duration, and air temperature can be represented by:
+The canopy snow unloading rate due to melt and wind can be represented by:
 
 $$
-\frac{dL}{dt} = L_0 \cdot [f(T_a) + f(u) + f(t)]
-$$
-
-A corresponding analytical solution for the above is:
-
-$$
-L^{t+\Delta t} = L^t e^{-\kappa_{unld} \Delta t}
-$$
+q_{unld} = L \cdot \kappa_{unld}
+$${#eq-unl-ode}
 
 where:
 
 $$
-\kappa_{unld} = f(T_a) + f(u) + f(t)
+\kappa_{unld} = f(T_a) + f(u)
 $$
 
-Or for just the unloading rate:
+<!-- consider adding Lres to melt unloading function , see eq. 29 in the review paper -->
+
+Canopy snow unloading due to melt of snow intercepted in the canopy was found to be linearly proportional to the canopy snow melt rate, $q_{drip}$. This was represented as the equation as in @Andreadis2009:
 
 $$
-\Delta L = L(t) - L(t+\Delta t)
-
-Substitute \(L(t+\Delta t)\) from the analytical solution:
-\[
-L(t+\Delta t) = L(t) \cdot \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right),
-\]
-
-\[
-\Delta L = L(t) - L(t) \cdot \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right).
-\]
-
-Factor out \(L(t)\):
-\[
-\Delta L = L(t) \cdot \left[1 - \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right)\right].
-\]
-
-Final Expression for Positive \(\Delta L\):
-\[
-\Delta L = L(t) \cdot \left[1 - \exp\left(-\Delta t \cdot \Big[a_T \cdot e^{b_T \cdot T_a} + u \cdot a_u \cdot e^{b_u \cdot u} + a_t \cdot e^{b_t \cdot t}\Big]\right)\right].
-\]
+f(T_a) = X_u \cdot q_{drip}
 $$
 
-Less confidence in the temperature unloading model, maybe better suited to use a physically based snowmelt model. The wind unloading model aligns well with the observations although, only two canopy snow load bins were used. This model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships. 
+<!-- TODO create fig showing the increase in mass snow unloading (tree ablation minus sublimation and drip) w/ increasing q_drip. See cal-melt-drip-ratio.R script. -->
 
-![](figs/results/modelled_temp_unloading_w_obs.png){#fig-mod-temp-unld}
+Canopy snow unloading due to wind is shown in @fig-mod-wind-unld to increase exponentially with wind speed measured at mid canopy height. The data presented in @fig-mod-wind-unld originates from the SCls and has been filtered to include periods where the air temperature is below -6°C where the effect of canopy snow melt on unloading was observed to be minimal in @fig-glob-prob-unl.
 
-The equation to represent the model shown in @fig-mod-temp-unld is:
-
-$$
-f(T) = a_T \cdot e^{b_T\cdot T_a}
-$$
-
-where $a_T$ is a constant of `r mod_coef_temp[['a']]` (s^-1^) and $b_T$ is a constant of `r mod_coef_temp[['b']]` (°C^-1^).
-
-The slight decline in unloading rate at 3.5 m s^-1^ for the 11 mm canopy snow load group is attributed to a single event where snow had been intercepted in the canopy for over 30 hours and may have been slightly more resistant to unloading compared to other events prior to this. Although lots of other obs with durations close to 30 hours and no obvious melt/refreeze so possibly more related to concurrent sublimation / wind redistribution. Although minimal wind redistribution observed at the pluvio. Could check disdrometer.
-
-![](figs/results/modelled_wind_unloading_w_obs.png){#fig-mod-wind-unld}
+![Canopy snow unloading rate measured by the subcanopy lysimeters during periods where the air temperature is below -6°C. The dots show the mean unloading rate for wind speed bins (0–0.5 m s^-1^, 0.5–1.0 m s^-1^, ..., 5.5–6.0 m s^-1^). The error bars show +/- 1 standard deviation above and below the mean. The fitted lines show predictions from @eq-fu. )](figs/results/modelled_wind_unloading_w_obs.png){#fig-mod-wind-unld}
 
 The equation to represent the model shown in @fig-mod-wind-unld is:
 
 $$
 f(u) = u \cdot a_u \cdot e^{b_u\cdot u}
-$$
+$${#eq-fu}
 
 where $a_u$ is a constant of `r mod_coef_wind[['a']]` (m^-1^) and $b_u$ is a constant of `r mod_coef_wind[['b']]` (m^-1^).
 
@@ -214,19 +181,40 @@ rbind(wind_err_tbl, temp_err_tbl)
 
 ```
 
-@fig-mod-time-unld and @fig-mod-cpy-load-unld show the decrease in unloading associated with increased duration in the canopy and increased unloading with increasing canopy snow load respectively. These figures show periods with snow intercepted in the canopy and filtered to below -6 °C and 1 m s^-1^ wind speed, where unloading attributed to these processes are observed to be reduced in @fig-mod-wind-unld and @fig-mod-temp-unld. The canopy snow load bin with 10 mm of snow intercepted in the canopy experienced some larger mass unloading events around 50 hours and were determine to be not representative of duration based unloading which was expected to decline over time as snow is subject to equitemeprature metamorphasism and increases cohesion. So the resulting model was just fit to the 4 mm canopy snow load dataset.
-
-![](figs/results/modelled_duration_unloading_w_obs.png){#fig-mod-time-unld}
-
-To model the curve shown in @fig-mod-time-unld fit to the dataset which had an average of 4 mm of canopy snow load is:
-
-$$
-f(t) = a_t \cdot e^{b_t \cdot t}
-$$
-
-where $a_{t}$ is a constant of `r mod_coef_duration[['a']]`, $b_t$ is a constant of `r mod_coef_duration[['b']]`, and $t$ is the duration that snow has been intercepted in the canopy. 
 
 ![](figs/results/modelled_canopy_snowload_unloading_w_obs.png){#fig-mod-cpy-load-unld}
+
+To derrive an analytical solution for $q_unld$ we start with the analytical equation to compute the canopy snow load for the next time step, $L^{t+\Delta t}$ due to unloading:
+
+$$
+L^{t+\Delta t} = L^{t} \cdot exp(-\kappa_{unld} \Delta t)
+$${eq-qunl-analytical}
+
+where $L_t$ is the canopy snow load for the current time step. 
+
+Since change in canopy snow load due to unloading over a discrete time interval, $\Delta L$ aka ($q_{unld} \cdot \Delta t$) is calculated as:
+
+$$
+\Delta L = L^{t} - L^{t+\Delta t}
+$${#eq-del-L-unl}
+
+@eq-del-L-unl can be used to remove $L^{t+\Delta t}$ from @eq-qunl-analytical:
+
+$$
+\Delta L = L^{t} - L^{t} \cdot exp(-\kappa_{unld} \Delta t)
+$$
+
+Factor out $L^{t}$:
+
+$$
+\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right].
+$$
+
+Final Expression for Positive $\Delta L$:
+
+$$
+\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right]
+$$
 
 ## Discussion
 
@@ -247,6 +235,8 @@ Underestimates canopy snow melt for colder/near 0 events (see 2023-03-25)
 The wind dominated ablation events have much poorer performance, aside from 2022-12-01 which aligns well on average. 
 
 The sublimation or snowmelt dominated events, which are less influenced by wind have the best performance.
+
+ The wind model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships. 
 
 ## Conclusions
 

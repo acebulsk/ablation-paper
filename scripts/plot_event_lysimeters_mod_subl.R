@@ -64,9 +64,9 @@ plot_df <- rbind(tree, troughs) |>
     levels = c(
       'tree_mm',
       'mod_cuml_subl_cpy',
-      'sparse_forest',
-      'medium_density_forest',
-      'dense_forest'
+      'sparse',
+      'mixed',
+      'closed'
     )
   ))
 

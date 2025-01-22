@@ -25,18 +25,20 @@ to_long <- function(from,
   return(out)
 }
 
-load_suffix <- 'fsd_closed_0.88'
+# load_suffix <- 'fsd_closed_0.88'
+load_suffix <- 'fsd_cal_for_each_trough'
 
 # weighed tree zeroed prior to snowfall events
+# file from ~/local-usask/analysis/ablation/scripts/crhm-select-event-assessment/00_3_zero_weighed_tree_pre_post_snow_in_cnpy.R 
 weighed_tree_df <-
   readRDS(
     paste0(
-      '../../analysis/ablation/data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
+      'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
       load_suffix,
       '.rds'))
 
 canopy_snow_events <- 
-  read.csv('../../analysis/ablation/data/snow_in_canopy_post_snowfall.csv') |> 
+  read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
          event_id = as.Date(from, tz = 'Etc/GMT+6')) 
@@ -52,12 +54,12 @@ events_fltr_long <-
 
 # filter pre/post weighed tree dataset to just the warm events
 weighed_tree_df_fltr <- weighed_tree_df |>
-  select(datetime, value) |> 
+  select(datetime:tree_mm, -name) |> 
   left_join(events_fltr_long) |> # this is the df I created to select periods of time where snow is in the canopy and no above canopy precip is occuring
   filter(is.na(event_id) == F)
 
-ggplot(weighed_tree_df_fltr, aes(datetime, value)) +
-  geom_line()
+ggplot(weighed_tree_df_fltr, aes(datetime, tree_mm)) +
+  geom_line() +facet_grid(rows=vars(tree_cal_trough_name))
 plotly::ggplotly()
 
 saveRDS(

@@ -1,0 +1,3 @@
+"","name","runtag","Mean Bias","MAE","RMS Error","NRMSE","R","r^2"
+"1","simulated_baseline","for_ablation_paper",-1.124,2.109,3.799,0.594,0.847,0.718
+"2","simulated_updated","for_ablation_paper",0.423,1.746,2.415,0.377,0.93,0.864

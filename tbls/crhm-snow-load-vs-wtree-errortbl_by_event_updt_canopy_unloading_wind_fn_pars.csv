@@ -1,0 +1,21 @@
+"","event_id","runtag","Mean Bias","MAE","RMS Error","NRMSE","R","r^2"
+"1",2022-03-02,"updt_canopy_unloading_wind_fn_pars",0.177,0.187,0.216,0.041,0.995,0.99
+"2",2022-03-09,"updt_canopy_unloading_wind_fn_pars",-1.717,1.811,2.47,0.982,0.889,0.79
+"3",2022-03-20,"updt_canopy_unloading_wind_fn_pars",-0.169,0.176,0.224,0.131,0.996,0.993
+"4",2022-03-24,"updt_canopy_unloading_wind_fn_pars",0.155,0.572,0.707,0.254,0.985,0.97
+"5",2022-03-29,"updt_canopy_unloading_wind_fn_pars",-0.684,0.694,0.897,0.54,0.919,0.845
+"6",2022-04-21,"updt_canopy_unloading_wind_fn_pars",-0.498,0.548,0.702,0.25,0.973,0.947
+"7",2022-04-23,"updt_canopy_unloading_wind_fn_pars",-1.048,1.066,1.544,0.514,0.947,0.896
+"8",2022-06-14,"updt_canopy_unloading_wind_fn_pars",0.585,1.711,2.039,0.292,0.988,0.976
+"9",2022-06-24,"updt_canopy_unloading_wind_fn_pars",0.105,0.353,0.451,0.117,0.993,0.987
+"10",2022-12-01,"updt_canopy_unloading_wind_fn_pars",0.121,1.373,1.631,0.147,0.984,0.968
+"11",2023-01-28,"updt_canopy_unloading_wind_fn_pars",2.391,2.391,2.708,0.43,0.945,0.892
+"12",2023-02-24,"updt_canopy_unloading_wind_fn_pars",-3.822,4.661,6.412,0.536,0.941,0.885
+"13",2023-02-26,"updt_canopy_unloading_wind_fn_pars",0.38,0.389,0.507,0.087,0.914,0.836
+"14",2023-03-14,"updt_canopy_unloading_wind_fn_pars",2.146,2.148,2.46,0.379,0.975,0.951
+"15",2023-03-25,"updt_canopy_unloading_wind_fn_pars",-2.044,2.044,2.527,0.158,0.956,0.913
+"16",2023-03-26,"updt_canopy_unloading_wind_fn_pars",-3.709,3.709,4.572,0.382,0.941,0.885
+"17",2023-03-28,"updt_canopy_unloading_wind_fn_pars",-2.503,2.503,2.989,0.217,0.99,0.98
+"18",2023-05-08,"updt_canopy_unloading_wind_fn_pars",-0.354,0.555,0.655,0.194,0.981,0.962
+"19",2023-06-15,"updt_canopy_unloading_wind_fn_pars",-0.766,1.048,1.357,0.237,0.966,0.933
+"20",2023-06-21,"updt_canopy_unloading_wind_fn_pars",-0.705,0.885,1.243,0.247,0.971,0.943

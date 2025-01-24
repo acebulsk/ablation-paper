@@ -1,6 +1,6 @@
 "","event_id","runtag","Mean Bias","MAE","RMS Error","NRMSE","R","r^2"
 "1",2022-03-02,"after_new_gap_filling_and_RH_corr",0.602,0.605,0.666,0.128,0.989,0.977
-"2",2022-03-09,"after_new_gap_filling_and_RH_corr",-1.015,1.312,1.822,0.725,0.924,0.854
+"2",2022-03-09,"after_new_gap_filling_and_RH_corr",-1.014,1.312,1.822,0.725,0.924,0.854
 "3",2022-03-20,"after_new_gap_filling_and_RH_corr",0.022,0.127,0.157,0.092,0.995,0.991
 "4",2022-03-24,"after_new_gap_filling_and_RH_corr",0.464,0.655,0.829,0.298,0.979,0.958
 "5",2022-03-29,"after_new_gap_filling_and_RH_corr",-0.584,0.6,0.782,0.47,0.934,0.873

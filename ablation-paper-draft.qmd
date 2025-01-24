@@ -137,26 +137,19 @@ The probability of unloading was found to start around 0.5 when snow is newly in
 
 ### Modelling Canopy Snow Unloading 
 
-The canopy snow unloading rate due to melt and wind can be represented by:
+The canopy snow unloading rate due to melt, $q_{unld}^{melt}$ (kg m^-2^ s^-1^) and wind, $q_{unld}^{wind}$ (kg m^-2^ s^-1^) can be represented by:
 
 $$
-q_{unld} = L \cdot \kappa_{unld}
+q_{unld} = q_{unld}^{wind} + q_{unld}^{melt}
 $${#eq-unl-ode}
-
-where:
-
-$$
-\kappa_{unld} = f(T_a) + f(u)
-$$
 
 <!-- consider adding Lres to melt unloading function , see eq. 29 in the review paper -->
 
 Canopy snow unloading due to melt of snow intercepted in the canopy was found to be linearly proportional to the canopy snow melt rate, $q_{drip}$. This was represented as the equation as in @Andreadis2009:
 
 $$
-f(T_a) = X_u \cdot q_{drip}
+q_{unld}^{melt} = X_u \cdot q_{drip}
 $$
-
 <!-- TODO create fig showing the increase in mass snow unloading (tree ablation minus sublimation and drip) w/ increasing q_drip. See cal-melt-drip-ratio.R script. -->
 
 Canopy snow unloading due to wind is shown in @fig-mod-wind-unld to increase exponentially with wind speed measured at mid canopy height. The data presented in @fig-mod-wind-unld originates from the SCls and has been filtered to include periods where the air temperature is below -6°C where the effect of canopy snow melt on unloading was observed to be minimal in @fig-glob-prob-unl.
@@ -166,10 +159,18 @@ Canopy snow unloading due to wind is shown in @fig-mod-wind-unld to increase exp
 The equation to represent the model shown in @fig-mod-wind-unld is:
 
 $$
-f(u) = u \cdot a_u \cdot e^{b_u\cdot u}
-$${#eq-fu}
+q_{unld}^{wind} = L \cdot f(u)
+$$
+where $f(u)$ is a wind induced unloading function (s^-1^).
 
-where $a_u$ is a constant of `r mod_coef_wind[['a']]` (m^-1^) and $b_u$ is a constant of `r mod_coef_wind[['b']]` (m^-1^).
+$$
+f(u) = \begin{cases}
+    0,& \text{if } u < u_{th} \\
+    u \cdot a_u \cdot e^{b_u\cdot u},              & \text{if }  u \ge u_{th}
+\end{cases}
+$$ {#eq-roesch-unload-v}
+
+where $a_u$ is a constant of `r mod_coef_wind[['a']]` (m^-1^) and $b_u$ is a constant of `r mod_coef_wind[['b']]` (m^-1^), and $u_{th}$ is a threshold wind speed below which $f(u)$ is equal to zero.
 
 ```{r}
 wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') |> 
@@ -184,15 +185,15 @@ rbind(wind_err_tbl, temp_err_tbl)
 
 ![](figs/results/modelled_canopy_snowload_unloading_w_obs.png){#fig-mod-cpy-load-unld}
 
-To derrive an analytical solution for $q_unld$ we start with the analytical equation to compute the canopy snow load for the next time step, $L^{t+\Delta t}$ due to unloading:
+To derive an analytical solution for $q_unld$ we start with the analytical equation to compute the canopy snow load for the next time step, $L^{t+\Delta t}$ due to unloading:
 
 $$
-L^{t+\Delta t} = L^{t} \cdot exp(-\kappa_{unld} \Delta t)
+L^{t+\Delta t} = L^{t} \cdot exp(-f(u) \Delta t)-(X_u \cdot q_{drip} \cdot \Delta t)
 $${eq-qunl-analytical}
 
 where $L_t$ is the canopy snow load for the current time step. 
 
-Since change in canopy snow load due to unloading over a discrete time interval, $\Delta L$ aka ($q_{unld} \cdot \Delta t$) is calculated as:
+Since change in canopy snow load due to unloading over a discrete time interval ($\Delta L$) is equal to the product of $q_{unld}$ and $\Delta t$ it can be expressed as:
 
 $$
 \Delta L = L^{t} - L^{t+\Delta t}
@@ -201,20 +202,15 @@ $${#eq-del-L-unl}
 @eq-del-L-unl can be used to remove $L^{t+\Delta t}$ from @eq-qunl-analytical:
 
 $$
-\Delta L = L^{t} - L^{t} \cdot exp(-\kappa_{unld} \Delta t)
+\Delta L = L^{t} - \left[L^{t} \cdot exp(-\kappa_{unld} \Delta t)\right] + \left[X_u \cdot q_{drip} \cdot \Delta t\right]
 $$
 
-Factor out $L^{t}$:
+Factor out $L^{t}$ from the unloading term:
 
 $$
-\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right].
+\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right]+ \left[X_u \cdot q_{drip} \cdot \Delta t\right]
 $$
 
-Final Expression for Positive $\Delta L$:
-
-$$
-\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right]
-$$
 
 ## Discussion
 
@@ -247,6 +243,8 @@ The sublimation or snowmelt dominated events, which are less influenced by wind 
 
 -   The canopy snow exposure coef from existing studies was found to be too small at this site and needed to be increased substantially 
 -   The amount of drip compared to mass release of canopy snow was found to be significatnly less in this study compared to previous studies which suggested primarily drip
+
+results show updated model is more consistent across temperaturs and wind speed
 
 
 # References

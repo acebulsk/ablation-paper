@@ -25,8 +25,8 @@ to_long <- function(from,
   return(out)
 }
 
-# load_suffix <- 'fsd_closed_0.88'
-load_suffix <- 'fsd_cal_for_each_trough'
+load_suffix <- 'fsd_closed_0.88'
+# load_suffix <- 'fsd_cal_for_each_trough'
 
 # weighed tree zeroed prior to snowfall events
 # file from ~/local-usask/analysis/ablation/scripts/crhm-select-event-assessment/00_3_zero_weighed_tree_pre_post_snow_in_cnpy.R 
@@ -59,7 +59,7 @@ weighed_tree_df_fltr <- weighed_tree_df |>
   filter(is.na(event_id) == F)
 
 ggplot(weighed_tree_df_fltr, aes(datetime, tree_mm)) +
-  geom_line() +facet_grid(rows=vars(tree_cal_trough_name))
+  geom_line() +facet_grid(rows=vars(tree_cal_cc))
 plotly::ggplotly()
 
 saveRDS(

@@ -13,13 +13,13 @@ scl_q_unld_15 <- scl_df_kg_m2 |>
   ungroup() |>
   filter(is.na(q_unl) == F) 
 
-w_tree_q_unld_15 <- w_tree_kg_m2 |>
-  filter(name %in% good_loads)  |>
-  group_by(name) |>
+w_tree_q_unld_15 <- weighed_tree_zeroed |>
+  filter(name == 'weighed tree')  |>
+  group_by(tree_cal_trough_name) |>
   mutate(
-    dU = lag(value) - value,
-    dU = ifelse(dU < 0, 0, dU),
-    q_unl = (dU / 15) * 60
+    dL = lag(tree_mm) - tree_mm,
+    dL = ifelse(dL < 0, 0, dL),
+    q_unl = (dL / 15) * 60
   ) |>
   ungroup() |>
   filter(is.na(q_unl) == F) 

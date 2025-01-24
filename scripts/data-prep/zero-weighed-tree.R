@@ -10,8 +10,8 @@ options(scipen = 999)
 
 quality_th <- 3 
 
-# load_suffix <- 'fsd_closed_0.88'
-load_suffix <- 'fsd_cal_for_each_trough'
+load_suffix <- 'fsd_closed_0.88'
+# load_suffix <- 'fsd_cal_for_each_trough'
 
 to_long_short <- function(from, to, class, quality, notes, event_id){
   datetime <- seq(from, to, 900)
@@ -46,6 +46,14 @@ for(row in 1:nrow(canopy_snow_events)){
   canopy_snow_events$to_flag[row] <- to_flag
 }
 
+# file.copy(from = paste0(
+#   '../../analysis/interception/data/loadcell/treefort_weighed_tree_cal_kg_m2_plv_',
+#   load_suffix,
+#   '.rds'
+# ),
+# to = raw_data_path,
+# overwrite = F,
+# copy.date = T)
 weighed_tree_df <-
   # readRDS('../interception/data/loadcell/treefort_load_main_cal_plv_fsd_mm.rds') |>
   readRDS(
@@ -75,12 +83,12 @@ weighed_tree_df_fltr <- weighed_tree_df |>
 # zero the tree at the start of each event 
 
 event_start_vals <- weighed_tree_df_fltr |> 
-  group_by(event_id, name, tree_cal_trough_name, tree_cal_cc) |> 
+  group_by(event_id, name, tree_cal_cc) |> 
   summarise(start_time = min(datetime, na.rm = T),
             start_val = nth(value, which.min(datetime))) # grab instrument value at begining of event |> 
 
 weighed_tree_zeroed_pre_post_cnpy_snow <- weighed_tree_df_fltr |> 
-  left_join(event_start_vals, by = c('event_id', 'name', 'tree_cal_trough_name', 'tree_cal_cc')) |> 
+  left_join(event_start_vals, by = c('event_id', 'name', 'tree_cal_cc')) |> 
   mutate(value = value - start_val,
          hours = as.numeric(difftime(datetime, start_time, 'hours'))/(60*60),
          value = case_when(
@@ -108,14 +116,16 @@ saveRDS(
 
 # plot all and save to figs
 w_tree_plot <- weighed_tree_zeroed_pre_post_cnpy_snow |> 
-  select(datetime, name = tree_cal_trough_name, value = tree_mm, event_id)
+  select(datetime, name = tree_cal_cc, value = tree_mm, event_id)
   
 lapply(
   w_tree_plot$event_id |> unique(),
   plot_facet_one_vars,
   cur_load_met = w_tree_plot,
   cur_var_names = w_tree_plot$name |> unique(),
-  filename_prefix = 'figs/supplement/w_tree_plots_pre_post/timeseries_w_tree_'
+  filename_prefix = paste0('figs/supplement/w_tree_plots_pre_post/',
+                           load_suffix,
+                           '_timeseries_w_tree_')
 )
 
 # event_max_load <- weighed_tree_zeroed_pre_post_cnpy_snow |> 

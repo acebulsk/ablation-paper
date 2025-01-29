@@ -1,7 +1,7 @@
 # Script to zero weighed tree at start of specified events
 
 # setup ----
-
+source('scripts/data-prep/lysimeters/01_define_functions.R')
 library(tidyverse)
 library(plotly)
 library(viridis)
@@ -100,10 +100,26 @@ weighed_tree_zeroed_pre_post_cnpy_snow <- weighed_tree_df_fltr |>
   # rbind(inc_snow) |> 
   filter(is.na(event_id) == F) 
 
-# ggplot(weighed_tree_zeroed_pre_post_cnpy_snow, aes(datetime, tree_mm, colour = name, group = name)) +
-#   geom_line() +
-#   facet_grid(rows = vars(tree_cal_trough_name))
-# plotly::ggplotly()
+# fix some noisey points 
+
+good1 <- as.POSIXct('2023-06-15 11:15:00', tz = 'Etc/GMT+6')
+good2 <- as.POSIXct('2023-06-15 11:45:00', tz = 'Etc/GMT+6')
+
+bad1 <- as.POSIXct('2023-06-15 11:30:00', tz = 'Etc/GMT+6')
+bad2 <- as.POSIXct('2023-06-15 12:00:00', tz = 'Etc/GMT+6')
+
+fill_val1 <- weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == good1,]$tree_mm
+fill_val2 <- weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == good2,]$tree_mm
+
+weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == bad1,]$tree_mm <- fill_val1
+weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == bad2,]$tree_mm <- fill_val2
+
+ggplot(weighed_tree_zeroed_pre_post_cnpy_snow, aes(datetime, tree_mm, colour = name, group = name)) +
+  geom_line() +
+  facet_grid(rows = vars(tree_cal_cc))
+plotly::ggplotly()
+
+
 
 saveRDS(
   weighed_tree_zeroed_pre_post_cnpy_snow,

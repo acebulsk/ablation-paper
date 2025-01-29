@@ -143,14 +143,6 @@ $$
 q_{unld} = q_{unld}^{wind} + q_{unld}^{melt}
 $${#eq-unl-ode}
 
-<!-- consider adding Lres to melt unloading function , see eq. 29 in the review paper -->
-
-Canopy snow unloading due to melt of snow intercepted in the canopy was found to be linearly proportional to the canopy snow melt rate, $q_{drip}$. This was represented as the equation as in @Andreadis2009:
-
-$$
-q_{unld}^{melt} = X_u \cdot q_{drip}
-$$
-<!-- TODO create fig showing the increase in mass snow unloading (tree ablation minus sublimation and drip) w/ increasing q_drip. See cal-melt-drip-ratio.R script. -->
 
 Canopy snow unloading due to wind is shown in @fig-mod-wind-unld to increase exponentially with wind speed measured at mid canopy height. The data presented in @fig-mod-wind-unld originates from the SCls and has been filtered to include periods where the air temperature is below -6°C where the effect of canopy snow melt on unloading was observed to be minimal in @fig-glob-prob-unl.
 
@@ -166,17 +158,34 @@ where $f(u)$ is a wind induced unloading function (s^-1^).
 $$
 f(u) = \begin{cases}
     0,& \text{if } u < u_{th} \\
-    u \cdot a_u \cdot e^{b_u\cdot u},              & \text{if }  u \ge u_{th}
+    u_{mid} \cdot a \cdot e^{b\cdot u_{mid}} \cdot e^{c\cdot T_a},              & \text{if }  u \ge u_{th}
 \end{cases}
-$$ {#eq-roesch-unload-v}
+$$ {#eq-wind-unld}
 
-where $a_u$ is a constant of `r mod_coef_wind[['a']]` (m^-1^) and $b_u$ is a constant of `r mod_coef_wind[['b']]` (m^-1^), and $u_{th}$ is a threshold wind speed below which $f(u)$ is equal to zero.
+where $u_{mid}$ is the wind speed at mid canopy height, $a$ is a constant of `r mod_coef_wind[['a']]` (m^-1^), $b$ is a constant of `r mod_coef_wind[['b']]` (m^-1^), $c$ is a constant of `r mod_coef_wind[['c']]` (m^-1^) and $u_{th}$ is a threshold wind speed below which $f(u)$ is equal to zero.
+
+Canopy snow unloading due to melt of snow intercepted in the canopy is shown in @fig-mod-melt-unld to be linearly proportional to the canopy snow melt rate, $q_{drip}$. This was represented as the equation:
+
+<!-- consider adding Lres to melt unloading function , see eq. 29 in the review paper -->
+$$
+q_{unld}^{melt} = X_u \cdot q_{drip}
+$${#eq-melt-unld-ode}
+
+where $X_u$ is the ratio of mass release to canopy snowmelt. @eq-melt-unld-ode is similar to the equation presented by @Andreadis2009 but differs in that it does not incorporate a minimum threshold of $L$ for $q_{unld}^{melt}$ to occur. A linear model to represent the relationship shown in @fig-mod-melt-unld was derived using @eq-melt-unld-ode and an ordinary least squares regression fit. $q_{unld}^{wind}$ calculated as a from the observed ablation from the weighed tree:
+
+$$
+q_{unld}^{melt} = \Delta L - q_{drip} - q_{unld}^{wind}
+ - q_{sub}^{veg}
+$${#q_unld_melt_mass_bal}
+
+where rates of $q_{drip}$ was simulated from the updated CRHM canopy snowmelt routine, $q_{unld}^{wind}$ was simulated using @eq-wind-unld, and $q_{subl}^{veg}$ was simulated using the CRHM canopy snow sublimation routine.
+
+![The relationship between the canopy snow unloading rate, attributed to the melting of canopy snow measured by weighed tree lysimetry, and the rate of simulated canopy snowmelt. The dots represent the unloading and snowmelt rates observed at 15-minute intervals. The red line indicates a line of best fit using @eq-melt-unld-ode.](figs/results/modelled_melt_unloading_w_obs.png){#fig-mod-melt-unld}
+
 
 ```{r}
 wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') |> 
   mutate(model = 'wind_model')
-temp_err_tbl <- readRDS('data/modelled_temp_unloading_error_table.rds') |> 
-  mutate(model = 'temp_model')
 
 rbind(wind_err_tbl, temp_err_tbl)
 
@@ -202,15 +211,29 @@ $${#eq-del-L-unl}
 @eq-del-L-unl can be used to remove $L^{t+\Delta t}$ from @eq-qunl-analytical:
 
 $$
-\Delta L = L^{t} - \left[L^{t} \cdot exp(-\kappa_{unld} \Delta t)\right] + \left[X_u \cdot q_{drip} \cdot \Delta t\right]
+\Delta L = L^{t} - \left[L^{t} \cdot exp(-f(u) \Delta t)\right] + \left[X_u \cdot q_{drip} \cdot \Delta t\right]
 $$
 
 Factor out $L^{t}$ from the unloading term:
 
 $$
-\Delta L = L^{t} \cdot \left[1 - exp(-\kappa_{unld} \Delta t)\right]+ \left[X_u \cdot q_{drip} \cdot \Delta t\right]
+\Delta L = L^{t} \cdot \left[1 - exp(-f(u) \Delta t)\right]+ \left[X_u \cdot q_{drip} \cdot \Delta t\right]
 $$
 
+### Model Results 
+
+![](figs/crhm-analysis/subl_drip_unld/select_post_agu_events/compare_baseline_updated_psp_w_new_wind_unld_w_temp_par/obs_mod_canopy_snow_load.png){#fig-obs-mod-w-tree}
+
+
+```{r}
+event_smry <- left_join(
+  event_met,
+  obs_mod_w_tree_err_tbl
+) |> left_join(event_ablation_frac)
+
+event_smry
+
+```
 
 ## Discussion
 
@@ -233,14 +256,14 @@ The wind dominated ablation events have much poorer performance, aside from 2022
 The sublimation or snowmelt dominated events, which are less influenced by wind have the best performance.
 
  The wind model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships. 
+ 
+Not currently taking into account different density of unloaded snow, or over time as it melts in the canopy.
 
 ## Conclusions
 
 -   Over two winter seasons, the primary processes contributing to canopy snow ablation were unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a small component of the mass balance. 
--   The probability of unloading was observed to increase with air temperature and wind speed. However, the probability of wind induced unloading was observed to decrease at warmer air temperatures. The probability of unloading due to warming was also observed to decline when wind speeds were above 1 m s^-1^. The increase in cohesion and adhesion of snow in the canopy at warmer temperatures and cooling due to wind-induced evaporation may contribute to the interaction multivariate interaction between air temperature, wind speed and canopy snow unloading.  
--   The duration that snow is intercepted in the canopy was found to first decrease the probability of unloading exponentially for the first 15 hours, followed by an exponential increase in the probability of unloading for the remaining duration that snow is intercepted in the canopy. 
--   Exponential relationships were observed between both air temperature and wind speed with unloading and drip, which were also dependent on the amount of snow intercepted in the canopy. In comparison to existing models, this discontinuous forest exhibited unloading and drip due to warming at lower air temperatures. Conversely, wind-induced unloading occurred at higher wind speeds than predicted by current models.
-
+-   The probability of unloading was observed to increase with air temperature and wind speed. However, the probability of wind induced unloading was observed to decrease at warmer air temperatures. The probability of unloading due to warming was also observed to decline when wind speeds were above 1 m s^-1^. The increase in cohesion and adhesion of snow in the canopy at warmer temperatures and cooling due to wind-induced evaporation may contribute to the interaction multivariate interaction between air temperature, wind speed and canopy snow unloading. 
+-   The observed associations of canopy snow unloading with wind speed and air temperature were represented in a new canopy snow ablation routine. An exponential function represents the increase in canopy snow unloading with wind speed which is also moderated by air temperature and canopy snow load. Mass unloading of canopy snow is calculated as a linear function of snowmelt using a physically based routine. This routine accounts for cooling effects when snow evaporates from the canopy decreasing the rate of temperature induced unloading for increased wind speeds.
 -   The canopy snow exposure coef from existing studies was found to be too small at this site and needed to be increased substantially 
 -   The amount of drip compared to mass release of canopy snow was found to be significatnly less in this study compared to previous studies which suggested primarily drip
 

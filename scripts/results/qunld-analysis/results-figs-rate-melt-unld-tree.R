@@ -132,7 +132,9 @@ obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
 #   mutate(est_q_unld_melt = dL - Subl_Cpy.1 - SUnloadWind.1 - canopy_snowmelt.1) 
 
 obs_mod_fltr <- obs_mod |> 
-  filter(canopy_snowmelt.1 > 0) |> 
+  filter(canopy_snowmelt.1 > 0#,
+         # hru_u.1 < 0.5
+         ) |> 
   # convert mm/interval to mm/hour
   mutate(est_q_unld_melt = est_q_unld_melt*4,
          canopy_snowmelt.1 = canopy_snowmelt.1*4)
@@ -149,10 +151,46 @@ ggplot(obs_mod_fltr, aes(x = canopy_snowmelt.1, y = est_q_unld_melt)) +
   geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
               linetype = "solid", size = 0.5) +
   labs(
-    x = expression("Canopy Snowmelt (" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
+    x = expression("Simulated Canopy Snowmelt Rate ("*kg ~ m^-2 ~ hr^-1*")"),
     # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
-    y = expression("Melt Unloading Rate (" ~ kg ~ m^-2 ~ hr^-1 ~ ")")
+    y = expression("Melt Unloading Rate ("*kg ~ m^-2 ~ hr^-1*")")
   ) 
+
+ggsave(
+  'figs/results/modelled_melt_unloading_w_obs.png',
+  width = 4,
+  height = 4,
+  device = png
+)
+
+## ERROR TABLE ----
+
+source('../../../Documents/code/stats/lm-through-the-origin/example-r2-from-lm-through-the-origin.R')
+
+## first adjust the R2 
+
+df_r2_adj <- r_squared_no_intercept(q_unld_melt_lm)
+
+obs_mod_fltr_err_tbl <- obs_mod_fltr |> 
+  mutate(diff = est_q_unld_melt - mod_q_unld_melt) |> 
+  # group_by(avg_w_tree) |> 
+  summarise(
+    `Mean Bias` = mean(diff, na.rm = T),
+    # `Max Error` = diff[which.max(abs(diff))],
+    MAE = mean(abs(diff), na.rm = T),
+    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T))) |> 
+  # left_join(coefs_df, by = c('plot_name', 'name')) |> 
+  # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
+  select(
+    `Mean Bias`,
+    MAE,
+    `RMS Error`
+  ) |> 
+  mutate(across(`Mean Bias`:`RMS Error`, round, digits = 3),
+         R2 = df_r2_adj)
+
+saveRDS(obs_mod_fltr_err_tbl,
+        'data/modelled_melt_unloading_error_table.rds')
 
 
 # Create observed vs predicted plot

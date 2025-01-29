@@ -16,14 +16,19 @@ met_unld_all_winds_cold <- q_unld_met_scl |>
     is.na(tree_mm) ~ 'NA',
     TRUE  ~ 'Heavy'
   )) |> group_by(`Canopy Load (mm)`) |> 
-  mutate(avg_w_tree = mean(tree_mm))
+  mutate(avg_w_tree = mean(tree_mm)) |> 
+  mutate(temp_group = case_when(
+    t < -15 ~ 'Cold',
+    TRUE  ~ 'Warm'
+  )) |> group_by(temp_group) |> 
+  mutate(avg_temp = mean(t))
 
 met_unld_all_winds_cold |> 
-  group_by(`Canopy Load (mm)`) |> 
+  group_by(`Canopy Load (mm)`, avg_temp) |> 
   summarise(avg_w_tree = mean(tree_mm))
 
 met_unld_all_winds_cold_smry <- met_unld_all_winds_cold |> 
-  group_by(wind_labs, `Canopy Load (mm)`, avg_w_tree) |> 
+  group_by(wind_labs, `Canopy Load (mm)`, avg_w_tree, avg_temp) |> 
   summarise(q_unl_avg = mean(q_unl, na.rm = T),
             q_unl_sd = sd(q_unl, na.rm = T),
             sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
@@ -40,7 +45,7 @@ met_unld_all_winds_cold_smry <- met_unld_all_winds_cold |>
 ### wind vs unloading rate ----
 
 ggplot(met_unld_all_winds_cold_smry, 
-       aes(x = wind_labs, y = q_unl_avg, colour = as.character(round(avg_w_tree)))) + 
+       aes(x = wind_labs, y = q_unl_avg, colour = factor(round(avg_temp)))) + 
   geom_point(data = met_unld_all_winds_cold, aes(u, q_unl), alpha = 0.1, colour = 'black') +
   geom_errorbar(aes(
     x = wind_labs, 
@@ -56,11 +61,15 @@ ggplot(met_unld_all_winds_cold_smry,
   theme(legend.position = 'bottom') +
   ylim(NA, 3.1) +
   # xlim(NA, 3.5) +
-  scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
-  labs(color = 'Mean Canopy Load (mm)')# + facet_grid(cols = vars(name))
+  facet_wrap(~factor(paste0("Mean Canopy Load: ", round(avg_w_tree), " (kg m⁻²)"),
+                     levels = paste0("Mean Canopy Load: ", 
+                                     round(sort(unique(avg_w_tree))), 
+                                     " (kg m⁻²)"))) +  scale_color_viridis_d() +
+# scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
+labs(color = 'Mean Air Temperature (°C)')# + facet_grid(cols = vars(name))
 
 ggsave(
-  'figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png',
+  'figs/results/binned_unloading_rate_and_wind_w_temp_mid_class_tree_load.png',
   device = png,
   width = 4,
   height = 4,
@@ -85,26 +94,27 @@ b_lm <- coefs[2]
 # use starting values from the linear model 
 # per second for model
 # wind labs in here twice sets to 0 when wind is 0, dont need this for other params
-model_nls <- nls(q_unl_avg/(60*60) ~ wind_labs * a * avg_w_tree * exp(b * wind_labs), 
+model_nls <- nls(q_unl_avg/(60*60) ~ wind_labs * a * avg_w_tree * exp(b * wind_labs) * exp(-c * (avg_temp + 20)), 
                  data = met_unld_all_winds_cold_smry, 
-                 start = list(a = a_lm, b = b_lm))
+                 start = list(a = a_lm, b = b_lm, c = 0.1))
 nls_coefs <- coef(model_nls)
-saveRDS(nls_coefs, 'data/model_coef_wind_unld_per_second.rds')
+saveRDS(nls_coefs, 'data/model_coef_wind_temp_unld_per_second.rds')
 
 met_unld_all_winds_cold_smry <- met_unld_all_winds_cold_smry |> 
   mutate(
-    model_nls_pred = wind_labs * nls_coefs[[1]] * avg_w_tree * exp(nls_coefs[[2]]* wind_labs) # Linear model prediction
+    model_nls_pred = wind_labs * nls_coefs[[1]] * avg_w_tree * exp(nls_coefs[[2]]* wind_labs) * exp(-nls_coefs[[3]] * (avg_temp + 20))
   )
 # Create ggplot
-ggplot(met_unld_all_winds_cold_smry, aes(x = wind_labs, y = model_nls_pred)) +
-  # Observed vs NLS model
-  geom_point(aes(color = "Observed vs NLS"), size = 2) 
+ggplot(met_unld_all_winds_cold_smry, aes(x = wind_labs, y = model_nls_pred, colour = avg_temp)) +
+  geom_point() +
+  facet_wrap(~as.character(round(avg_w_tree))) 
 # summary(model_nls)
 
 # per hour for plotting
-model_nls <- nls(q_unl_avg ~ wind_labs * a * avg_w_tree * exp(b * wind_labs), 
+# adding in the temperature par increased R2 below from 0.34 to 0.49
+model_nls <- nls(q_unl_avg ~ wind_labs * a * avg_w_tree * exp(b * wind_labs) * exp(-c * (avg_temp + 20)), 
                  data = met_unld_all_winds_cold_smry, 
-                 start = list(a = a_lm, b = b_lm))
+                 start = list(a = a_lm, b = b_lm, c = 0.1))
 
 RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
 TSS <- sum((met_unld_all_winds_cold_smry$q_unl_avg - mean(met_unld_all_winds_cold_smry$q_unl_avg))^2)  # Total sum of squares
@@ -181,33 +191,39 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 # Look at the different models for the warm events 
 ex_wind_labs <- seq(0,5,0.1)
 ex_avg_w_tree <- c(3, 11)
-wind_ex_df <- expand.grid(wind_labs = ex_wind_labs, avg_w_tree = ex_avg_w_tree)
+ex_avg_temp <- c(-21, -10)
+wind_ex_df <- expand.grid(wind_labs = ex_wind_labs, avg_w_tree = ex_avg_w_tree, avg_temp = ex_avg_temp)
 new_predicted_y <- predict(model_nls, newdata = wind_ex_df)
 
 ## PLOT MODEL ----
 
 ggplot(wind_ex_df) +
-  geom_line(aes(wind_labs, new_predicted_y, colour = factor(avg_w_tree))) +
+  geom_line(aes(wind_labs, new_predicted_y, colour = factor(round(avg_temp)))) +
   geom_errorbar(data = met_unld_all_winds_cold_smry,
                 aes(
                   x = wind_labs,
                   ymax = sd_hi,
                   ymin = sd_low,
                   width = 0.15,
-                  colour = as.character(round(avg_w_tree))
+                  colour = factor(round(avg_temp))
                 )) +
   geom_point(data = met_unld_all_winds_cold_smry,
-             aes(wind_labs, q_unl_avg, colour = as.character(round(avg_w_tree))),
+             aes(wind_labs, q_unl_avg, colour = factor(round(avg_temp))),
              size = 2) +
   ylab(expression("Unloading Rate (kg" ~ m^-2 ~ hr^-1 * ")")) +
   xlab(expression("Wind Speed (m"~ s^-1 * ")")) +
   xlim(c(0,5)) + # removes outlier at 6 m/s
   # theme_bw() +
+  facet_wrap(~factor(paste0("Mean Canopy Load: ", round(avg_w_tree), " (kg m⁻²)"),
+                     levels = paste0("Mean Canopy Load: ", 
+                                     round(sort(unique(avg_w_tree))), 
+                                     " (kg m⁻²)")),
+             scale = 'free_x') + 
   scale_color_viridis_d(begin = 0, end = 0.8) +
-  labs(colour = expression(atop("Canopy Snow", "Load (kg m"^-2*")"))) # avoids large space using regular way
-
+  # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
+  labs(color = 'Mean Air Temperature (°C)')# + facet_grid(cols = vars(name))
 ggsave(
-  'figs/results/modelled_wind_unloading_w_obs.png',
+  'figs/results/modelled_wind_temp_unloading_w_obs.png',
   width = 6,
   height = 4,
   device = png

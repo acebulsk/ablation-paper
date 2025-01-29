@@ -1,4 +1,5 @@
 library(tidyverse)
+options(ggplot2.discrete.colour= palette.colors(palette = "R4")[2:6])
 
 # functions ----
 

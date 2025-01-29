@@ -29,7 +29,7 @@ load_suffix <- 'fsd_closed_0.88'
 # load_suffix <- 'fsd_cal_for_each_trough'
 
 # weighed tree zeroed prior to snowfall events
-# file from ~/local-usask/analysis/ablation/scripts/crhm-select-event-assessment/00_3_zero_weighed_tree_pre_post_snow_in_cnpy.R 
+# file from scripts/data-prep/zero-weighed-tree.R
 weighed_tree_df <-
   readRDS(
     paste0(

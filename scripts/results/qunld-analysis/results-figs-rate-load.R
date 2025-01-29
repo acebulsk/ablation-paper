@@ -4,7 +4,7 @@
 
 met_unld_tree_fltr <- q_unld_met_scl |> 
   filter(name %in% scl_names,
-         u < 2,
+         u < 1,
          t < -6,
          q_unl < 7) |> 
   mutate(time_group = case_when(
@@ -29,8 +29,8 @@ met_unld_tree_smry <- met_unld_tree_fltr |>
 
 ggplot(met_unld_tree_smry, 
        aes(x = tree_labs, y = q_unl_avg)) + 
-  # geom_point(data = met_unld_tree_fltr, aes(tree_labs, q_unl), alpha = 0.1, colour = 'black') +
-  # ylim(c(0, 1.5)) +
+  geom_point(data = met_unld_tree_fltr, aes(tree_mm, q_unl), alpha = 0.1, colour = 'black') +
+  ylim(c(0, 1.5)) +
   geom_errorbar(aes(
     x = tree_labs, 
     ymax = sd_hi,

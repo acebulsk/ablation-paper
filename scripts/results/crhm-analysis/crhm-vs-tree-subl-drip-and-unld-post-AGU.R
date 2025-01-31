@@ -1,7 +1,8 @@
 # This script plots the selected events used at AGU 2024 and now combined into one df
 library(tidyverse)
 
-fig_tbl_tag <- 'compare_baseline_updated_psp_w_new_wind_unld_w_temp_par'
+base_path <- 'figs/crhm-analysis/ablation-events/'
+fig_tbl_tag <- 'updated_model_only'
 
 # LOAD DATA ----
 
@@ -43,32 +44,6 @@ mod_tree <- crhm_output_updated |>
 
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 
-### BASELINE CRHM ABLATION MODEL from Ellis2010/HP98 ----
-# Select model run with all unloading events weighed tree snow load assimilated
-prj_base <- "ffr_closed_canopy_cc0.88_crhm_baseline"
-
-run_tag_base <- "for_ablation_paper"
-
-path <- list.files(
-  paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_base
-  ),
-  pattern = run_tag_base,
-  full.names = T
-)
-
-stopifnot(length(path) == 1)
-
-crhm_output_baseline <- CRHMr::readOutputFile(
-  path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
-
-mod_tree <- crhm_output_baseline |> 
-  select(datetime, simulated_baseline = Snow_load.1)
-
-obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
-
 # plot weighed tree obs vs. sim facet by event ----
 #TODO change to mark 00 at at least every midnight
 obs_mod_tree |> 
@@ -83,13 +58,14 @@ obs_mod_tree |>
   theme(legend.position = 'bottom') +
   scale_x_datetime(date_labels = "%H")
 
-
-ggsave(paste0(
-  'figs/crhm-analysis/subl_drip_unld/select_post_agu_events/',
-  fig_tbl_tag,
-  '/obs_mod_canopy_snow_load.png'
+ggsave(
+  paste0(
+    base_path,
+    'obs_mod_canopy_snow_load_',
+    fig_tbl_tag,
+    '.png'
   ),
-  width = 8, 
+  width = 8,
   height = 6,
   device = png
 )
@@ -101,21 +77,39 @@ obs_mod_tree_err_tbl <- obs_mod_tree |>
   mutate(diff = observed - value) |> 
   # group_by(name) |> 
   summarise(
-    `Mean Bias` = mean(diff, na.rm = T),
+    runtag = run_tag_updt,
+    MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
-    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
     # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = `RMS Error` / mean(observed, na.rm = T),
+    NRMSE = RMSE / mean(observed, na.rm = T),
     R = cor(observed, value),
-    `r^2` = R^2) |> 
-  mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
+    R2 = R^2) |> 
+  mutate(across(MB:R2, round, digits = 3))
 
-write.csv(obs_mod_tree_err_tbl,
-          paste0(
-            'tbls/crhm-snow-load-vs-wtree-errortbl_avgs_',
-            fig_tbl_tag,
-            '.csv'
-          ))
+obs_mod_tree_err_tbl
+
+all_err_tbl_avgs <- read.csv(
+  paste0(
+    'tbls/',
+    'obs_mod_canopy_snow_load_err_tbl_avg_',
+    fig_tbl_tag,
+    '.csv'
+  )
+)
+
+all_err_tbl_avgs_out <- rbind(obs_mod_tree_err_tbl,
+                              all_err_tbl_avgs)
+
+write.csv(
+  all_err_tbl_avgs_out,
+  paste0(
+    'tbls/',
+    'obs_mod_canopy_snow_load_err_tbl_avg_',
+    fig_tbl_tag,
+    '.csv'
+  )
+)
 
 # obs vs mod weighed tree error table 
 
@@ -136,17 +130,20 @@ obs_mod_tree_err_tbl_events <- obs_mod_tree |>
 
 write.csv(obs_mod_tree_err_tbl_events,
           paste0(
-            'tbls/crhm-snow-load-vs-wtree-errortbl_by_event_',
+            'tbls/',
+            'obs_mod_canopy_snow_load_err_tbl_by_event_',
             fig_tbl_tag,
             '.csv'
           ))
 
 saveRDS(obs_mod_tree_err_tbl_events,
-          paste0(
-            'tbls/crhm-snow-load-vs-wtree-errortbl_by_event_',
-            fig_tbl_tag,
-            '.rds'
-          ))
+        paste0(
+          'tbls/',
+          'obs_mod_canopy_snow_load_err_tbl_by_event_',
+          fig_tbl_tag,
+          '.rds'
+        ))
+
 # compare error with met
 event_met <- readRDS('data/ablation_event_met_summary.rds')
 

@@ -1,9 +1,24 @@
-# script to generate model of wind induced unloading
+# script to generate model of wind induced unloading that also includes
+# temperature effect which we originally observed decreased probability of
+# unloading due to wind if the snow was warm
+
+# This almost works but our model fails for The -10 tree with heavy loads
+
+# overall reduces the R2 from 0.66 in the wind only model to 0.5 when we include air temp here
+
+# FIRST CHECK TEMP AND WIND ARE INDEPENDENT ----
+
+ggplot(q_unld_met_scl, aes(u, t)) + 
+  geom_point(alpha = 0.1)
+cor.test(q_unld_met_scl$u, q_unld_met_scl$t)
+
+# cor is < 0.2 so is weak
 
 ## COMPUTE AVERAGES OVER BINS ---- 
 
 met_unld_all_winds_cold <- q_unld_met_scl |> 
   filter(
+    # name == 'mixed',
     name %in% scl_names,
     q_unl < 7,
     q_unl > min_qunld,
@@ -118,9 +133,10 @@ model_nls <- nls(q_unl_avg ~ wind_labs * a * avg_w_tree * exp(b * wind_labs) * e
 
 RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
 TSS <- sum((met_unld_all_winds_cold_smry$q_unl_avg - mean(met_unld_all_winds_cold_smry$q_unl_avg))^2)  # Total sum of squares
-rsq_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
+rsq_nls_w_temp <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
 
 modelr::rsquare(model_nls, met_unld_all_winds_cold_smry) # check is the same as our manually defined method
+nlstools::overview(model_nls)  # This will show parameter correlations
 
 ### Fit a non linear least squares model with weights iteratively ----
 # give large values a higher weight
@@ -220,6 +236,7 @@ ggplot(wind_ex_df) +
                                      " (kg m⁻²)")),
              scale = 'free_x') + 
   scale_color_viridis_d(begin = 0, end = 0.8) +
+  theme(legend.position = 'bottom') +
   # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Mean Air Temperature (°C)')# + facet_grid(cols = vars(name))
 ggsave(
@@ -240,8 +257,8 @@ met_unld_all_winds_cold_smry |>
 ## ERROR TABLE ----
 
 q_unl_temp_model_err_tbl <- met_unld_all_winds_cold_smry |> 
+  group_by(avg_w_tree, avg_temp) |> 
   mutate(diff = q_unl_avg - pred_q_unl) |> 
-  group_by(avg_w_tree) |> 
   summarise(
     `Mean Bias` = mean(diff, na.rm = T),
     # `Max Error` = diff[which.max(abs(diff))],
@@ -250,13 +267,17 @@ q_unl_temp_model_err_tbl <- met_unld_all_winds_cold_smry |>
   # left_join(coefs_df, by = c('plot_name', 'name')) |> 
   # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
   select(
-    `Mean Canopy Load (mm)` = avg_w_tree,
+    `Mean Air Temp.` = avg_temp,
+    `Mean Canopy Load` = avg_w_tree,
     `Mean Bias`,
     MAE,
     `RMS Error`
   ) |> 
-  mutate(across(`Mean Bias`:`RMS Error`, round, digits = 3),
-         R2 = rsq_nls)
+  mutate(
+    `Mean Air Temp.` = round(`Mean Air Temp.`),
+    `Mean Canopy Load` = round(`Mean Canopy Load`)) |> 
+  mutate(across(`Mean Bias`:`RMS Error`, round, digits = 2),
+         R2 = rsq_nls_w_temp)
 
 saveRDS(q_unl_temp_model_err_tbl,
-        'data/modelled_wind_unloading_error_table.rds')
+        'data/modelled_wind_w_temp_unloading_error_table.rds')

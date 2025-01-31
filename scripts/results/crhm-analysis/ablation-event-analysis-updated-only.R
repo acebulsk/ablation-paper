@@ -1,14 +1,10 @@
-# This script plots the selected events used at AGU 2024 and now combined into one df
-# It compares the observed weighed tree ablation against the following models:
-# - CRHM baseline (i.e., HP98 and Ellis et al., 2010)
-# - updated (working updates to ablation routine for 2025 paper)
-# - Roesch 2001
-# - Andreadis 2009 
+# This script plots the performance of the updated canopy snow ablation model
+# for select ablation events
 
 library(tidyverse)
 
 base_path <- 'figs/crhm-analysis/ablation-events/'
-fig_tbl_tag <- 'all_ablation_models'
+fig_tbl_tag <- 'updated_model_only'
 
 # LOAD DATA ----
 
@@ -26,9 +22,11 @@ select_events_long <- obs_tree |> select(datetime, event_id)
 prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 
 # specify certain model run
-#run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
+# run_tag_updt <- "psp_temp_as_canopy_snow_temp"
+# run_tag_updt <- "air_temp_as_canopy_snow_temp"
+# run_tag_updt <- "icebulb_temp_as_canopy_snow_temp"
+# run_tag_updt <- "obs_irtc_trunk_temp_as_canopy_snow_temp"
 run_tag_updt <- "rm_wind_unld_w_temp"
-# run_tag <- "testing123"
 
 path <- list.files(
   paste0(
@@ -50,118 +48,28 @@ mod_tree <- crhm_output_updated |>
 
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 
-### Roesch 2001 ----
-# Select model run with all unloading events weighed tree snow load assimilated
-prj_roesch <- "ffr_closed_canopy_cc0.88_roesch2001"
-
-# specify certain model run
-#run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_roesch <- "v3"
-# run_tag <- "testing123"
-
-path <- list.files(
-  paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_roesch
-  ),
-  pattern = run_tag_roesch,
-  full.names = T
-)
-
-stopifnot(length(path) == 1)
-
-crhm_output_updated <- CRHMr::readOutputFile(
-  path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
-
-mod_tree <- crhm_output_updated |> 
-  select(datetime, simulated_roesch2001 = Snow_load.1)
-
-obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
-
-### Andreadis 2009 ----
-# Select model run with all unloading events weighed tree snow load assimilated
-prj_andreadis <- "ffr_closed_canopy_cc0.88_andreadis2009"
-
-# specify certain model run
-#run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_andreadis <- "v2"
-# run_tag <- "testing123"
-
-path <- list.files(
-  paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_andreadis
-  ),
-  pattern = run_tag_andreadis,
-  full.names = T
-)
-
-stopifnot(length(path) == 1)
-
-crhm_output_updated <- CRHMr::readOutputFile(
-  path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
-
-mod_tree <- crhm_output_updated |> 
-  select(datetime, simulated_andreadis2009 = Snow_load.1)
-
-obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
-
-### BASELINE CRHM ABLATION MODEL from Ellis2010/HP98 ----
-# Select model run with all unloading events weighed tree snow load assimilated
-prj_base <- "ffr_closed_canopy_cc0.88_crhm_baseline"
-
-run_tag_base <- "for_ablation_paper"
-
-path <- list.files(
-  paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_base
-  ),
-  pattern = run_tag_base,
-  full.names = T
-)
-
-stopifnot(length(path) == 1)
-
-crhm_output_baseline <- CRHMr::readOutputFile(
-  path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
-
-mod_tree <- crhm_output_baseline |> 
-  select(datetime, simulated_baseline = Snow_load.1)
-
-obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
-
 # plot weighed tree obs vs. sim facet by event ----
 #TODO change to mark 00 at at least every midnight
-options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 obs_mod_tree |> 
   pivot_longer(!c(datetime, event_id)) |> 
   ggplot(aes(datetime, value, 
-             colour = name, 
-             linetype = name)) +  
+             colour = name)) +
   geom_line() +
   facet_wrap(~event_id, scales = 'free') +
   ylab(expression("Canopy Snow Load (kg m"^-2*")")) +
   xlab(element_blank()) +
-  labs(colour = 'Data Type', linetype = 'Data Type') +  # Same label for both
+  labs(colour = 'Data Type') +
   theme(legend.position = 'bottom') +
-  scale_x_datetime(date_labels = "%H") +
-  scale_linetype_manual(values = c(
-    observed = "solid",
-    simulated_updated = "dashed",
-    simulated_roesch2001 = "dashed",
-    simulated_andreadis2009 = "dashed",
-    simulated_baseline = "dashed"
-  ))
+  scale_x_datetime(date_labels = "%H")
+
 
 ggsave(
   paste0(
     base_path,
     'obs_mod_canopy_snow_load_',
     fig_tbl_tag,
+    '_',
+    run_tag_updt,
     '.png'
   ),
   width = 8,
@@ -169,62 +77,72 @@ ggsave(
   device = png
 )
 
-# generate error table avg all events
-obs_mod_tree_err_tbl <- obs_mod_tree |> 
-  pivot_longer(starts_with('simulated')) |> 
-  group_by(name) |> 
-  mutate(diff = observed - value) |> 
-  # group_by(name) |> 
-  summarise(
-    `Mean Bias` = mean(diff, na.rm = T),
-    MAE = mean(abs(diff), na.rm = T),
-    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
-    # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = `RMS Error` / mean(observed, na.rm = T),
-    R = cor(observed, value),
-    `r^2` = R^2) |> 
-  mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
-
-write.csv(obs_mod_tree_err_tbl,
-          paste0(
-            'tbls/',
-            'obs_mod_canopy_snow_load_err_tbl_avg_',
-            fig_tbl_tag,
-            '.csv'
-          ))
-
 # obs vs mod weighed tree error table 
 
 obs_mod_tree_err_tbl_events <- obs_mod_tree |> 
   pivot_longer(starts_with('simulated')) |> 
-  group_by(event_id, name) |> 
+  group_by(event_id) |> 
   mutate(diff = observed - value) |> 
   # group_by(name) |> 
   summarise(
-    `Mean Bias` = mean(diff, na.rm = T),
+    runtag = run_tag_updt,
+    MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
-    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
     # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = `RMS Error` / mean(observed, na.rm = T),
+    NRMSE = RMSE / mean(observed, na.rm = T),
     R = cor(observed, value),
-    `r^2` = R^2) |> 
-  mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
+    R2 = R^2) |> 
+  mutate(across(MB:R2, round, digits = 3))
 
-write.csv(obs_mod_tree_err_tbl_events,
-          paste0(
-            'tbls/',
-            'obs_mod_canopy_snow_load_err_tbl_by_event_',
-            fig_tbl_tag,
-            '.csv'
-          ))
+obs_mod_tree_err_tbl_events_all <- readRDS(paste0(
+  'tbls/',
+  'obs_mod_canopy_snow_load_err_tbl_by_event_',
+  fig_tbl_tag,
+  '.rds'
+))
 
-saveRDS(obs_mod_tree_err_tbl_events,
+obs_mod_tree_err_tbl_events_out <- rbind(obs_mod_tree_err_tbl_events_all,
+                                         obs_mod_tree_err_tbl_events)
+
+ggplot(obs_mod_tree_err_tbl_events_out |> 
+         filter(grepl('wind_unld', runtag)),
+       aes(factor(event_id), MB, fill = runtag)) +
+  geom_bar(stat = 'identity', position = 'dodge') 
+
+ggplot(obs_mod_tree_err_tbl_events_out |> 
+         filter(grepl('wind_unld', runtag)),
+       aes(factor(event_id), RMSE, fill = runtag)) +
+  geom_bar(stat = 'identity', position = 'dodge') 
+
+saveRDS(obs_mod_tree_err_tbl_events_out,
         paste0(
           'tbls/',
           'obs_mod_canopy_snow_load_err_tbl_by_event_',
           fig_tbl_tag,
           '.rds'
         ))
+
+obs_mod_tree_err_tbl_avgs <- obs_mod_tree_err_tbl_events |> 
+  group_by(runtag) |> summarise(across(MB:R2, mean))
+
+obs_mod_tree_err_tbl_all <- read.csv(paste0(
+  'tbls/',
+  'obs_mod_canopy_snow_load_err_tbl_avg_',
+  fig_tbl_tag,
+  '.csv'
+))
+
+obs_mod_tree_err_tbl_out <- rbind(obs_mod_tree_err_tbl_all, obs_mod_tree_err_tbl_avgs)
+
+write.csv(obs_mod_tree_err_tbl_out,
+          paste0(
+            'tbls/',
+            'obs_mod_canopy_snow_load_err_tbl_avg_',
+            fig_tbl_tag,
+            '.csv'
+          ), row.names = F)
+
 # compare error with met
 event_met <- readRDS('data/ablation_event_met_summary.rds')
 
@@ -339,7 +257,6 @@ obs_mod_tree |>
   labs(linetype = 'Data Type') +
   theme(legend.position = 'bottom') +
   scale_x_datetime(date_labels = "%H")
-
 
 ggsave(paste0(
   'figs/crhm-analysis/subl_drip_unld/select_post_agu_events/',

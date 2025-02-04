@@ -1,0 +1,5 @@
+"","name","Mean Bias","MAE","RMS Error","NRMSE","R","r^2"
+"1","simulated_andreadis2009",-2.417,2.851,4.903,0.766,0.809,0.655
+"2","simulated_baseline",-1.125,2.11,3.799,0.594,0.847,0.718
+"3","simulated_roesch2001",1.829,2.752,3.716,0.581,0.853,0.728
+"4","simulated_updated",0.851,1.85,2.524,0.394,0.926,0.858

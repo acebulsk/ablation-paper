@@ -2,12 +2,17 @@
 
 ## COMPUTE AVERAGES OVER BINS ---- 
 
-met_unld_all_winds_cold <- q_unld_met_scl |> 
+met_unld_all_winds_cold <- 
+  # q_unld_met_scl |> 
+  # met_binned has duplicated data for each scaled weighed tree
+  # q_unld_scl has been filtered to remove troughs for erroneous periods
+  left_join(q_unld_scl, met_binned, by = c('datetime', 'name')) |>
   filter(
     name %in% scl_names,
     q_unl < 7,
     q_unl > min_qunld,
     t < -6,
+    wind_labs < 5, # obs at 6 m/s is outlier
     # tree_mm >= min_canopy_snow # this reduces our data by like 25%, and removes some good obs of temp unloading near 5 deg. C
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
@@ -201,7 +206,7 @@ ggplot(wind_ex_df) +
              size = 2) +
   ylab(expression("Unloading Rate (kg" ~ m^-2 ~ hr^-1 * ")")) +
   xlab(expression("Wind Speed (m"~ s^-1 * ")")) +
-  xlim(c(0,5)) + # removes outlier at 6 m/s
+  # xlim(c(0,5)) + # removes outlier at 6 m/s
   # theme_bw() +
   scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = expression(atop("Canopy Snow", "Load (kg m"^-2*")"))) # avoids large space using regular way
@@ -224,8 +229,9 @@ met_unld_all_winds_cold_smry |>
 ## ERROR TABLE ----
 
 q_unl_temp_model_err_tbl <- met_unld_all_winds_cold_smry |> 
+  ungroup() |> 
   mutate(diff = q_unl_avg - pred_q_unl) |> 
-  group_by(avg_w_tree) |> 
+  # group_by(avg_w_tree) |> 
   summarise(
     `Mean Bias` = mean(diff, na.rm = T),
     # `Max Error` = diff[which.max(abs(diff))],
@@ -234,7 +240,7 @@ q_unl_temp_model_err_tbl <- met_unld_all_winds_cold_smry |>
   # left_join(coefs_df, by = c('plot_name', 'name')) |> 
   # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
   select(
-    `Mean Canopy Load (mm)` = avg_w_tree,
+    # `Mean Canopy Load (mm)` = avg_w_tree,
     `Mean Bias`,
     MAE,
     `RMS Error`

@@ -26,7 +26,7 @@ prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 # run_tag_updt <- "air_temp_as_canopy_snow_temp"
 # run_tag_updt <- "icebulb_temp_as_canopy_snow_temp"
 # run_tag_updt <- "obs_irtc_trunk_temp_as_canopy_snow_temp"
-run_tag_updt <- "rm_wind_unld_w_temp"
+run_tag_updt <- "updated_q_unld_melt_load_lin_6.14_2"
 
 path <- list.files(
   paste0(
@@ -89,7 +89,7 @@ obs_mod_tree_err_tbl_events <- obs_mod_tree |>
     MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
     RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
-    # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
     NRMSE = RMSE / mean(observed, na.rm = T),
     R = cor(observed, value),
     R2 = R^2) |> 
@@ -106,12 +106,12 @@ obs_mod_tree_err_tbl_events_out <- rbind(obs_mod_tree_err_tbl_events_all,
                                          obs_mod_tree_err_tbl_events)
 
 ggplot(obs_mod_tree_err_tbl_events_out |> 
-         filter(grepl('wind_unld', runtag)),
+         filter(grepl('updated_q_unld_melt_load_new', runtag) | grepl('updated_q_unld_melt_load_lin_6.14', runtag)),
        aes(factor(event_id), MB, fill = runtag)) +
   geom_bar(stat = 'identity', position = 'dodge') 
 
 ggplot(obs_mod_tree_err_tbl_events_out |> 
-         filter(grepl('wind_unld', runtag)),
+         filter(grepl('updated_q_unld_melt_load_new', runtag)),
        aes(factor(event_id), RMSE, fill = runtag)) +
   geom_bar(stat = 'identity', position = 'dodge') 
 
@@ -148,37 +148,31 @@ event_met <- readRDS('data/ablation_event_met_summary.rds')
 
 event_error_met <- left_join(obs_mod_tree_err_tbl_events, event_met)
 
-# below shows updated is more consistent across temperaturs and wind speed
+# below shows updated is more consistent across temperatures and wind speed
 
 event_error_met |> 
-  ggplot(aes(t_mean, `Mean Bias`, colour = rh_mean)) + 
-  geom_point() + 
-  facet_wrap(~name)
+  ggplot(aes(t_mean, MB, colour = rh_mean)) + 
+  geom_point() 
 
 event_error_met |> 
-  ggplot(aes(rh_mean, `Mean Bias`, colour = t_mean)) + 
-  geom_point()+ 
-  facet_wrap(~name)
+  ggplot(aes(rh_mean, MB, colour = t_mean)) + 
+  geom_point()
 
 event_error_met |> 
-  ggplot(aes(u_mean, `Mean Bias`, colour = rh_mean)) + 
-  geom_point()+ 
-  facet_wrap(~name)
+  ggplot(aes(u_mean, MB, colour = rh_mean)) + 
+  geom_point()
 
 event_error_met |> 
-  ggplot(aes(t_mean, `RMS Error`, colour = rh_mean)) + 
-  geom_point() + 
-  facet_wrap(~name)
+  ggplot(aes(t_mean, RMSE, colour = rh_mean)) + 
+  geom_point() 
 
 event_error_met |> 
-  ggplot(aes(rh_mean, `RMS Error`, colour = t_mean)) + 
-  geom_point()+ 
-  facet_wrap(~name)
+  ggplot(aes(rh_mean, RMSE, colour = t_mean)) + 
+  geom_point()
 
 event_error_met |> 
-  ggplot(aes(u_mean, `RMS Error`, colour = rh_mean)) + 
-  geom_point()+ 
-  facet_wrap(~name)
+  ggplot(aes(u_mean, RMSE, colour = rh_mean)) + 
+  geom_point()
 
 # calculate ablation processes separately for each event ----- 
 
@@ -551,20 +545,20 @@ for (event in unique(select_events_long$event_id)) {
     mutate(diff = observed - simulated) |> 
     # group_by(name) |> 
     summarise(
-      `Mean Bias` = mean(diff, na.rm = T),
+      MB = mean(diff, na.rm = T),
       MAE = mean(abs(diff), na.rm = T),
-      `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
-      # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-      NRMSE = `RMS Error` / mean(observed, na.rm = T),
+      RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+      # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+      NRMSE = RMSE / mean(observed, na.rm = T),
       R = cor(observed, simulated),
       `r^2` = R^2) |> 
-    mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
+    mutate(across(MB:`r^2`, round, digits = 3))
   
   stats_text <- obs_mod_tree_err_tbl |> 
     summarise(
       text = sprintf(
         "Mean Bias (mm): %.2f\nRMS Error (mm): %.2f\nNRMSE: %.2f\nR²: %.2f", 
-        `Mean Bias`, `RMS Error`, NRMSE, `r^2`
+        MB, RMSE, NRMSE, `r^2`
       )
     ) |> 
     pull(text)

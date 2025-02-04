@@ -1,7 +1,7 @@
 # Load required inputs and data for CRHM analysis
 library(tidyverse)
 
-options(ggplot2.discrete.colour= palette.colors(palette = "R4")[2:6])
+options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 # options(ggplot2.discrete.fill= palette.colors(palette = "R4")[2:6])
 
 # SETUP ----

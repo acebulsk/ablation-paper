@@ -7,10 +7,13 @@ obs_mod_w_tree_fig <- paste0(
   '/obs_mod_canopy_snow_load.png'
 )
 
-mod_coef_wind <- readRDS('data/model_coef_wind_temp_unld_per_second.rds')
-# mod_coef_wind <- readRDS('data/model_coef_wind_unld_per_second.rds') # prior to adding temp inside wind unld fun
-mod_coef_temp <- readRDS('data/model_coef_temp_unld_per_second.rds')
+# mod_coef_wind <- readRDS('data/model_coef_wind_temp_unld_per_second.rds')
+mod_coef_wind <- readRDS('data/model_coef_wind_unld_per_second.rds') # prior to adding temp inside wind unld fun
 mod_coef_duration <- readRDS('data/model_coef_duration_unld_per_second.rds')
+
+# q_unld_melt_ratio <- coef(readRDS('data/lm_q_drip_vs_q_unld_melt.rds'))[[1]] |> round(2)
+q_unld_melt_ratio <- coef(readRDS('data/lm_q_drip_vs_q_unld_melt_bin_lm.rds'))[[1]] |> round(2)
+
 
 event_met <- readRDS('data/ablation_event_met_summary.rds') |> 
   select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 

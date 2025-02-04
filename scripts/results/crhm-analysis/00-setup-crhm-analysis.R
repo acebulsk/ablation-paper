@@ -87,6 +87,17 @@ load_suffix <- 'fsd_closed_0.88'
 # q_subl <- 
 #   readRDS('data/clean-data/obs_mod_canopy_load_and_sublimation_cnpy_snow.rds') |> 
 #   select()
+
+# events where snow is in the canopy post snowfall
+canopy_snow_events <- 
+  read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
+  mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
+         to = as.POSIXct(to, tz = 'Etc/GMT+6'),
+         event_id = as.Date(from, tz = 'Etc/GMT+6')) 
+
+events_fltr_long <-
+  purrr::pmap_dfr(canopy_snow_events, to_long)
+
 obs_tree <-
   readRDS(paste0(
     'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
@@ -94,18 +105,26 @@ obs_tree <-
     '.rds'
   )) 
 
-q_unld_met_scl <- readRDS('data/clean-data/unloading_data_with_met_15min.rds')
+obs_tree_post_sf <- obs_tree |> 
+  select(datetime, tree_mm) |> 
+  left_join(events_fltr_long |> select(datetime, event_id, weighed_tree_quality),
+            by = 'datetime') |>
+  filter(weighed_tree_quality < 3) |> select(-weighed_tree_quality)
 
 # warm tree specific events
+# these ones differ from the cold ones below and may include some precip
 warm_events <- c(
   '2022-04-21',
   '2022-04-23',
   '2022-06-14',
+  '2022-06-23',
   '2022-06-24',
   '2023-03-14',
   '2023-03-25',
   '2023-03-26',
   '2023-03-28',
+  '2023-04-13',
+  '2023-04-17',
   '2023-05-08',
   '2023-06-15',
   '2023-06-21'
@@ -119,8 +138,20 @@ obs_tree_warm <-
   )) |> 
   filter(event_id %in% warm_events)
 
+all(warm_events %in% obs_tree_warm$event_id)
+
 # cold tree events
 cold_events <- c(
+  # new ones
+  '2021-12-27', # wind event
+  '2022-01-18', # wind event
+  '2022-02-04', # wind event
+  '2022-02-21', # wind event
+  # '2022-02-24', # wind event , tree increased due to vapour deposition likely
+  '2022-03-04',
+  '2022-03-16',
+  
+  # OG
   '2022-03-02', 
   '2022-03-09',
   '2022-03-20', 
@@ -130,7 +161,6 @@ cold_events <- c(
   '2023-01-28',
   '2023-02-24',
   '2023-02-26'
-  #'2023-04-12' could add back if filter to start later.. also removed jjst so have clean 20 events
 )
 obs_tree_cold <-
   readRDS(paste0(
@@ -139,6 +169,9 @@ obs_tree_cold <-
     '_kg_m2_post_cnpy_snow.rds'
   )) |> 
   filter(event_id %in% cold_events)
+
+all(cold_events %in% obs_tree_cold$event_id)
+
 
 # load tipping bucket data
 tb_data <-

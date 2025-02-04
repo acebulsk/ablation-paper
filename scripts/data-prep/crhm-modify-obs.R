@@ -46,7 +46,7 @@ ft_obs_irtc |>
   geom_line()
 plotly::ggplotly()
 
-ffr_qc_fill_out_irtc_tree <- left_join(ffr_qc_fill_out_irtc,
+ffr_qc_fill_out_irtc_tree <- left_join(ft_obs_irtc,
                                        combined_tree_events) |> # change this if want cold events too
   mutate(obs_snow_load = ifelse(is.na(obs_snow_load), 9999, obs_snow_load))
 

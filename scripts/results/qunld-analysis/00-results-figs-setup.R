@@ -3,6 +3,13 @@ options(ggplot2.discrete.colour= palette.colors(palette = "R4")[2:6])
 
 # functions ----
 
+source('../../../Documents/code/stats/lm-through-the-origin/example-r2-from-lm-through-the-origin.R')
+
+
+label_bin_fn <- function(bins){
+  (bins[-1] + bins[-length(bins)]) / 2
+}
+
 to_long <- function(from,
                     to,
                     class,
@@ -29,6 +36,7 @@ to_long <- function(from,
 # SETUP ----
 
 # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+load_suffix <- 'fsd_closed_0.88'
 
 int_fig_width <- 6
 int_fig_height <- 4
@@ -66,31 +74,26 @@ canopy_snow_events <-
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
          event_id = as.Date(from, tz = 'Etc/GMT+6')) 
 
-events_fltr <- canopy_snow_events |> 
-  filter(quality < 3) # these have all around bad ablation data
-
 events_fltr_long <-
-  purrr::pmap_dfr(events_fltr, to_long) |> 
-  select(-quality)
+  purrr::pmap_dfr(canopy_snow_events, to_long)
+
+met_binned <- readRDS('data/clean-data/met_binned_for_unloading_analysis.rds')
 
 q_unld_tree <-
-  readRDS('data/clean-data/ft_w_tree_data_del_15_min.rds') |> 
-  left_join(events_fltr_long |> select(datetime, weighed_tree_quality, notes), by = 'datetime') |> 
-  filter(weighed_tree_quality < 3)
+  readRDS( paste0(
+    'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
+    load_suffix,
+    '.rds'
+  )) |> 
+  select(datetime:tree_mm) |> 
+  left_join(events_fltr_long |> select(datetime, event_id, weighed_tree_quality, notes), by = 'datetime') |>
+  filter(weighed_tree_quality < 3) 
 
 q_unld_scl <- 
   readRDS('data/clean-data/ft_scl_data_del_15_min.rds') |> 
   inner_join(events_fltr_long |> select(datetime, event_id, bad_troughs), by = 'datetime') |> 
   # remove some of the unloading obs where we observed one of the instruments to be faulty
   mutate(value_flag = name == bad_troughs) |> # this is not a bug!
-  filter(!value_flag)
+  filter(!value_flag,
+         quality < 3)
 
-q_unld_scl_cml_event <- q_unld_scl |> 
-  group_by(event_id, name) |> 
-  mutate(cml_unld = cumsum(dU))
-
-q_unld_met_scl <- readRDS('data/clean-data/unloading_data_with_met_15min.rds')
-
-
-
-  

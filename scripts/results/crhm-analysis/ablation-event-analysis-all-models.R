@@ -27,7 +27,7 @@ prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_updt <- "rm_wind_unld_w_temp"
+run_tag_updt <- "new_event_set_add_subl_unld2"
 # run_tag <- "testing123"
 
 path <- list.files(
@@ -56,7 +56,7 @@ prj_roesch <- "ffr_closed_canopy_cc0.88_roesch2001"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_roesch <- "v3"
+run_tag_roesch <- "new_event_set"
 # run_tag <- "testing123"
 
 path <- list.files(
@@ -85,7 +85,7 @@ prj_andreadis <- "ffr_closed_canopy_cc0.88_andreadis2009"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_andreadis <- "v2"
+run_tag_andreadis <- "new_event_set"
 # run_tag <- "testing123"
 
 path <- list.files(
@@ -112,7 +112,7 @@ obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
 # Select model run with all unloading events weighed tree snow load assimilated
 prj_base <- "ffr_closed_canopy_cc0.88_crhm_baseline"
 
-run_tag_base <- "for_ablation_paper"
+run_tag_base <- "new_event_set"
 
 path <- list.files(
   paste0(
@@ -132,18 +132,26 @@ crhm_output_baseline <- CRHMr::readOutputFile(
 mod_tree <- crhm_output_baseline |> 
   select(datetime, simulated_baseline = Snow_load.1)
 
-obs_mod_tree <- left_join(obs_mod_tree, mod_tree)
+obs_mod_tree <- left_join(obs_mod_tree, mod_tree) |> 
+  left_join(mod_d_drip_smry_frac)  |>
+  mutate(event_type = case_when(
+    melt > 0.8 ~ 'melt',
+    sublimation > 0.8 ~ 'sublimation',
+    wind > 0.6 ~ 'wind',
+    TRUE ~ 'mixed'
+  ))
 
 # plot weighed tree obs vs. sim facet by event ----
-#TODO change to mark 00 at at least every midnight
-options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
+options(ggplot2.discrete.colour= c("#000000", "#DF536B", "#61D04F", "#2297E6", "#CD0BBC"))
+# "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+# "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
 obs_mod_tree |> 
-  pivot_longer(!c(datetime, event_id)) |> 
+  pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
   ggplot(aes(datetime, value, 
              colour = name, 
              linetype = name)) +  
   geom_line() +
-  facet_wrap(~event_id, scales = 'free') +
+  facet_wrap(event_type~event_id, scales = 'free') +
   ylab(expression("Canopy Snow Load (kg m"^-2*")")) +
   xlab(element_blank()) +
   labs(colour = 'Data Type', linetype = 'Data Type') +  # Same label for both
@@ -151,7 +159,7 @@ obs_mod_tree |>
   scale_x_datetime(date_labels = "%H") +
   scale_linetype_manual(values = c(
     observed = "solid",
-    simulated_updated = "dashed",
+    simulated_updated = "solid",
     simulated_roesch2001 = "dashed",
     simulated_andreadis2009 = "dashed",
     simulated_baseline = "dashed"
@@ -169,31 +177,7 @@ ggsave(
   device = png
 )
 
-# generate error table avg all events
-obs_mod_tree_err_tbl <- obs_mod_tree |> 
-  pivot_longer(starts_with('simulated')) |> 
-  group_by(name) |> 
-  mutate(diff = observed - value) |> 
-  # group_by(name) |> 
-  summarise(
-    `Mean Bias` = mean(diff, na.rm = T),
-    MAE = mean(abs(diff), na.rm = T),
-    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
-    # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = `RMS Error` / mean(observed, na.rm = T),
-    R = cor(observed, value),
-    `r^2` = R^2) |> 
-  mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
-
-write.csv(obs_mod_tree_err_tbl,
-          paste0(
-            'tbls/',
-            'obs_mod_canopy_snow_load_err_tbl_avg_',
-            fig_tbl_tag,
-            '.csv'
-          ))
-
-# obs vs mod weighed tree error table 
+# generate error table by event
 
 obs_mod_tree_err_tbl_events <- obs_mod_tree |> 
   pivot_longer(starts_with('simulated')) |> 
@@ -201,16 +185,16 @@ obs_mod_tree_err_tbl_events <- obs_mod_tree |>
   mutate(diff = observed - value) |> 
   # group_by(name) |> 
   summarise(
-    `Mean Bias` = mean(diff, na.rm = T),
+    MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
-    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T)),
-    # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = `RMS Error` / mean(observed, na.rm = T),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    NRMSE = RMSE / mean(observed, na.rm = T),
     R = cor(observed, value),
-    `r^2` = R^2) |> 
-  mutate(across(`Mean Bias`:`r^2`, round, digits = 3))
+    R2 = R^2) |> 
+  mutate(across(MB:R2, round, digits = 3))
 
-write.csv(obs_mod_tree_err_tbl_events,
+write.csv(obs_mod_tree_err_tbl,
           paste0(
             'tbls/',
             'obs_mod_canopy_snow_load_err_tbl_by_event_',
@@ -218,10 +202,43 @@ write.csv(obs_mod_tree_err_tbl_events,
             '.csv'
           ))
 
-saveRDS(obs_mod_tree_err_tbl_events,
+# obs vs mod weighed tree error table avg by event type
+
+obs_mod_tree_err_tbl_avg_type <- obs_mod_tree_err_tbl_events |> 
+  left_join(mod_d_drip_smry_frac)  |> 
+  mutate(event_type = case_when(
+    melt > 0.8 ~ 'melt',
+    sublimation > 0.8 ~ 'sublimation',
+    wind > 0.6 ~ 'wind',
+    TRUE ~ 'mixed'
+  )) |> 
+  group_by(name, event_type) |> summarise(across(MB:R2, mean)) 
+
+saveRDS(obs_mod_tree_err_tbl_avg_type,
         paste0(
           'tbls/',
-          'obs_mod_canopy_snow_load_err_tbl_by_event_',
+          'obs_mod_canopy_snow_load_err_tbl_avg_type',
+          fig_tbl_tag,
+          '.rds'
+        ))
+
+# obs vs mod weighed tree error table avg by model
+
+obs_mod_tree_err_tbl_avgs <- obs_mod_tree_err_tbl_events |> 
+  group_by(name) |> summarise(across(MB:R2, mean))
+
+write.csv(obs_mod_tree_err_tbl_avgs,
+          paste0(
+            'tbls/',
+            'obs_mod_canopy_snow_load_err_tbl_avg_',
+            fig_tbl_tag,
+            '.csv'
+          ))
+
+saveRDS(obs_mod_tree_err_tbl_avgs,
+        paste0(
+          'tbls/',
+          'obs_mod_canopy_snow_load_err_tbl_avg_',
           fig_tbl_tag,
           '.rds'
         ))

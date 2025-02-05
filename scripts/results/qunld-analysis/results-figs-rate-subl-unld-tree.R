@@ -40,14 +40,14 @@ crhm_output <- CRHMr::readOutputFile(
 min_sub <- 0
 max_sub <- round(
   max(crhm_output$Subl_Cpy.1*4, na.rm = T),3)
-sub_step <- 0.2
+sub_step <- 0.1
 
 sub_breaks <- seq(
-  .2,
+  0,
   max_sub+0.05,
   sub_step)
 
-sub_breaks <- c(0, 0.05, 0.1, 0.15, sub_breaks)
+# sub_breaks <- c(0, 0.05, 0.1, 0.15, sub_breaks)
 
 sub_labs_seq <- label_bin_fn(bins = sub_breaks)
 
@@ -93,65 +93,70 @@ crhm_output$temp_labs <- as.numeric(as.character(crhm_output$temp_labs))
 
 ## obs ----
 
-### all events snow in canopy ----
-# obs_tree <-
-#   readRDS(paste0(
-#     'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
-#     load_suffix,
-#     '.rds'
-#   )) |>  filter(name == 'weighed tree')
+# these ones differ from the cold ones below and may include some precip
+warm_events <- c(
+  '2022-04-21',
+  '2022-04-23',
+  '2022-06-14',
+  '2022-06-23',
+  '2022-06-24',
+  '2023-03-14',
+  '2023-03-25',
+  '2023-03-26',
+  '2023-03-28',
+  '2023-04-13',
+  '2023-04-17',
+  '2023-05-08',
+  '2023-06-15',
+  '2023-06-21'
+)
 
-#' # warm tree specific events
-#' warm_events <- c(
-#'   '2022-04-21',
-#'   '2022-04-23',
-#'   '2022-06-14',
-#'   '2022-06-24',
-#'   '2023-03-14',
-#'   '2023-03-25',
-#'   '2023-03-26',
-#'   '2023-03-28',
-#'   '2023-05-08',
-#'   '2023-06-15',
-#'   '2023-06-21'
-#' )
-#' 
-#' obs_tree_warm <-
-#'   readRDS(paste0(
-#'     'data/clean-data/warm_tree_events_zero_weighed_tree_',
-#'     load_suffix,
-#'     '_kg_m2_post_cnpy_snow.rds'
-#'   )) |> 
-#'   filter(event_id %in% warm_events)
-#' 
-#' # cold tree events
-#' cold_events <- c(
-#'   '2022-03-02', 
-#'   '2022-03-09',
-#'   '2022-03-20', 
-#'   '2022-03-24',  
-#'   '2022-03-29',  
-#'   '2022-12-01',
-#'   '2023-01-28',
-#'   '2023-02-24',
-#'   '2023-02-26'
-#'   #'2023-04-12' could add back if filter to start later.. also removed jjst so have clean 20 events
-#' )
-#' obs_tree_cold <-
-#'   readRDS(paste0(
-#'     'data/clean-data/all_tree_events_zero_weighed_tree_',
-#'     load_suffix,
-#'     '_kg_m2_post_cnpy_snow.rds'
-#'   )) |> 
-#'   filter(event_id %in% cold_events)
-#' 
-#' obs_tree <- rbind(obs_tree_cold  |> 
-#'                     select(datetime, event_id, tree_mm),
-#'                   obs_tree_warm |> 
-#'                     select(datetime, event_id, tree_mm)) 
+obs_tree_warm <-
+  readRDS(paste0(
+    'data/clean-data/warm_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
+  filter(event_id %in% warm_events)
 
-# stronger relationship using all the data
-obs_tree <- q_unld_tree
+all(warm_events %in% obs_tree_warm$event_id)
+
+# cold tree events
+cold_events <- c(
+  # new ones
+  #'2021-12-27', # wind event some precip, maybe blowing snow redist.
+  # '2022-01-18', # wind event too much precip during (maybe blowing snow redistribution?)
+  '2022-02-04', # wind event
+  #'2022-02-21', # wind event unloading not associated with wind or other here
+  # '2022-02-24', # wind event , tree increased due to vapour deposition likely
+  # '2022-03-04', # unloading due to branch bending from warming
+  # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
+  
+  # OG
+  '2022-03-02', 
+  '2022-03-09',
+  '2022-03-20', 
+  '2022-03-24',  
+  '2022-03-29',  
+  '2022-12-01',
+  '2023-01-28',
+  '2023-02-24',
+  '2023-02-26'
+)
+obs_tree_cold <-
+  readRDS(paste0(
+    'data/clean-data/all_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
+  filter(event_id %in% cold_events)
+
+all(cold_events %in% obs_tree_cold$event_id)
+
+obs_tree <- rbind(obs_tree_cold  |> 
+                    select(datetime, event_id, tree_mm),
+                  obs_tree_warm |> 
+                    select(datetime, event_id, tree_mm)) 
 
 # PLOT -----
 
@@ -216,41 +221,59 @@ subl_event_filter <- obs_mod |>
 obs_mod_fltr <- obs_mod |> 
   filter(canopy_snowmelt.1 == 0,
          est_q_unld_subl >= 0,
-         est_q_unld_subl < 1,
-         dL > 0.01,
+         est_q_unld_subl < 0.5,
+         Subl_Cpy.1 > 0,
+         # Subl_Cpy.1 < 0.175,
+         # dL > 0.01,
          tree_mm > 2,
          event_id %in% subl_event_filter$event_id,
-         hru_u.1 < 1,
-         hru_t.1 < 0
+         hru_u.1 < 1
+         # hru_t.1 < 0
   ) |> 
   # convert mm/interval to mm/hour
   mutate(est_q_unld_subl = est_q_unld_subl*4,
-         Subl_Cpy.1 = Subl_Cpy.1*4)  |> 
-  mutate(`Canopy Load (mm)` = case_when(
-    tree_mm < 4 ~ 'Light',
-    # tree_mm >= 5 & tree_mm <= 10 ~ 'Med',
-    is.na(tree_mm) ~ 'NA',
-    TRUE  ~ 'Heavy'
-  )) |> group_by(`Canopy Load (mm)`) |> 
-  mutate(avg_w_tree = mean(tree_mm))
+         Subl_Cpy.1 = Subl_Cpy.1*4) 
 
-q_unld_subl_lm <- lm(est_q_unld_subl ~ 0 + Subl_Cpy.1:hru_t.1, data = obs_mod_fltr)
+## model linear ---- 
+
+q_unld_subl_lm <- lm(est_q_unld_subl ~ 0 + Subl_Cpy.1, data = obs_mod_fltr)
+r2_adj_lm <- r_squared_no_intercept(q_unld_subl_lm)
 obs_mod_fltr$mod_q_unld_subl <- predict(q_unld_subl_lm)
 saveRDS(q_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
 # Extract the coefficient (slope) from the model
 slope <- coef(q_unld_subl_lm)[1]
 
+## model nls ---- 
+q_unld_subl_nls <-
+  nls(est_q_unld_subl ~ Subl_Cpy.1 * a * exp(b * Subl_Cpy.1),
+      data = obs_mod_fltr,
+      start = list(a = 5, b = 1)
+  )
+RSS.p <- sum(residuals(q_unld_subl_nls)^2)  # Residual sum of squares
+TSS <- sum((obs_mod_fltr$est_q_unld_subl - mean(obs_mod_fltr$est_q_unld_subl))^2)  # Total sum of squares
+r2_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
+saveRDS(q_unld_subl_nls, 'data/lm_q_drip_vs_q_unld_subl_bin.rds')
+new_data <- data.frame(
+  Subl_Cpy.1 = seq(
+    0,
+    max(obs_mod_fltr$Subl_Cpy.1),
+    length.out = 100
+  )
+)
+new_data$mod_q_unld_subl_nls <- predict(q_unld_subl_nls, newdata = new_data)
+
 # Create the plot
 ggplot(obs_mod_fltr, aes(x = Subl_Cpy.1, y = est_q_unld_subl)) +
   geom_point(aes(colour = hru_t.1), size = 2) +                      # Scatter plot of the data
-  # geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
-  #             linetype = "solid", size = 0.5) +
+  geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
+              linetype = "solid", size = 0.5) +
   labs(
     x = expression("Simulated Canopy Snow Sublimation Rate ("*kg ~ m^-2 ~ hr^-1*")"),
     # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
     y = expression("Sublimation Unloading Rate ("*kg ~ m^-2 ~ hr^-1*")")
   ) +
-  scale_color_viridis_c()
+  scale_color_viridis_c() +
+  geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls))
 
 ggsave(
   'figs/results/modelled_subl_unloading_w_obs.png',
@@ -262,7 +285,7 @@ ggsave(
 # bin model ----
 
 obs_mod_fltr_avg <- obs_mod_fltr |> 
-  group_by(Subl_Cpy.1 = canopy_sub_labs, avg_w_tree) |> 
+  group_by(Subl_Cpy.1 = canopy_sub_labs) |> 
   summarise(est_q_unld_subl_bin = mean(est_q_unld_subl, na.rm = T),
             q_unl_sd = sd(est_q_unld_subl, na.rm = T),
             sd_low = ifelse((est_q_unld_subl_bin - q_unl_sd)<0,0, est_q_unld_subl_bin - q_unl_sd),
@@ -280,23 +303,23 @@ saveRDS(q_unld_subl_lm_bin, 'data/lm_q_drip_vs_q_unld_subl_bin_lm.rds')
 slope <- coef(q_unld_subl_lm_bin)[1]
 
 ## bin model nls ---- 
-# q_unld_melt_nls_bin <-
-#   nls(est_q_unld_melt_bin ~ canopy_snowmelt.1 * a * exp(b * canopy_snowmelt.1),
-#       data = obs_mod_fltr_avg,
-#       start = list(a = 5, b = -1)
-#       )
-# RSS.p <- sum(residuals(q_unld_melt_nls_bin)^2)  # Residual sum of squares
-# TSS <- sum((obs_mod_fltr_avg$est_q_unld_melt_bin - mean(obs_mod_fltr_avg$est_q_unld_melt_bin))^2)  # Total sum of squares
-# r2_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
-# saveRDS(q_unld_melt_nls_bin, 'data/lm_q_drip_vs_q_unld_melt_bin_nls.rds')
-# new_data <- data.frame(
-#   canopy_snowmelt.1 = seq(
-#     0,
-#     max(obs_mod_fltr$canopy_snowmelt.1),
-#     length.out = 100
-#   )
-# )
-# new_data$mod_q_unld_melt_nls <- predict(q_unld_melt_nls_bin, newdata = new_data)
+q_unld_subl_nls_bin <-
+  nls(est_q_unld_subl_bin ~ Subl_Cpy.1 * a * exp(b * Subl_Cpy.1),
+      data = obs_mod_fltr_avg,
+      start = list(a = 5, b = -1)
+      )
+RSS.p <- sum(residuals(q_unld_subl_nls_bin)^2)  # Residual sum of squares
+TSS <- sum((obs_mod_fltr_avg$est_q_unld_subl_bin - mean(obs_mod_fltr_avg$est_q_unld_subl_bin))^2)  # Total sum of squares
+r2_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
+saveRDS(q_unld_subl_nls_bin, 'data/lm_q_drip_vs_q_unld_subl_bin_nls.rds')
+new_data <- data.frame(
+  Subl_Cpy.1 = seq(
+    0,
+    max(obs_mod_fltr$Subl_Cpy.1),
+    length.out = 100
+  )
+)
+new_data$mod_q_unld_subl_nls <- predict(q_unld_subl_nls_bin, newdata = new_data)
 
 ## bin model sigmoid ---- 
 # q_unld_melt_sig_bin <-
@@ -313,20 +336,20 @@ slope <- coef(q_unld_subl_lm_bin)[1]
 
 # Create the plot
 ggplot(obs_mod_fltr_avg) + 
-  geom_point(aes(Subl_Cpy.1, est_q_unld_subl_bin, colour = factor(avg_w_tree))) +
-  # geom_errorbar(aes(
-  #   x = Subl_Cpy.1, 
-  #   ymax = sd_hi,
-  #   ymin = sd_low), width = 0.02) +
+  geom_point(aes(Subl_Cpy.1, est_q_unld_subl_bin)) +
+  geom_errorbar(aes(
+    x = Subl_Cpy.1,
+    ymax = sd_hi,
+    ymin = sd_low), width = 0.02) +
   geom_point(
     data = obs_mod_fltr,
     aes(Subl_Cpy.1, est_q_unld_subl),
     alpha = 0.3,
     size = 1
   ) +                      # show the linear model
-  # geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
-  #             linetype = "solid", size = 0.5) +
-  # geom_line(data = new_data, aes(canopy_snowmelt.1, mod_q_unld_melt_nls)) +
+  geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
+              linetype = "solid", size = 0.5) +
+  geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls)) +
   # geom_line(data = new_data, aes(canopy_snowmelt.1, mod_q_unld_melt_sigmoid)) +
   labs(
     x = expression("Simulated Canopy Snowmelt Rate ("*kg ~ m^-2 ~ hr^-1*")"),
@@ -342,15 +365,15 @@ ggsave(
 )
 ## ERROR TABLE ----
 
-obs_mod_fltr$pred_q_unld_melt_lm <- predict(q_unld_melt_lm_bin, newdata = obs_mod_fltr)
-# obs_mod_fltr$pred_q_unld_melt_nls <- predict(q_unld_melt_nls_bin, newdata = obs_mod_fltr)
+obs_mod_fltr$pred_q_unld_subl_lm <- predict(q_unld_subl_lm_bin, newdata = obs_mod_fltr)
+obs_mod_fltr$pred_q_unld_subl_nls <- predict(q_unld_subl_nls_bin, newdata = obs_mod_fltr)
 # obs_mod_fltr$pred_q_unld_melt_sig <- predict(q_unld_melt_sig_bin, newdata = obs_mod_fltr)
 
 obs_mod_fltr_long <- pivot_longer(obs_mod_fltr, starts_with('pred'))
 
 ggplot(obs_mod_fltr_long) +
   geom_point(
-    aes(est_q_unld_melt, value),
+    aes(est_q_unld_subl, value),
     alpha = 0.1
   ) +
   geom_abline() + 
@@ -358,7 +381,7 @@ ggplot(obs_mod_fltr_long) +
 
 lm_error_metrics <-   
   obs_mod_fltr_long |> 
-  mutate(diff = est_q_unld_melt - value) |> 
+  mutate(diff = est_q_unld_subl - value) |> 
   group_by(name) |>
   summarise(
     # runtag = run_tag_updt,
@@ -366,14 +389,14 @@ lm_error_metrics <-
     MAE = mean(abs(diff), na.rm = T),
     RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
     # NRMSE = `RMS Error` / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = RMSE / mean(est_q_unld_melt, na.rm = T),
-    R = cor(est_q_unld_melt, value),
+    NRMSE = RMSE / mean(est_q_unld_subl, na.rm = T),
+    R = cor(est_q_unld_subl, value),
     R2_gof = R^2,
     R2_cd = 1 - sum(diff^2, na.rm = T) / sum((value - mean(value, na.rm = T))^2, na.rm = T)) |> 
   mutate(across(MB:R2_cd, round, digits = 3))
 
 saveRDS(lm_error_metrics,
-        'data/modelled_melt_unloading_error_table.rds')
+        'data/modelled_subl_unloading_error_table.rds')
 
 
 # Create observed vs predicted plot

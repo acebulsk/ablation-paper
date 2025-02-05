@@ -143,13 +143,13 @@ all(warm_events %in% obs_tree_warm$event_id)
 # cold tree events
 cold_events <- c(
   # new ones
-  '2021-12-27', # wind event
-  '2022-01-18', # wind event
+  #'2021-12-27', # wind event some precip, maybe blowing snow redist.
+  # '2022-01-18', # wind event too much precip during (maybe blowing snow redistribution?)
   '2022-02-04', # wind event
-  '2022-02-21', # wind event
+  #'2022-02-21', # wind event unloading not associated with wind or other here
   # '2022-02-24', # wind event , tree increased due to vapour deposition likely
-  '2022-03-04',
-  '2022-03-16',
+  # '2022-03-04', # unloading due to branch bending from warming
+  # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
   
   # OG
   '2022-03-02', 
@@ -191,3 +191,5 @@ tb_events_long <-
 tb_data_zeroed <- tb_data |> 
   left_join(tb_events_long) |> 
   group_by(event_id, name)
+
+mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')

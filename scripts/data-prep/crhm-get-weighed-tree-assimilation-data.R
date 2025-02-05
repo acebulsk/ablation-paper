@@ -33,12 +33,12 @@ warm_tree_events_df <-
 cold_events <- c(
   # new ones
   '2021-12-27', # wind event
-  '2022-01-18', # wind event
+  # '2022-01-18', # wind event
   '2022-02-04', # wind event
   '2022-02-21', # wind event
   # '2022-02-24', # wind event , tree increased due to vapour deposition likely
   '2022-03-04',
-  '2022-03-16',
+  # '2022-03-16',
   
   # OG
   '2022-03-02', 

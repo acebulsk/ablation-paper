@@ -14,6 +14,29 @@ to_long_tb <- function(unloading_start_date, end_date, event_id){
   return(out)
 }
 
+to_long <- function(from,
+                    to,
+                    class,
+                    quality,
+                    bad_troughs,
+                    weighed_tree_quality,
+                    is_melt_event,
+                    notes,
+                    event_id) {
+  datetime <- seq(from, to, 900)
+  
+  out <- data.frame(datetime,
+                    class,
+                    quality,
+                    bad_troughs,
+                    weighed_tree_quality,
+                    is_melt_event,
+                    notes,
+                    event_id)
+  
+  return(out)
+}
+
 load_suffix <- 'fsd_closed_0.88'
 # load_suffix <- 'fsd_cal_for_each_trough' # use this one if needing to compare the weighed tree to the troughs, mainly just used for the wind unloading analysis
 

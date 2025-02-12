@@ -91,7 +91,7 @@ q_unld_tree <-
 
 q_unld_scl <- 
   readRDS('data/clean-data/ft_scl_data_del_15_min.rds') |> 
-  inner_join(events_fltr_long |> select(datetime, event_id, bad_troughs), by = 'datetime') |> 
+  inner_join(events_fltr_long |> select(datetime, event_id, quality, bad_troughs), by = 'datetime') |> 
   # remove some of the unloading obs where we observed one of the instruments to be faulty
   mutate(value_flag = name == bad_troughs) |> # this is not a bug!
   filter(!value_flag,

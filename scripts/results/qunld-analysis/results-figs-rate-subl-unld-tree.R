@@ -272,8 +272,8 @@ ggplot(obs_mod_fltr, aes(x = Subl_Cpy.1, y = est_q_unld_subl)) +
     # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
     y = expression("Sublimation Unloading Rate ("*kg ~ m^-2 ~ hr^-1*")")
   ) +
-  scale_color_viridis_c() +
-  geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls))
+  scale_color_viridis_c() #+
+ # geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls))
 
 ggsave(
   'figs/results/modelled_subl_unloading_w_obs.png',
@@ -349,10 +349,10 @@ ggplot(obs_mod_fltr_avg) +
   ) +                      # show the linear model
   geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
               linetype = "solid", size = 0.5) +
-  geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls)) +
+  # geom_line(data = new_data, aes(Subl_Cpy.1, mod_q_unld_subl_nls)) +
   # geom_line(data = new_data, aes(canopy_snowmelt.1, mod_q_unld_melt_sigmoid)) +
   labs(
-    x = expression("Simulated Canopy Snowmelt Rate ("*kg ~ m^-2 ~ hr^-1*")"),
+    x = expression("Simulated Canopy Snow Sublimation Rate ("*kg ~ m^-2 ~ hr^-1*")"),
     # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
     y = expression("Sublimation Unloading Rate ("*kg ~ m^-2 ~ hr^-1*")")
   )

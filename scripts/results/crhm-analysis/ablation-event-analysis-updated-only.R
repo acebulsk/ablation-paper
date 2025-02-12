@@ -29,7 +29,9 @@ prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 # run_tag_updt <- "air_temp_as_canopy_snow_temp"
 # run_tag_updt <- "icebulb_temp_as_canopy_snow_temp"
 # run_tag_updt <- "obs_irtc_trunk_temp_as_canopy_snow_temp"
-run_tag_updt <- "new_event_set_add_subl_unld2"
+run_tag_updt <- "new_event_set_output.txt"
+run_tag_updt <- "test_LW_in_eq_vf_4pir"
+
 
 path <- list.files(
   paste0(
@@ -45,6 +47,8 @@ stopifnot(length(path) == 1)
 crhm_output_updated <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
+
+crhm_output_updated$Subl_Cpy.1 |> sum()
 
 mod_tree <- crhm_output_updated |> 
   select(datetime, simulated_updated = Snow_load.1)
@@ -241,7 +245,7 @@ melt_events <- mod_d_drip_smry_frac |>
   pull(event_id)
 
 subl_events <- mod_d_drip_smry_frac |> 
-  filter(sublimation > 0.8) |> 
+  filter(sublimation > 0.5) |> 
   pull(event_id)
 
 wind_events <- mod_d_drip_smry_frac |> 
@@ -274,7 +278,7 @@ write.csv(obs_mod_tree_err_tbl_events_ablt_frac,
           paste0(
             'tbls/',
             'obs_mod_canopy_snow_load_err_tbl_event_frac_ablation',
-            run_tag,
+            run_tag_updt,
             '.csv'
           ), row.names = F)
 
@@ -286,7 +290,7 @@ write.csv(obs_mod_tree_err_tbl_ablt_frac_avg,
           paste0(
             'tbls/',
             'obs_mod_canopy_snow_load_err_tbl_avg_frac_ablation',
-            run_tag,
+            run_tag_updt,
             '.csv'
           ), row.names = F)
 
@@ -414,13 +418,14 @@ height = 6,
 device = png
 )
 
-# Plot ablation processes separately
+# Plot ablation processes separately ----
 mod_cml_dU <- mod_d_drip |> 
   inner_join(select_events_long) |> 
   pivot_longer(c(snowmelt,
-                 # unload_melt,
-                 # unload_wind,
-                 unloading,
+                 unload_melt,
+                 unload_wind,
+                 unload_subl,
+                 # unloading,
                  sublimation),
                values_to = 'dU') |> 
   group_by(event_id, name) |> 
@@ -439,13 +444,14 @@ mod_cml_dU |>
   ggplot(aes(datetime, value, 
              colour = name)) +
   geom_line() +
-  facet_wrap(event_type~event_id, scales = 'free') +
-  scale_colour_manual(values = c("sublimation" = "#E69F00",
-                                 "unloading" = "#009E73",
-                                 "snowmelt" = "#56B4E9"),
-                      labels = c("sublimation" = "Sublimation",
-                                 "unloading" = "Unloading",
-                                 "snowmelt" = "Snowmelt")) +
+  facet_wrap(~event_id, scales = 'free') +
+  # facet_wrap(event_type~event_id, scales = 'free') +
+  # scale_colour_manual(values = c("sublimation" = "#E69F00",
+  #                                "unloading" = "#009E73",
+  #                                "snowmelt" = "#56B4E9"),
+  #                     labels = c("sublimation" = "Sublimation",
+  #                                "unloading" = "Unloading",
+  #                                "snowmelt" = "Snowmelt")) +
   labs(colour = "Process:") +
   ylab(expression("Canopy Snow Ablation (kg m"^-2*")")) +
   xlab(element_blank()) +

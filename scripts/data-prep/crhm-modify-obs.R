@@ -59,8 +59,8 @@ CRHMr::writeObsFile(ft_obs_irtc_tree,
                     '../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data.obs',
                     comment = 'This file consists of air temp, rh, and wind speed from the Waterloo Forest Tower (aka Fortress Forest Ride) see the R proj met-data-processing for qaqc and gap fill procedures. The radiation data is from Fortress Ridge and has been gap filled with Fortress Ridge South.')
 
-obs_event <- ft_obs_irtc_tree |> filter(datetime >= as.POSIXct('2023-05-08 00:15:00', tz = 'Etc/GMT+6'),
-                                       datetime <= as.POSIXct('2023-05-10 00:00:00', tz = 'Etc/GMT+6'))
+obs_event <- ft_obs_irtc_tree |> filter(datetime >= as.POSIXct('2023-02-20 00:15:00', tz = 'Etc/GMT+6'),
+                                       datetime <= as.POSIXct('2023-02-23 00:00:00', tz = 'Etc/GMT+6'))
 
 CRHMr::writeObsFile(obs_event,
                     '../../analysis/crhm-analysis/obs/ffr_crhm_modelling_obs_w_asm_data_fltr_event.obs',

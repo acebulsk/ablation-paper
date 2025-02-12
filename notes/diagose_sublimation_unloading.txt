@@ -1,0 +1,11 @@
+worse after adding sublimation unloading
+'2022-03-20', model over estimates sublimation at the begining before sun rises RH ~ 80%. -8 to -5 deg. C.
+'2022-03-24', model over estimates sublimation at night once Qsi shuts off but RH remains low at 40-70%. -7 to -5 deg. C.
+'2023-03-14', model over estimates sublimation at night when RH is 50-80%, maybe slight over estimate of wind induced unloading too. temp is -10 to -5. 
+'2023-04-13' # model departs from obs due to over estimating sublimation rate at the end of the event, RH is <60% after 3 pm but obs tree stops sublimating, maybe bad RH vals, or tree was stuck
+
+better
+'2023-03-25', # daytime period, sublimation rate is on track, canopy snow observed melting in timelapse but is not simulated as t < 0
+2023-03-26', # model works well for daytime period, sublimation based unloading makes up for lack of snowmelt as t < 0, wind induced unloading underestimates in evening when sublimation shuts off as RH == 100
+'2023-03-28',  # daytime period, sublimation rate is on track, canopy snow observed melting in timelapse but is not simulated as t < 0
+'2023-04-17'  # daytime period, under estimates canopy snow unloading sublimation rate is on track, no canopy snow melt observed in timelapse imagery possiibly due to evaporative cooling

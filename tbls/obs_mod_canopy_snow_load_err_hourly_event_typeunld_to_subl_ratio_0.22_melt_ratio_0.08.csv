@@ -1,0 +1,17 @@
+"","name","event_type","MB","MAE","RMSE","NRMSE","R","R2"
+"1","simulated_updated","melt",-0.062,0.571,0.904,0.786,0.812,0.659
+"2","simulated_roesch2001","melt",0.117,0.663,1,0.87,0.71,0.504
+"3","simulated_baseline","melt",0.212,0.67,1.102,0.959,0.627,0.393
+"4","simulated_andreadis2009","melt",0.252,1.01,1.405,1.222,0.234,0.055
+"5","simulated_updated","mixed",0.019,0.203,0.357,1.181,0.636,0.404
+"6","simulated_roesch2001","mixed",0.012,0.231,0.384,1.27,0.54,0.292
+"7","simulated_andreadis2009","mixed",0.079,0.202,0.402,1.33,0.468,0.219
+"8","simulated_baseline","mixed",-0.005,0.227,0.462,1.529,0.445,0.198
+"9","simulated_updated","sublimation",-0.019,0.096,0.14,0.666,0.806,0.65
+"10","simulated_roesch2001","sublimation",-0.012,0.105,0.142,0.678,0.782,0.612
+"11","simulated_andreadis2009","sublimation",0.002,0.11,0.174,0.827,0.611,0.373
+"12","simulated_baseline","sublimation",-0.008,0.12,0.216,1.03,0.61,0.372
+"13","simulated_roesch2001","wind",0.141,0.537,1.072,2.01,0.317,0.1
+"14","simulated_updated","wind",0.117,0.533,1.079,2.022,0.292,0.085
+"15","simulated_baseline","wind",0.314,0.542,1.224,2.295,-0.232,0.054
+"16","simulated_andreadis2009","wind",0.338,0.55,1.24,2.324,-0.236,0.056

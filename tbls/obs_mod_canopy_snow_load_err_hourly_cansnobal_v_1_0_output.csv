@@ -1,0 +1,13 @@
+"","name","event_type","MB","MAE","RMSE","NRMSE","R","R2"
+"1","simulated_baseline","melt",0.212,0.67,1.102,0.959,0.627,0.393
+"2","simulated_baseline","mixed",-0.005,0.227,0.462,1.529,0.445,0.198
+"3","simulated_baseline","sublimation",-0.008,0.12,0.216,1.03,0.61,0.372
+"4","simulated_baseline","wind",0.314,0.542,1.224,2.295,-0.232,0.054
+"5","simulated_roesch2001","melt",0.117,0.663,1,0.87,0.71,0.504
+"6","simulated_roesch2001","mixed",0.012,0.231,0.384,1.27,0.54,0.292
+"7","simulated_roesch2001","sublimation",-0.012,0.105,0.142,0.678,0.782,0.612
+"8","simulated_roesch2001","wind",0.141,0.537,1.072,2.01,0.317,0.1
+"9","simulated_updated","melt",-0.054,0.591,0.816,0.71,0.862,0.744
+"10","simulated_updated","mixed",0.064,0.21,0.403,1.333,0.484,0.234
+"11","simulated_updated","sublimation",-0.005,0.125,0.185,0.88,0.539,0.291
+"12","simulated_updated","wind",0.165,0.535,1.114,2.089,0.197,0.039

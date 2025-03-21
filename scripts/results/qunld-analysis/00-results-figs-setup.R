@@ -97,3 +97,7 @@ q_unld_scl <-
   filter(!value_flag,
          quality < 3)
 
+mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
+
+# need cal value to get weight of tree in kg for instrument error check
+tree_cal_val_88 <- readRDS('./../../analysis/interception/data/loadcell/FFR_tree_cal_value_pluvio_fsd_closed.rds')

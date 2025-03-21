@@ -20,17 +20,15 @@ name_dict <- data.frame(
                'mixed',
                'sparse')
 )
-scl_df_long <- lys_df |> 
-  filter(name != 'tree_mm',
-         tree_cal_trough_name == 'closed') |> # not actually selecting by trough but just reducing repeats
-  select(-tree_cal_trough_name, -tree_cal_cc) |> 
+scl_df_long <- q_unld_met_scl |> 
+  select(-tree_cal_cc) |> 
   inner_join(canopy_snow_long |> select(datetime, event_id)) |>
   # inner_join(canopy_snow_long_pre_post |> select(datetime, event_id)) |> 
   group_by(event_id, name) |> 
   mutate(value = value - min(value),) |> 
   left_join(name_dict) |> 
   mutate(name = 'scl') |> 
-  select(datetime, name, tree_cal_trough_name = new_name, value, event_id)
+  select(datetime, name, tree_cal_trough_name = name, value, event_id)
 
 weighed_tree_zeroed_fltr <- weighed_tree_zeroed |> 
   mutate(name = 'w_tree') |>

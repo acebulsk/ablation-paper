@@ -2,7 +2,7 @@
 ## Load Canopy Snow Periods ---- 
 
 # load_suffix <- 'fsd_closed_0.88'
-load_suffix <- 'fsd_cal_for_each_trough'
+load_suffix <- 'fsd_cal_for_each_trough_vza_15'
 
 scl_names <- c('mixed', 'sparse', 'closed')
 good_loads <- c('mixed', 'sparse', 'closed', 'tree_mm')

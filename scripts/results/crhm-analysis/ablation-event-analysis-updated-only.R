@@ -4,7 +4,7 @@
 library(tidyverse)
 
 base_path <- 'figs/crhm-analysis/ablation-events/'
-fig_tbl_tag <- 'updated_model_only_add_new_events'
+fig_tbl_tag <- 'cansnobal_init_testing'
 
 # LOAD DATA ----
 
@@ -22,7 +22,9 @@ select_events_long <- obs_tree |> select(datetime, event_id)
 
 ### UPDATED ABLATION MODEL WITH PSP ----
 # Select model run with all unloading events weighed tree snow load assimilated
-prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
+# prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
+prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
+
 
 # specify certain model run
 # run_tag_updt <- "psp_temp_as_canopy_snow_temp"
@@ -31,14 +33,14 @@ prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 # run_tag_updt <- "obs_irtc_trunk_temp_as_canopy_snow_temp"
 run_tag_updt <- "new_event_set_output.txt"
 run_tag_updt <- "test_LW_in_eq_vf_4pir"
-
+run_tag_updt <- "unld_to_subl_ratio_0.22_fix"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_updt
+    "crhm/output/"
   ),
   pattern = run_tag_updt,
+  recursive = T,
   full.names = T
 )
 
@@ -46,12 +48,23 @@ stopifnot(length(path) == 1)
 
 crhm_output_updated <- CRHMr::readOutputFile(
   path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
+  timezone = 'Etc/GMT+6')# |> filter(datetime %in% obs_tree$datetime)
 
-crhm_output_updated$Subl_Cpy.1 |> sum()
+# ggplot(crhm_output_updated |> pivot_longer(c(Snow_load.1,snow_h2o_veg.1)), aes(datetime, value, colour = name)) +
+#   geom_line()
+# 
+# plotly::ggplotly()
+# 
+# ggplot(crhm_output_updated |>
+#          mutate(delsub_veg_int.1=-delsub_veg_int.1) |> pivot_longer(c(Subl_Cpy.1,delsub_veg_int.1)), aes(datetime, value, colour = name)) +
+#   geom_line()
+# 
+# plotly::ggplotly()
+# 
+# crhm_output_updated$Subl_Cpy.1 |> sum()
 
 mod_tree <- crhm_output_updated |> 
-  select(datetime, simulated_updated = Snow_load.1)
+  select(datetime, ellis2010 = Snow_load.1, simulated_new = m_s_veg.1)
 
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 
@@ -237,8 +250,6 @@ mod_d_drip_smry_frac <- mod_d_drip |>
             sublimation = (sublimation+unload_subl)/total_ablation) |> 
   mutate(across(c(melt, wind, sublimation), round, 2)) |> 
   select(event_id, melt, wind, sublimation)
-
-saveRDS(mod_d_drip_smry_frac, 'data/ablation_event_fraction_ablation_processes.rds')
 
 melt_events <- mod_d_drip_smry_frac |> 
   filter(melt > 0.8) |> 

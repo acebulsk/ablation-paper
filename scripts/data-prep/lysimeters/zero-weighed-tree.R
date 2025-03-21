@@ -1,4 +1,11 @@
-# Script to zero weighed tree at start of specified events
+# Script to zero weighed tree at start of specified events 
+
+# Ran this twice as we
+# need one for the simulated closed canopy of 0.88 and again for the canopies
+# that match the SCLs since we need the weighed tree snow load above the SCLs to
+# match their corresponding canopy closures. Used a zenith angle of 15 deg for
+# the SCL canopy coverage calc and then resampled the FSD snow surveys to match
+# this canopy closure which were used to scale the weighed tree.
 
 # setup ----
 source('scripts/data-prep/lysimeters/01_define_functions.R')
@@ -11,7 +18,7 @@ options(scipen = 999)
 quality_th <- 3 
 
 load_suffix <- 'fsd_closed_0.88'
-# load_suffix <- 'fsd_cal_for_each_trough'
+load_suffix <- 'fsd_cal_for_each_trough_vza_15'
 
 to_long_short <- function(from, to, class, quality, notes, event_id){
   datetime <- seq(from, to, 900)
@@ -55,7 +62,6 @@ for(row in 1:nrow(canopy_snow_events)){
 # overwrite = F,
 # copy.date = T)
 weighed_tree_df <-
-  # readRDS('../interception/data/loadcell/treefort_load_main_cal_plv_fsd_mm.rds') |>
   readRDS(
     paste0('data/raw-data/treefort_weighed_tree_cal_kg_m2_plv_',
            load_suffix,

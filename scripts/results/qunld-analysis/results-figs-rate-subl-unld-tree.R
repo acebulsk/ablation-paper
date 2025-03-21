@@ -1,9 +1,12 @@
 # This script analyzes the relationship between observed weighed tree ablation
-# due to mass unloading of snow as it melts with simulated canopy snowmelt.
+# due to mass unloading of snow as itsublimates.
 # Canopy snow unloading is determined as residual ablation after removing
 # q_subl^veg, q_drip, q_unld^wind
 
-# NOTE: investigated this and could not find relationship
+# NOTE: looks like a relationship for binned unloading to subl ratio across bins
+# for canopy snow load, however this ended up over estimating the unloading
+# rate. for and example look at event 2022-03-24 which has almost no unloading
+# with significant sublimation.
 
 library(tidyverse)
 
@@ -14,14 +17,15 @@ load_suffix <- 'fsd_closed_0.88'
 ## model ---- 
 
 # Select model run with all unloading events weighed tree snow load assimilated
-prj <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
+prj <- "ffr_closed_canopy_cc0.88_cansnobal"
 
 # specify certain model run
-run_tag <- "updated_q_unld_wind_pars"
+run_tag <- "cansnobal_v_1_0_output"
+run_tag <- "fix_ra_bug_no_unld_subl2"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
+    "crhm/output/",
     prj
   ),
   pattern = run_tag,
@@ -31,8 +35,9 @@ path <- list.files(
 crhm_output <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> 
-  select(datetime, hru_t.1, hru_u.1, hru_p.1,
-         Subl_Cpy.1:SUnloadWind.1)
+  select(datetime, hru_t.1, m_s_veg.1, hru_u.1, hru_p.1,
+         delsub_veg_int.1:delunld_subl_int.1) |> 
+  mutate(delsub_veg_int.1 = -delsub_veg_int.1)
 
 ### bin sublimation rate (s-1) ----
 
@@ -93,6 +98,7 @@ crhm_output$temp_labs <- as.numeric(as.character(crhm_output$temp_labs))
 
 ## obs ----
 
+# warm tree specific events
 # these ones differ from the cold ones below and may include some precip
 warm_events <- c(
   '2022-04-21',
@@ -151,12 +157,36 @@ obs_tree_cold <-
   )) |> 
   filter(event_id %in% cold_events)
 
-all(cold_events %in% obs_tree_cold$event_id)
-
 obs_tree <- rbind(obs_tree_cold  |> 
                     select(datetime, event_id, tree_mm),
                   obs_tree_warm |> 
                     select(datetime, event_id, tree_mm)) 
+
+## bin weighed tree ----
+
+# note zeros are not included in binning, to add set inlcude.lowest = T
+min_tree <- 0
+max_tree <- round(
+  max(obs_tree$tree_mm, na.rm = T),0)
+tree_step <- 2.5
+
+tree_breaks <- seq(
+  min_tree,
+  max_tree+2,
+  tree_step)
+
+tree_labs_seq <- label_bin_fn(bins = tree_breaks)
+
+stopifnot(tail(tree_breaks, 1) > max(obs_tree$tree_mm, na.rm = T))
+stopifnot(length(tree_labs_seq) + 1 == length(tree_breaks))
+
+obs_tree$tree_binned <- cut(obs_tree[,'tree_mm', drop = TRUE], tree_breaks)
+
+obs_tree$tree_labs <- cut(obs_tree[,'tree_mm', drop = TRUE], 
+                          tree_breaks, 
+                          labels = tree_labs_seq)
+
+obs_tree$tree_labs <- as.numeric(as.character(obs_tree$tree_labs))
 
 # PLOT -----
 
@@ -169,74 +199,93 @@ w_tree_q_unld_15 <- obs_tree |>
   ungroup() |>
   filter(is.na(q_unl) == F,
          dL > 0) |> 
-  select(datetime, event_id, tree_mm, dL)
+  select(datetime, event_id, tree_mm, tree_binned, tree_labs, dL)
 
 obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |> 
-  mutate(est_q_unld_subl = dL - Subl_Cpy.1 - SUnloadWind.1 - canopy_snowmelt.1) 
+  mutate(est_q_unld_subl = dL - delsub_veg_int.1 - delunld_int.1 - delmelt_veg_int.1) 
 
 subl_event_filter <- obs_mod |> 
   group_by(event_id) |> 
-  summarise(subl = sum(Subl_Cpy.1),
-            wind = sum(SUnloadWind.1),
-            melt = sum(canopy_snowmelt.1),
-            total = subl+wind+melt,
+  summarise(subl = sum(delsub_veg_int.1),
+            wind = sum(delunld_wind_int.1),
+            melt = sum(delmelt_veg_int.1),
+            melt_unld = sum(delunld_melt_int.1),
+            total = subl+wind+melt+melt_unld,
             frac_subl = subl/total,
             frac_wind = wind/total,
-            frac_melt = melt/total) |> 
-  filter(frac_subl > .6)
-
-# obs_mod |> pivot_longer(c(dL, tree_mm, Subl_Cpy.1, SUnloadWind.1, canopy_snowmelt.1)) |> 
-#   filter(event_id %in% subl_event_filter$event_id) |> 
-#   ggplot(aes(datetime, value)) +
-#   geom_line()+
-#   facet_grid(rows = vars(name), cols = vars(event_id), scales = 'free')
-# plotly::ggplotly()
-
-
-# to hourly
-# obs_mod <- obs_mod |> 
-#   mutate(
-#     datetime_hour = datetime - (15*60), # shift so datetime corresponds to start of measurement interval, this is to avoid measurements with the 00:00 timestamp which correspond to the average from 23:45 to 00:00 to be assigned incorrectly to the next day.
-#     datetime_hour = format(datetime_hour, '%Y-%m-%d %H:00:00'),
-#     datetime_hour = as.POSIXct(datetime_hour, tz = 'Etc/GMT+6'),
-#     datetime_hour = datetime_hour + 60*60 
-#     # datetime = lubridate::ceiling_date(datetime, unit = 'hour') # checked and this is the same as above
-#   ) |> 
-#   group_by(datetime_hour) |> 
-#   mutate(n = n()) |> 
-#   filter(n == 4) |> 
-#   summarise(
-#     tree_mm = nth(tree_mm, which.max(datetime)), # Get tree_mm with the largest datetime    t = mean(t),
-#     dL = sum(dL),
-#     hru_u.1 = mean(hru_u.1),
-#     Subl_Cpy.1 = sum(Subl_Cpy.1),
-#     SUnload.1 = sum(SUnload.1),
-#     canopy_snowmelt.1 = sum(canopy_snowmelt.1),
-#     SUnloadMelt.1 = sum(SUnloadMelt.1),
-#     SUnloadWind.1 = sum(SUnloadWind.1)
-#     ) |> 
-#   as.data.frame() |> 
-#   mutate(est_q_unld_subl = dL - Subl_Cpy.1 - SUnloadWind.1 - canopy_snowmelt.1) 
+            frac_melt = (melt+melt_unld)/total) |> 
+  filter(frac_subl > .63)
 
 obs_mod_fltr <- obs_mod |> 
-  filter(canopy_snowmelt.1 == 0,
+  filter(delmelt_veg_int.1 == 0,
          est_q_unld_subl >= 0,
-         est_q_unld_subl < 0.5,
-         Subl_Cpy.1 > 0,
+         # est_q_unld_subl < 1,
+         delsub_veg_int.1 > 0,
          # Subl_Cpy.1 < 0.175,
          # dL > 0.01,
          tree_mm > 2,
-         event_id %in% subl_event_filter$event_id,
-         hru_u.1 < 1
+         event_id %in% subl_event_filter$event_id#,
+         # hru_u.1 < 1
          # hru_t.1 < 0
   ) |> 
   # convert mm/interval to mm/hour
   mutate(est_q_unld_subl = est_q_unld_subl*4,
-         Subl_Cpy.1 = Subl_Cpy.1*4) 
+         delsub_veg_int.1 = delsub_veg_int.1*4,
+         unld_subl_ratio = est_q_unld_subl/delsub_veg_int.1) |> 
+  filter(unld_subl_ratio < 10)
+
+obs_mod_fltr_event <- obs_mod_fltr |>
+  group_by(event_id, tree_labs) |>
+  summarise(subl = sum(delsub_veg_int.1),
+            unld = sum(est_q_unld_subl),
+            unld_subl_ratio = unld/subl,
+            tree_mm = mean(tree_mm))
+
+ggplot(obs_mod_fltr_event,
+       aes(tree_labs, unld_subl_ratio, colour = event_id)) + geom_point()
+
+# Binned analysis ---- 
+
+obs_mod_fltr_binned <- obs_mod_fltr |>
+  group_by(tree_labs) |>
+  summarise(subl = sum(delsub_veg_int.1),
+            unld = sum(est_q_unld_subl),
+            unld_subl_ratio = unld/subl)
+
+bin_unld_subl_lm <- lm(unld_subl_ratio ~ 0 + tree_labs, data = obs_mod_fltr_binned)
+saveRDS(bin_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
+# Extract the coefficient (slope) from the model
+slope <- coef(bin_unld_subl_lm)[1]
+r2_adj_lm <- r_squared_no_intercept(bin_unld_subl_lm)
+r2_adj_lm
+
+ggplot(obs_mod_fltr_binned, aes(tree_labs, unld/subl)) + 
+  geom_point() +
+  annotate(
+    'label',
+    x = 1,
+    y = 4,
+    label = paste("R² =", round(r2_adj_lm, 2))
+  ) +
+  geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
+              linetype = "solid", size = 0.5) +
+  labs(
+    x = "Canopy Snow Load (mm)",
+    y = "Unloading to Sublimation Ratio (-)"
+  ) +
+  lims(y = c(0, NA),
+       x = c(0, NA))
+
+ggsave(
+  'figs/results/modelled_subl_unloading_ratio_vs_snow_load_bin.png',
+  width = 5,
+  height = 4,
+  device = png
+)
 
 ## model linear ---- 
 
-q_unld_subl_lm <- lm(est_q_unld_subl ~ 0 + Subl_Cpy.1, data = obs_mod_fltr)
+q_unld_subl_lm <- lm(est_q_unld_subl ~ 0 + delsub_veg_int.1, data = obs_mod_fltr)
 r2_adj_lm <- r_squared_no_intercept(q_unld_subl_lm)
 obs_mod_fltr$mod_q_unld_subl <- predict(q_unld_subl_lm)
 saveRDS(q_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
@@ -245,7 +294,7 @@ slope <- coef(q_unld_subl_lm)[1]
 
 ## model nls ---- 
 q_unld_subl_nls <-
-  nls(est_q_unld_subl ~ Subl_Cpy.1 * a * exp(b * Subl_Cpy.1),
+  nls(est_q_unld_subl ~ delsub_veg_int.1 * a * exp(b * delsub_veg_int.1),
       data = obs_mod_fltr,
       start = list(a = 5, b = 1)
   )
@@ -263,7 +312,7 @@ new_data <- data.frame(
 new_data$mod_q_unld_subl_nls <- predict(q_unld_subl_nls, newdata = new_data)
 
 # Create the plot
-ggplot(obs_mod_fltr, aes(x = Subl_Cpy.1, y = est_q_unld_subl)) +
+ggplot(obs_mod_fltr, aes(x = delsub_veg_int.1, y = est_q_unld_subl)) +
   geom_point(aes(colour = hru_t.1), size = 2) +                      # Scatter plot of the data
   geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
               linetype = "solid", size = 0.5) +
@@ -281,6 +330,15 @@ ggsave(
   height = 4,
   device = png
 )
+
+ggplot(obs_mod_fltr, aes(x = tree_mm, y = est_q_unld_subl/delsub_veg_int.1)) +
+  geom_point(aes(colour = hru_u.1), size = 2) +                      # Scatter plot of the data
+  labs(
+    x = "Canopy Snow Load (mm)",
+    # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
+    y = "Unloading to Sublimation Ratio (-)"
+  ) +
+  scale_color_viridis_c()
 
 # bin model ----
 
@@ -392,7 +450,7 @@ lm_error_metrics <-
     NRMSE = RMSE / mean(est_q_unld_subl, na.rm = T),
     R = cor(est_q_unld_subl, value),
     R2_gof = R^2,
-    R2_cd = 1 - sum(diff^2, na.rm = T) / sum((value - mean(value, na.rm = T))^2, na.rm = T)) |> 
+    R2_cd = 1 - sum(diff^2, na.rm = T) / sum((est_q_unld_subl - mean(est_q_unld_subl, na.rm = T))^2, na.rm = T)) |>
   mutate(across(MB:R2_cd, round, digits = 3))
 
 saveRDS(lm_error_metrics,

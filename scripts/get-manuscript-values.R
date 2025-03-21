@@ -14,7 +14,6 @@ mod_coef_duration <- readRDS('data/model_coef_duration_unld_per_second.rds')
 # q_unld_melt_ratio <- coef(readRDS('data/lm_q_drip_vs_q_unld_melt.rds'))[[1]] |> round(2)
 q_unld_melt_ratio <- coef(readRDS('data/lm_q_drip_vs_q_unld_melt_bin_lm.rds'))[[1]] |> round(2)
 
-
 event_met <- readRDS('data/ablation_event_met_summary.rds') |> 
   select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 
   mutate(across(t:Qsi, round, 2))
@@ -25,3 +24,8 @@ obs_mod_w_tree_err_tbl <- readRDS("tbls/crhm-snow-load-vs-wtree-errortbl_by_even
          `RMS Error`, 
          `r^2`)
 event_ablation_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
+
+event_met_abl_frac <- left_join(event_met, event_ablation_frac)
+
+obs_mod_w_tree_err_tbl_typed <- read.csv('tbls/obs_mod_canopy_snow_load_err_hourly_event_type0.2_melt_ratio_0.1.csv')
+

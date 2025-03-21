@@ -1,5 +1,7 @@
 # script to generate model of wind induced unloading
 
+min_snow_bin <- 4
+
 ## COMPUTE AVERAGES OVER BINS ---- 
 
 met_unld_all_winds_cold <- 
@@ -8,12 +10,11 @@ met_unld_all_winds_cold <-
   # q_unld_scl has been filtered to remove troughs for erroneous periods
   left_join(q_unld_scl, met_binned, by = c('datetime', 'name')) |>
   filter(
-    name %in% scl_names,
+    # name %in% scl_names,
     q_unl < 7,
-    q_unl > min_qunld,
+    q_unl > 0,
     t < -6,
     wind_labs < 5, # obs at 6 m/s is outlier
-    # tree_mm >= min_canopy_snow # this reduces our data by like 25%, and removes some good obs of temp unloading near 5 deg. C
   ) |> 
   mutate(`Canopy Load (mm)` = case_when(
     tree_mm < snow_load_th ~ 'Light',
@@ -35,8 +36,10 @@ met_unld_all_winds_cold_smry <- met_unld_all_winds_cold |>
             sd_hi = q_unl_avg + q_unl_sd,
             ci_low = quantile(q_unl,0.05),
             ci_hi = quantile(q_unl, 0.95),
+            sum_snow = sum(dU),
             n = n()) |> 
   filter(n >= 3,
+         sum_snow > min_snow_bin,
          !is.na(`Canopy Load (mm)`),
          !is.na(avg_w_tree))
 
@@ -60,7 +63,7 @@ ggplot(met_unld_all_winds_cold_smry,
   # theme_bw(base_size = 14) +
   theme(legend.position = 'bottom') +
   ylim(NA, 3.1) +
-  # xlim(NA, 3.5) +
+  xlim(NA, 3.5) +
   scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Mean Canopy Load (mm)')# + facet_grid(cols = vars(name))
 
@@ -206,7 +209,8 @@ ggplot(wind_ex_df) +
              size = 2) +
   ylab(expression("Unloading Rate (kg" ~ m^-2 ~ hr^-1 * ")")) +
   xlab(expression("Wind Speed (m"~ s^-1 * ")")) +
-  # xlim(c(0,5)) + # removes outlier at 6 m/s
+  ylim(c(0, 2)) +
+  xlim(c(0,3.5)) + # removes outlier at 6 m/s
   # theme_bw() +
   scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = expression(atop("Canopy Snow", "Load (kg m"^-2*")"))) # avoids large space using regular way

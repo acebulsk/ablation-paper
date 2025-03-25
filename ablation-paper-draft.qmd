@@ -79,30 +79,24 @@ Quality control and gap filling of the meteorological and lysimetry data used in
 
 ## Methods
 
-$q_{unld}^{melt}$ was calculated as a residual from the observed ablation from the weighed tree:
+The weighed tree lysimeter was scaled to match the locations of the subcanopy lysimeter canopy coverage... 
+
+The rate of canopy snow unloading due to wind was measured by the subcanopy lysimeters. During periods without precipitation and cool temperatures (< -6°C) the subcanopy lysimeters provided measurements of canopy snow unloading primarily resulting from wind induced unloading. Some addiitonal unloading due two metamorphasism of snow and temperature induced branch benidng are also possible but interpreted to be minimal or primarily from wind indued unloading. To maintain consistency of the $q_{unld}^{wind}$ measurements with wind speed, the 15-minute interval measurements of $q_{unld}^{wind}$ were maintained but were aggregated over differing bins of wind speed. This also increased confidence in the $q_{unld}^{wind}$ measurements which had relatively low aaccumulation of unloaded snow over the 15-minute intervals, leading to high relative instrument accuracy the individual measurements of $q_{unld}^{wind}$. However after averaging $q_{unld}^{wind}$ across differing bins of wind speed and the standard deviation of $q_{unld}^{wind}$ was also calculated. Wind speed bin widths were 0.5 m s^-s^.
+
+To determine the rate of canopy snow unloading due to the melt process  $q_{unld}^{melt}$, a mass balance approach was incorporated. Since direct measurements of canopy snow unloading are challenging obtain independently from canopy snowmelt drainage, Equation 1 in @Cebulski2025 was rearranged to express $q_{unld}^{melt}$ as a residual, assuming that canopy snow unloading $q_{unld}$ originates from two sources: $q_{unld}^{melt}$ and wind-induced unloading ($q_{unld}^{wind}$):
 
 $$
-q_{unld}^{melt} = \Delta L - q_{drip} - q_{unld}^{wind}
+q_{unld} = q_{unld}^{wind} + q_{unld}^{melt}
+$${#eq-unl-ode}
+
+then Equation 1 in @Cebulski2025 was rearranged to solve for $q_{unld}^{melt}$ as:
+
+$$
+q_{unld}^{melt} = -\frac{\Delta L}{\Delta t} - q_{drip} - q_{unld}^{wind}
  - q_{sub}^{veg}
-$${#q_unld_melt_mass_bal}
+$${#q-unld-melt-mass-bal}
 
-where rates of $q_{drip}$ was simulated from the updated CRHM canopy snowmelt routine, $q_{unld}^{wind}$ was simulated using @eq-wind-unld, and $q_{subl}^{veg}$ was simulated using the CRHM canopy snow sublimation routine. The rate of canopy snow unloading due to the melt of canopy snow was found to occur at `r q_unld_melt_ratio` times the $q_{drip}$ rate which is a function of canopy snow load and ice-bulb temperature. The data used to find this ratio is from periods where snow is in the canopy after snowfall events and the canopy is loaded with more than 2 kg m^-2^ of snow and for observations that had more than 0.1 kg m^-2^ ablated from the canopy over a 15 minute timestep.
-
-### Partitioning the Canopy Snow Ablation Mass Balance
-
-The canopy snow mass balance was partitioned into its individual components that ablate snow intercepted in the canopy to determine what the dominant ablation processes over the study period. While some components of the canopy snow mass balance can be measured directly with relative ease, such and unloading and drip by [e.g., @Storck2002], wind redistribution and sublimation of canopy snow are more difficult to quantify directly especially in mountain environments [@Helgason2012b]. To account for this the canopy snow mass balance was partitioned into components that were measured in this study, including unloading and drip, and the remaining processes, were lumped into a residual component. For periods where snow was intercepted in the canopy, and atmospheric precipitation was not observed by the PWL snowfall gauge, the canopy snow mass balance [see Equation 1 in @Cebulski2024b] could be simplified to: 
-
-$$
--\frac{dL}{dt} = q_{unld}(L) + q_{drip}(L) + q_{wind}^{veg}(L) + q_{sub}^{veg}(L)
-$$ {#eq-canopy-mass-bal}
-
-where $\frac{dL}{dt}$ is the change in canopy snow load over time (kg m^-2^ s^-1^), $q_{unld}(L)$ is the canopy snow unloading rate (kg m^-2^ s^-1^), $q_{drip}(L)$ is the canopy snow drip rate due to canopy snowmelt (kg m^-2^ s^-1^), $q_{wind}^{veg}(L)$ is the wind transport rate of snow by suspension in our out of the control volume (kg m^-2^ s^-1^). The weighed tree lysimeter provided measurements of $\frac{dL}{dt}$ while the subcanopy lysimeters provided measurements of $q_{unld}(L) + q_{drip}(L)$. A residual corresponding to the remaining unmeasured components, $q_{wind}^{veg}(L)$ and $q_{sub}^{veg}(L)$ was calculated by rearranging @eq-canopy-mass-bal as:
-
-$$
-q_{wind}^{veg}(L) + q_{sub}^{veg}(L) = \frac{dL}{dt} - \left(q_{unld}(L) + q_{drip}(L)\right)
-$$
-
-where a positive residual equates to canopy snow that was ablated from the weighed tree lysimeter and was not accounted for by measurements of $q_{unld}$ and $q_{drip}$. A negative residual may occur when higher rates of $q_{unld}$ + $q_{drip}$, measured by the subcanopy lysimeters, are higher than $\frac{dL}{dt}$, measured by the weighed tree lysimeter. Slight differences in the mass balance at the SCL and weighed tree lysimeters was expected due to the different measurement locations and instrument error. The duration that snow was intercepted in the canopy was also calculated as a potential predictor variable for canopy snow ablation processes. This was calculated for individual snowfall events as the time starting when snowfall stopped and continued as long as the snow resided in the canopy.
+where the change in canopy snow load over time $\frac{\Delta L}{\Delta t}$, was measured by the weighed tree lysimeter, rates of canopy snowmelt drainage $q_{drip}$, wind induced unloading $q_{unld}^{wind}$, and canopy snow sublimation $q_{sub}^{veg}$ were simulated using the updated canopy snow ablation routine described below. While some components of the canopy snow mass balance can be measured directly with relative ease, such as $\frac{\Delta L}{\Delta t}$, sublimation of canopy snow is more difficult to quantify directly especially in mountain environments which justified the use of simulated values in this study [@Helgason2012b]. Periods of negligible precipitation and wind redistribution allowed for the removal of these terms from @q-unld-melt-mass-bal.
 
 ### Modelled Canopy Snow Sublimation Rate
 
@@ -120,7 +114,7 @@ where $p_{unld}$ is the probability of unloading (-), $n$ is the number of unloa
 
 ## Canopy Snow Energy Balance 
 
-An updated canopy snow energy balance routine was implemented to better represent the canopy snowmelt and sublimation rates. This approach is based on the following one-layer energy balance equation that treats the snow separate from vegetation elements:
+The following canopy snow energy balance routine was implemented which determines the amount of energy available to melt snow intercepted in the canopy, $Q_{melt}(L)$ (W m^-2^) and tracks the rate of change of the canopy snow temperature, $\frac{\Delta T_{vs}}{\Delta t}$ (K s^-1^):
 
 $$
 Q_{melt}(L) = 
@@ -129,21 +123,21 @@ Q_{lw} +
 Q_{p} + Q_{h} + Q_{l} - [C_p^{ice} L \frac{\Delta T_{vs}}{\Delta t}]
 $$ {#eq-eb}
 
-where $Q_{melt}(L)$ (W m^-2^) is the rate of energy available to melt canopy snow, $Q_{sw}$ and $Q_{lw}$ (W m^-2^) are the net shortwave and longwave radiation heat fluxes to the canopy snow, $Q_p$ (W m^-2^), is the advective energy rate, and $Q_{l}$ and $Q_{h}$ (W m^-2^), are the turbulent fluxes of latent heat and sensible heat (positive towards canopy snow), respectively, $C_p^{ice}$ (J kg^-1^ K^-1^) is the specific heat capacity of ice, $\frac{\Delta T_{vs}}{\Delta t}$ (K s^-1^) is the rate of change of the canopy snow temperature. 
+where $Q_{sw}$ and $Q_{lw}$ (W m^-2^) are the net shortwave and longwave radiation heat fluxes to the canopy snow, $Q_p$ (W m^-2^), is the advective energy rate, and $Q_{l}$ and $Q_{h}$ (W m^-2^), are the turbulent fluxes of latent heat and sensible heat respectively  (positive towards canopy snow), and $C_p^{ice}$ (J kg^-1^ K^-1^) is the specific heat capacity of ice. 
 
 $Q_{sw}$ was determined as:
 
 $$
 Q_{sw} = \downarrow Q_{sw} \cdot (1 - \alpha_s) \cdot \tau_{50}^{veg}
 $$
-where $\downarrow Q_{sw}$ is the downwelling shortwave radiation (W m^-2^), $\alpha_s$ is the albedo of snow intercepted in the canopy (taken as 0.8), $\tau_{50}^{veg}$ is the transmittance of radiation through half of the vegetation elements [Eq. 7 from @Pomeroy2009 with half the LAI]. $Q_{sw}$ thus approximates the solar radiation incident to the mid height point of the canopy which is thought to represent an average value across differing heights within the canopy. Upwelling shortwave radiation reflected off of the surface snowpack is considered negligible contribution to the snow intercepted in the canopy as it is primarily blocked by vegetation elements underlying the canopy snow. 
+where $\downarrow Q_{sw}$ is the downwelling shortwave radiation (W m^-2^), $\alpha_s$ is the albedo of snow intercepted in the canopy (taken as 0.8), $\tau_{50}^{veg}$ is the canopy transmittance to $\downarrow Q_{sw}$ through half of the canopy [Eq. 7 from @Pomeroy2009]. Upwelling shortwave radiation reflected off of the surface snowpack is considered negligible contribution to the snow intercepted in the canopy as it is primarily blocked by vegetation elements underlying the canopy snow. 
 
 $Q_{lw}$ was approximated as:
 
 $$
 Q_{lw} = \downarrow Q_{lw}^{atm} + \uparrow Q_{lw}^{veg} + \uparrow Q_{lw}^{veg2veg} - Q_{lw}^{vs}
 $$
-where $Q_{lw}^{atm}$ is downwelling longwave radiation from the atmosphere with the @Sicart2006 emissivity calculation for the influence of clouds, $Q_{lw}^{veg}$ is longwave radiation upwelling from the vegetation elements underlying the snow intercepted in the canopy which is assumed to be in equilibrum with the air temperature plus the increase in vegetation temperature from shortwave irradiance extinguished in the canopy approxiamted from Equation 4 in @Pomeroy2009, $Q_{lw}^{veg2veg}$ is longwave radiation emitted from the underside of the vegetation elements but not absorbed by the subcanopy snowpack and reflected back to the canopy, and $Q_{lw}^{vs}$ is the outgoing longwave radiation from the top and bottom of the canopy snow layer calculated as:
+where $Q_{lw}^{atm}$ is downwelling longwave radiation from the atmosphere, $Q_{lw}^{veg}$ is longwave radiation upwelling from vegetation elements underlying snow intercepted in the canopy, $Q_{lw}^{veg2veg}$ is longwave radiation emitted from the underside of the vegetation elements but not absorbed by the subcanopy snowpack and reflected back to the canopy, and $Q_{lw}^{vs}$ is the outgoing longwave radiation from the top and bottom of the canopy snow layer calculated as:
 
 $$
 Q_{lw}^{vs} = 2 \epsilon_{i} \sigma T_{vs}^4
@@ -180,7 +174,7 @@ $$
 
 where $r_i$ is a resistance for transport of moisture from intercepted snow to the canopy air space [Eq. 28 in @Essery2003], $q_a(T_a)$ and $q_{vs}(T_{vs})$ are the specific humidity (-) at the air temperature and canopy snow temperature respectively. If the height of the air temperature measurement differs from the humidity measurement the $z_T$ term in the @eq-ra should be adjusted to use the the humidity measurement height. 
 
-The above sensible and latent heat flux equations assume neutral atmospheric stability conditions, i.e., nearly adiabatic conditions (no heat exchange) which may be appropriate for application with snow which is intercepted in the roughness elements where stability corrections may not be required. This is also supported by the uncertainty of stability correction in forest canopies [@cite]. Solving @eq-eb requires an iterative solution to determine $\Delta T_{vs}$ and the remaining terms which are also a function of $T_{vs}$.
+The above sensible and latent heat flux equations assume neutral atmospheric stability conditions, i.e., nearly adiabatic conditions (no heat exchange) which may be appropriate for application with snow which is intercepted in the roughness elements where stability corrections may not be required. This is also supported by the uncertainty of stability correction in forest canopies [@cite]. $Q_{lw}^{atm}$ was approximated in this study as in @Sicart2006 to take into account the influence of atmospheric moisture on emissivity. $Q_{lw}^{veg}$ was calculated with the assumption that canopy elements were in equilibrum with the air temperature plus any change in vegetation temperature from the extinction of $\downarrow Q_{sw}$ in the canopy [@Pomeroy2009, Eq. 4]. Solving @eq-eb requires an iterative solution to determine $\Delta T_{vs}$ and the remaining terms which are also a function of $T_{vs}$. 
 
 ## Results
 
@@ -192,17 +186,9 @@ The above sensible and latent heat flux equations assume neutral atmospheric sta
 
 ![](figs/results/frequency_of_unloading_wind_air_temp.png){#fig-glob-freq-unl}
 
-### The influence of sublimation and snowmelt on unloading
-
-TODO maybe do similar probability plot here. also need to determine if air temp relationship is still valid for non meling snow. 
-
 ### Canopy Snow Unloading Relationships
 
-The canopy snow unloading rate due to melt, $q_{unld}^{melt}$ (kg m^-2^ s^-1^) and wind, $q_{unld}^{wind}$ (kg m^-2^ s^-1^) can be represented by:
 
-$$
-q_{unld} = q_{unld}^{wind} + q_{unld}^{melt}
-$${#eq-unl-ode}
 
 Canopy snow unloading due to wind is shown in @fig-mod-wind-unld to increase exponentially with wind speed measured at mid canopy height. The data presented in @fig-mod-wind-unld originates from the SCls and has been filtered to include periods where the air temperature is below -6°C where the effect of canopy snow melt on unloading was observed to be minimal in @fig-glob-prob-unl.
 
@@ -234,30 +220,16 @@ The canopy snow unloading to melt ratio was found to be to be linearly proportio
 
 <!-- consider adding Lres to melt unloading function , see eq. 29 in the review paper -->
 $$
-q_{unld}^{melt} = X_{mu} \cdot q_{drip}(L)
+q_{unld}^{melt} = f(m) \cdot q_{drip}(L)
 $${#eq-melt-unld-ode}
 
-where $X_{mu}$ is the ratio of unloading to canopy snowmelt. @eq-melt-unld-ode is similar to the equation presented by @Andreadis2009 but differs in that instead of incorporating a minimum threshold of $L$ for $q_{unld}^{melt}$ to occur, $X_mu$ was found to increase with increasing $L$ as:
+where $f(m)$ is the ratio of unloading to canopy snowmelt. @eq-melt-unld-ode is similar to Equation 33 in @Andreadis2009; however, instead of assuming a constant value of 0.4 for $f(m)$, it was determined as:
 
 $$
-X_{mu} = m \cdot L
+f(m) = m \cdot L
 $$
 
-where $m$ is a fitting parameter found to be (~ 0.1, *R^2^* = 0.95) through an ordinary least squares regression for the data shown in @fig-unld-melt-ratio which were filtered to periods of snowmelt and no precipitation.
-
-Similarly the ratio of canopy snow unloading to canopy snow sublimation was also found to be proportional to the canopy snow load [@fig-unld-subl-ratio]. This was represented by the equation:
-
-$$
-q_{unld}^{subl} = X_{su} \cdot q_{subl}^{veg}
-$$
-
-where $X_{su}$ is the ratio of unloading to canopy snow sublimation. $X_su$ was found to increase with increasing $L$ as:
-
-$$
-X_{mu} = s \cdot L
-$$
-
-where s is a fitting parameter found to be (~ 0.2, *R^2^* = 0.78) through an ordinary least squares regression for the data shown in @fig-unld-subl-ratio which were filtered to periods of sublimation and no precipitation.
+where $m$ is a fitting parameter found to be (~`r q_unld_melt_ratio`, *R^2^* = `r q_unld_melt_r2adj`) through an ordinary least squares regression. The regression was performed using the data shown in @fig-unld-melt-ratio, which presents the ratio of canopy snow unloading, derived from the weighed tree, to simulated canopy snowmelt across bins of canopy snow load.
 
 ![The relationship between the canopy snow unloading to snowmelt ratio for varying canopy snow load bins. The dots represent the cumulative observed unloading divided by cumulative simulated snowmelt for various bins of canopy snow load. The red line indicates a line of best fit through ordinary least squares regression.](figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png){#fig-unld-melt-ratio}
 

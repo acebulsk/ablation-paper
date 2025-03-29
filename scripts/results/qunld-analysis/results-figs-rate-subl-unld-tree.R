@@ -39,136 +39,61 @@ crhm_output <- CRHMr::readOutputFile(
          delsub_veg_int.1:delunld_subl_int.1) |> 
   mutate(delsub_veg_int.1 = -delsub_veg_int.1)
 
-### bin sublimation rate (s-1) ----
+# Combine dfs and aggregate to hourly -----
 
-# note zeros are not included in binning, to add set inlcude.lowest = T
-min_sub <- 0
-max_sub <- round(
-  max(crhm_output$Subl_Cpy.1*4, na.rm = T),3)
-sub_step <- 0.1
-
-sub_breaks <- seq(
-  0,
-  max_sub+0.05,
-  sub_step)
-
-# sub_breaks <- c(0, 0.05, 0.1, 0.15, sub_breaks)
-
-sub_labs_seq <- label_bin_fn(bins = sub_breaks)
-
-stopifnot(tail(sub_breaks, 1) > max(crhm_output$Subl_Cpy.1, na.rm = T))
-stopifnot(length(sub_labs_seq) + 1 == length(sub_breaks))
-
-crhm_output$canopy_sub_binned <- cut(crhm_output[,'Subl_Cpy.1', drop = TRUE]*4, sub_breaks, include.lowest = T)
-
-crhm_output$canopy_sub_labs <- cut(crhm_output[,'Subl_Cpy.1', drop = TRUE]*4, 
-                                   sub_breaks, 
-                                   labels = sub_labs_seq,
-                                   include.lowest = T
-)
-
-crhm_output$canopy_sub_labs <- as.numeric(as.character(crhm_output$canopy_sub_labs))
+obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
+  mutate(wtr_year = weatherdash::wtr_yr(datetime)) |> 
+  left_join(tree_cal_val_88) |> 
+  # left_join(tree_weight) |> 
+  # mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
+  group_by(datetime, event_id) |>
+  summarise(tree_mm = last(tree_mm),
+            dL = sum(dL),
+            delsub_veg_int.1 = sum(delsub_veg_int.1),
+            delunld_wind_int.1 = sum(delunld_wind_int.1),
+            delunld_melt_int.1 = sum(delunld_melt_int.1),
+            delmelt_veg_int.1 = sum(delmelt_veg_int.1),
+            delsub_veg_int.1 = sum(delsub_veg_int.1),
+            est_q_unld_subl = dL - delsub_veg_int.1 - delunld_wind_int.1 - delmelt_veg_int.1,
+            unld_melt_ratio = est_q_unld_subl/delmelt_veg_int.1,
+            hru_t.1 = mean(hru_t.1),
+            hru_u.1 = mean(hru_u.1)
+  ) 
 
 ### bin temp  ----
 
 # note zeros are not included in binning, to add set inlcude.lowest = T
 min_temp <- round(
-  min(crhm_output$hru_t.1, na.rm = T),3)
+  min(obs_mod$hru_t.1, na.rm = T),3)
 max_temp <- round(
-  max(crhm_output$hru_t.1, na.rm = T),3)
+  max(obs_mod$hru_t.1, na.rm = T),3)
 temp_step <- 5
 
 temp_breaks <- seq(
   min_temp,
-  max_temp+2,
+  max_temp+4,
   temp_step)
 
 temp_labs_seq <- label_bin_fn(bins = temp_breaks)
 
-stopifnot(tail(temp_breaks, 1) > max(crhm_output$hru_t.1, na.rm = T))
+stopifnot(tail(temp_breaks, 1) > max(obs_mod$hru_t.1, na.rm = T))
 stopifnot(length(temp_labs_seq) + 1 == length(temp_breaks))
 
-crhm_output$temp_binned <- cut(crhm_output[,'hru_t.1', drop = TRUE], temp_breaks)
+obs_mod$temp_binned <- cut(obs_mod[,'hru_t.1', drop = TRUE], temp_breaks)
 
-crhm_output$temp_labs <- cut(crhm_output[,'hru_t.1', drop = TRUE], 
+obs_mod$temp_labs <- cut(obs_mod[,'hru_t.1', drop = TRUE], 
                              temp_breaks, 
                              labels = temp_labs_seq)
 
-crhm_output$temp_labs <- as.numeric(as.character(crhm_output$temp_labs))
-
-## obs ----
-
-# warm tree specific events
-# these ones differ from the cold ones below and may include some precip
-warm_events <- c(
-  '2022-04-21',
-  '2022-04-23',
-  '2022-06-14',
-  '2022-06-23',
-  '2022-06-24',
-  '2023-03-14',
-  '2023-03-25',
-  '2023-03-26',
-  '2023-03-28',
-  '2023-04-13',
-  '2023-04-17',
-  '2023-05-08',
-  '2023-06-15',
-  '2023-06-21'
-)
-
-obs_tree_warm <-
-  readRDS(paste0(
-    'data/clean-data/warm_tree_events_zero_weighed_tree_',
-    load_suffix,
-    '_kg_m2_post_cnpy_snow.rds'
-  )) |> 
-  filter(event_id %in% warm_events)
-
-all(warm_events %in% obs_tree_warm$event_id)
-
-# cold tree events
-cold_events <- c(
-  # new ones
-  #'2021-12-27', # wind event some precip, maybe blowing snow redist.
-  # '2022-01-18', # wind event too much precip during (maybe blowing snow redistribution?)
-  '2022-02-04', # wind event
-  #'2022-02-21', # wind event unloading not associated with wind or other here
-  # '2022-02-24', # wind event , tree increased due to vapour deposition likely
-  # '2022-03-04', # unloading due to branch bending from warming
-  # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
-  
-  # OG
-  '2022-03-02', 
-  '2022-03-09',
-  '2022-03-20', 
-  '2022-03-24',  
-  '2022-03-29',  
-  '2022-12-01',
-  '2023-01-28',
-  '2023-02-24',
-  '2023-02-26'
-)
-obs_tree_cold <-
-  readRDS(paste0(
-    'data/clean-data/all_tree_events_zero_weighed_tree_',
-    load_suffix,
-    '_kg_m2_post_cnpy_snow.rds'
-  )) |> 
-  filter(event_id %in% cold_events)
-
-obs_tree <- rbind(obs_tree_cold  |> 
-                    select(datetime, event_id, tree_mm),
-                  obs_tree_warm |> 
-                    select(datetime, event_id, tree_mm)) 
+obs_mod$temp_labs <- as.numeric(as.character(obs_mod$temp_labs))
 
 ## bin weighed tree ----
 
 # note zeros are not included in binning, to add set inlcude.lowest = T
 min_tree <- 0
 max_tree <- round(
-  max(obs_tree$tree_mm, na.rm = T),0)
-tree_step <- 2.5
+  max(obs_mod$tree_mm, na.rm = T),0)
+tree_step <- 2
 
 tree_breaks <- seq(
   min_tree,
@@ -177,32 +102,18 @@ tree_breaks <- seq(
 
 tree_labs_seq <- label_bin_fn(bins = tree_breaks)
 
-stopifnot(tail(tree_breaks, 1) > max(obs_tree$tree_mm, na.rm = T))
+stopifnot(tail(tree_breaks, 1) > max(obs_mod$tree_mm, na.rm = T))
 stopifnot(length(tree_labs_seq) + 1 == length(tree_breaks))
 
-obs_tree$tree_binned <- cut(obs_tree[,'tree_mm', drop = TRUE], tree_breaks)
+obs_mod$tree_binned <- cut(obs_mod[,'tree_mm', drop = TRUE], tree_breaks)
 
-obs_tree$tree_labs <- cut(obs_tree[,'tree_mm', drop = TRUE], 
+obs_mod$tree_labs <- cut(obs_mod[,'tree_mm', drop = TRUE], 
                           tree_breaks, 
                           labels = tree_labs_seq)
 
-obs_tree$tree_labs <- as.numeric(as.character(obs_tree$tree_labs))
+obs_mod$tree_labs <- as.numeric(as.character(obs_mod$tree_labs))
 
 # PLOT -----
-
-w_tree_q_unld_15 <- obs_tree |>
-  mutate(
-    dL = lag(tree_mm) - tree_mm,
-    dL = ifelse(dL < 0, 0, dL),
-    q_unl = (dL / 15) * 60
-  ) |>
-  ungroup() |>
-  filter(is.na(q_unl) == F,
-         dL > 0) |> 
-  select(datetime, event_id, tree_mm, tree_binned, tree_labs, dL)
-
-obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |> 
-  mutate(est_q_unld_subl = dL - delsub_veg_int.1 - delunld_int.1 - delmelt_veg_int.1) 
 
 subl_event_filter <- obs_mod |> 
   group_by(event_id) |> 
@@ -214,18 +125,18 @@ subl_event_filter <- obs_mod |>
             frac_subl = subl/total,
             frac_wind = wind/total,
             frac_melt = (melt+melt_unld)/total) |> 
-  filter(frac_subl > .63)
+  filter(frac_subl > .5)
 
 obs_mod_fltr <- obs_mod |> 
-  filter(delmelt_veg_int.1 == 0,
-         est_q_unld_subl >= 0,
+  filter(#delmelt_veg_int.1 == 0,
+         # est_q_unld_subl >= 0,
          # est_q_unld_subl < 1,
          delsub_veg_int.1 > 0,
          # Subl_Cpy.1 < 0.175,
-         # dL > 0.01,
-         tree_mm > 2,
-         event_id %in% subl_event_filter$event_id#,
-         # hru_u.1 < 1
+         dL > 0.02,
+         # tree_mm > 2,
+         event_id %in% subl_event_filter$event_id,
+         hru_u.1 < 1.25
          # hru_t.1 < 0
   ) |> 
   # convert mm/interval to mm/hour
@@ -234,25 +145,32 @@ obs_mod_fltr <- obs_mod |>
          unld_subl_ratio = est_q_unld_subl/delsub_veg_int.1) |> 
   filter(unld_subl_ratio < 10)
 
-obs_mod_fltr_event <- obs_mod_fltr |>
-  group_by(event_id, tree_labs) |>
+ggplot(obs_mod_fltr,
+       aes(delsub_veg_int.1, est_q_unld_subl, colour = factor(event_id))) + geom_point()
+ggplot(obs_mod_fltr,
+       aes(tree_mm, est_q_unld_subl, colour = hru_t.1)) + geom_point()
+ggplot(obs_mod_fltr,
+       aes(tree_mm, unld_subl_ratio, colour = factor(event_id))) + geom_point()
+
+ggplot(obs_mod_fltr,
+       aes(dL, delsub_veg_int.1, colour = factor(event_id))) + geom_point()
+
+# option 1 cumulative within bins, gives very low instrument error as we have a
+# large mass measured over the bin
+obs_mod_fltr_binned <- obs_mod_fltr |>
+  group_by(tree_labs, temp_labs) |>
   summarise(subl = sum(delsub_veg_int.1),
             unld = sum(est_q_unld_subl),
-            unld_subl_ratio = unld/subl,
-            tree_mm = mean(tree_mm))
+            unld_subl_ratio = unld/subl) 
 
-ggplot(obs_mod_fltr_event,
-       aes(tree_labs, unld_subl_ratio, colour = event_id)) + geom_point()
+ggplot(obs_mod_fltr_binned,
+       aes(tree_labs, unld_subl_ratio, colour = factor(temp_labs))) + geom_point()
 
 # Binned analysis ---- 
 
-obs_mod_fltr_binned <- obs_mod_fltr |>
-  group_by(tree_labs) |>
-  summarise(subl = sum(delsub_veg_int.1),
-            unld = sum(est_q_unld_subl),
-            unld_subl_ratio = unld/subl)
 
-bin_unld_subl_lm <- lm(unld_subl_ratio ~ 0 + tree_labs, data = obs_mod_fltr_binned)
+bin_unld_subl_lm <- lm(unld_subl_ratio ~ tree_labs, data = obs_mod_fltr_binned)
+summary(bin_unld_subl_lm)
 saveRDS(bin_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
 # Extract the coefficient (slope) from the model
 slope <- coef(bin_unld_subl_lm)[1]
@@ -260,21 +178,19 @@ r2_adj_lm <- r_squared_no_intercept(bin_unld_subl_lm)
 r2_adj_lm
 
 ggplot(obs_mod_fltr_binned, aes(tree_labs, unld/subl)) + 
-  geom_point() +
+  geom_point(aes(colour = factor(temp_labs))) +
+  geom_smooth(method = "lm", se = F) +  # Use method="lm" for linear model
   annotate(
     'label',
-    x = 1,
+    x = 5,
     y = 4,
     label = paste("R² =", round(r2_adj_lm, 2))
   ) +
-  geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
-              linetype = "solid", size = 0.5) +
   labs(
+    colour = 'Temp. bin (°C)',
     x = "Canopy Snow Load (mm)",
     y = "Unloading to Sublimation Ratio (-)"
-  ) +
-  lims(y = c(0, NA),
-       x = c(0, NA))
+  ) 
 
 ggsave(
   'figs/results/modelled_subl_unloading_ratio_vs_snow_load_bin.png',
@@ -317,6 +233,7 @@ ggplot(obs_mod_fltr, aes(x = delsub_veg_int.1, y = est_q_unld_subl)) +
   geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
               linetype = "solid", size = 0.5) +
   labs(
+    colour = 'temp_bin',
     x = expression("Simulated Canopy Snow Sublimation Rate ("*kg ~ m^-2 ~ hr^-1*")"),
     # y = expression(q[unld]^{melt} ~ "(" ~ kg ~ m^-2 ~ hr^-1 ~ ")"),
     y = expression("Sublimation Unloading Rate ("*kg ~ m^-2 ~ hr^-1*")")

@@ -42,86 +42,14 @@ crhm_output <- CRHMr::readOutputFile(
          delsub_veg_int.1:delunld_subl_int.1) |> 
   mutate(delsub_veg_int.1 = -delsub_veg_int.1)
 
-## obs ----
-
-# warm tree specific events
-# these ones differ from the cold ones below and may include some precip
-warm_events <- c(
-  '2022-04-21',
-  '2022-04-23',
-  '2022-06-14',
-  '2022-06-23',
-  '2022-06-24',
-  '2023-03-14',
-  '2023-03-25',
-  '2023-03-26',
-  '2023-03-28',
-  '2023-04-13',
-  '2023-04-17',
-  '2023-05-08',
-  '2023-06-15',
-  '2023-06-21'
-)
-
-obs_tree_warm <-
-  readRDS(paste0(
-    'data/clean-data/warm_tree_events_zero_weighed_tree_',
-    load_suffix,
-    '_kg_m2_post_cnpy_snow.rds'
-  )) |> 
-  filter(event_id %in% warm_events)
-
-all(warm_events %in% obs_tree_warm$event_id)
-
-# cold tree events
-cold_events <- c(
-  # new ones
-  #'2021-12-27', # wind event some precip, maybe blowing snow redist.
-  # '2022-01-18', # wind event too much precip during (maybe blowing snow redistribution?)
-  '2022-02-04', # wind event
-  #'2022-02-21', # wind event unloading not associated with wind or other here
-  # '2022-02-24', # wind event , tree increased due to vapour deposition likely
-  # '2022-03-04', # unloading due to branch bending from warming
-  # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
-  
-  # OG
-  '2022-03-02', 
-  '2022-03-09',
-  '2022-03-20', 
-  '2022-03-24',  
-  '2022-03-29',  
-  '2022-12-01',
-  '2023-01-28',
-  '2023-02-24',
-  '2023-02-26'
-)
-obs_tree_cold <-
-  readRDS(paste0(
-    'data/clean-data/all_tree_events_zero_weighed_tree_',
-    load_suffix,
-    '_kg_m2_post_cnpy_snow.rds'
-  )) |> 
-  filter(event_id %in% cold_events)
-
-obs_tree <- rbind(obs_tree_cold  |> 
-                    select(datetime, event_id, observed = tree_mm),
-                  obs_tree_warm |> 
-                    select(datetime, event_id, observed = tree_mm)) 
-
-w_tree_q_unld_15 <- obs_tree |>
-  mutate(
-    dL = lag(observed) - observed,
-    dL = ifelse(dL < 0, 0, dL)
-  ) |>
-  select(datetime, event_id, tree_mm = observed, dL)
 
 # Combine dfs and aggregate to hourly -----
 
 obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
   mutate(wtr_year = weatherdash::wtr_yr(datetime)) |> 
   left_join(tree_cal_val_88) |> 
-  left_join(tree_weight) |> 
-  mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
+  # left_join(tree_weight) |> 
+  # mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
   group_by(datetime, event_id) |>
   summarise(tree_mm = last(tree_mm),
             dL = sum(dL),
@@ -168,11 +96,11 @@ obs_mod$canopy_snowmelt_labs <- as.numeric(as.character(obs_mod$canopy_snowmelt_
 min_tree <- 0
 max_tree <- round(
   max(obs_mod$tree_mm, na.rm = T),0)
-tree_step <- 2
+tree_step <- 4
 
 tree_breaks <- seq(
   min_tree,
-  max_tree+1,
+  max_tree+2,
   tree_step)
 
 tree_labs_seq <- label_bin_fn(bins = tree_breaks)
@@ -197,11 +125,12 @@ obs_mod$tree_labs <- as.numeric(as.character(obs_mod$tree_labs))
 
 obs_mod_fltr <- obs_mod |> 
   filter(delmelt_veg_int.1 > 0,
-         est_q_unld_melt >= 0,
+         unld_melt_ratio < 20,
+         # est_q_unld_melt >= 0,
          # event_id %in% events_w_melt,
          # !event_id %in% c('2022-06-14'),
-         # dL > 0.1,
-         tree_mm > 2,
+         dL > 0.02,
+         # tree_mm > 2,
          # hru_p.1 == 0,
          # hru_u.1 < 1
   )
@@ -214,11 +143,11 @@ ggplot(obs_mod_fltr, aes(tree_mm, unld_melt_ratio, colour = factor(event_id))) +
   geom_point()
 # option 1 cumulative within bins, gives very low instrument error as we have a
 # large mass measured over the bin
-obs_mod_fltr_binned_event <- obs_mod_fltr |>
+obs_mod_fltr_binned <- obs_mod_fltr |>
   group_by(tree_labs, event_id) |>
   summarise(melt = sum(delmelt_veg_int.1),
             unld = sum(est_q_unld_melt),
-            unld_melt_ratio = unld/melt)
+            unld_melt_ratio = unld/melt) 
 
 # option 1b avg over events
 # obs_mod_fltr_binned <- obs_mod_fltr |>
@@ -228,46 +157,42 @@ obs_mod_fltr_binned_event <- obs_mod_fltr |>
 #             # strain_gauge_abs_error = mean(strain_gauge_abs_error),
 #             # unld_melt_ratio_hi = (unld + strain_gauge_abs_error)/melt,
 #             # unld_melt_ratio_lo = (unld - strain_gauge_abs_error)/melt,
-#             
-#             unld_melt_ratio = unld/melt) |> 
+# 
+#             unld_melt_ratio = unld/melt) |>
 #   filter(unld_melt_ratio < 5)
 
 # option 2 calculate average within each bin at fifteen min intervals
 # obs_mod_fltr_binned <- obs_mod_fltr |>
-#   mutate(unld_melt_ratio = est_q_unld_melt/delmelt_veg_int.1) |> 
+#   mutate(unld_melt_ratio = est_q_unld_melt/delmelt_veg_int.1) |>
 #   group_by(tree_labs) |>
 #   summarise(
 #             sd = sd(unld_melt_ratio, na.rm = T),
 #             unld_melt_ratio = mean(unld_melt_ratio),
 #             unld_melt_ratio_hi = (unld_melt_ratio + sd),
 #             unld_melt_ratio_lo = (unld_melt_ratio - sd),
-#             
+# 
 #             )
 
-bin_unld_melt_lm <- lm(unld_melt_ratio ~ 0 + tree_labs, data = obs_mod_fltr_binned_event)
+bin_unld_melt_lm <- lm(unld_melt_ratio ~ tree_labs, data = obs_mod_fltr_binned)
+summary(bin_unld_subl_lm)
+summary(bin_unld_melt_lm)
 saveRDS(bin_unld_melt_lm, 'data/lm_q_drip_vs_q_unld_melt.rds')
 # Extract the coefficient (slope) from the model
-slope <- coef(bin_unld_melt_lm)[1]
-r2_adj_lm <- r_squared_no_intercept(bin_unld_melt_lm)
-r2_adj_lm
-saveRDS(r2_adj_lm, 'data/r2adj_q_drip_vs_q_unld_melt.rds')
+r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
 
-
-ggplot(obs_mod_fltr_binned_event,
+ggplot(obs_mod_fltr_binned,
        aes(tree_labs, unld_melt_ratio)) +
   geom_point() +
-  # geom_point()
+  geom_smooth(method = "lm", se = F) +  # Use method="lm" for linear model
   annotate(
       'label',
-      x = 2,
+      x = 4,
       y = 3,
       label = paste("R² =", round(r2_adj_lm, 2))
   ) +
   # geom_errorbar(aes(ymax = unld_melt_ratio_hi, ymin = unld_melt_ratio_lo), width = 1, alpha = 0.5)  +
-  lims(y = c(0, NA),
-       x = c(0, NA)) +
-  geom_abline(intercept = 0, slope = slope, color = "red",    # Model line
-              linetype = "solid", size = 0.5) +
+  # lims(y = c(0, NA),
+  #      x = c(0, NA)) +
   labs(
     x = "Canopy Snow Load (mm)",
     y = "Unloading to Melt Ratio (-)"

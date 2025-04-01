@@ -7,9 +7,9 @@ options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 bad_events <- c(
   '2022-06-23', # crhm rain to snow paritioning is off here
   # '2022-06-24', # crhm rain to snow paritioning is off here
-  '2023-03-25', # bad solar for this day, annandale underestimates during cloudy day..previous empirical models get these better as are handling inc of unloading as air temp rises to melting point.
-  '2023-03-26', # bad solar for this day, annandale underestimates during cloudy day..previous empirical models get these better as are handling inc of unloading as air temp rises to melting point.
-  '2023-03-28', # bad solar for this day, annandale underestimates during cloudy day..previous empirical models get these better as are handling inc of unloading as air temp rises to melting point.
+  # '2023-03-25', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
+  # '2023-03-26', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
+  # '2023-03-28', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
   '2022-02-04', # baseline crhm gets this (write answer wrong reason) wind event as temp increases during the wind unloading. rm as is slightly misleading since it is observed to be wind unloading
   '2023-01-28' # crhm gets this again write answer wrong reason due to time intercepted and maybe some sublimation
 )
@@ -29,13 +29,13 @@ prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
 run_tag_updt <- "new_event_set_output.txt"
 run_tag_updt <- "test_LW_in_eq_vf_4pir"
 run_tag_updt <- "ess03_vt0.0_avs_0.65_fix5"
-run_tag_updt <- "no_subl_unld_ra_bug_fix"
+run_tag_updt <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
 
 
-to_long_tb <- function(unloading_start_date, end_date, event_id){
+to_long_tb <- function(unloading_start_date, end_date, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag){
   datetime <- seq(unloading_start_date, end_date, 900)
   
-  out <- data.frame(datetime, event_id)
+  out <- data.frame(datetime, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag)
   
   return(out)
 }
@@ -234,13 +234,18 @@ tb_events <-
     event_id = as.Date(unloading_start_date, tz = 'Etc/GMT+6'))
 tb_events_long <-
   purrr::pmap_dfr(tb_events |>
-                    select(c(unloading_start_date, end_date, event_id)),
+                    select(c(unloading_start_date, end_date, event_id, quality, TB1_flag:TB4_flag)),
                   to_long_tb)
 
 tb_data_zeroed <- tb_data |> 
   left_join(tb_events_long) |> 
-  group_by(event_id, name)
-
+  filter(quality < 3) |> 
+  mutate(
+    dU = ifelse(name == 'TB1_mm' & TB1_flag == T, NA, dU),
+    dU = ifelse(name == 'TB2_mm' & TB2_flag == T, NA, dU),
+    dU = ifelse(name == 'TB3_mm' & TB3_flag == T, NA, dU),
+    dU = ifelse(name == 'TB4_mm' & TB4_flag == T, NA, dU)
+  )
 mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
 
 

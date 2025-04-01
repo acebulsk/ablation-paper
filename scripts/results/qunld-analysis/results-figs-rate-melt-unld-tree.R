@@ -24,11 +24,11 @@ good_events <- mod_d_drip_smry_frac |>
 prj <- "ffr_closed_canopy_cc0.88_cansnobal"
 
 # specify certain model run
-run_tag <- "no_unld_melt_4cal"
+run_tag <- "updt_SW_to_obs_no_melt_unld"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
+    "crhm/output/",
     prj
   ),
   pattern = run_tag,

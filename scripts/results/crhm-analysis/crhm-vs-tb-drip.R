@@ -1,12 +1,20 @@
 # Script to compare drip output from CRHM to drip measured by tipping buckets
 
+# by each bucket
 tb_d_drip <- tb_data_zeroed |> 
   group_by(datetime, event_id, name) |> 
   summarise(dU = mean(dU)) |> 
   select(datetime, event_id, name, dU) |> 
   group_by(event_id, name) |> 
   mutate(cml_drip = cumsum(dU),
-         cml_drip = cml_drip - first(cml_drip)) |> ungroup() # so each event starts at 0
+         cml_drip = cml_drip - first(cml_drip),
+         ) |> ungroup() # so each event starts at 0
+
+# stats over buckets
+tb_d_drip_stat <- tb_d_drip |> 
+  group_by(datetime, event_id) |> 
+  summarise(cml_drip = mean(cml_drip, na.rm = T),
+            sd = sd(cml_drip, na.rm = T)) 
 
 mod_d_drip <- crhm_output_newsim |> 
   left_join(tb_d_drip |> select(datetime, event_id) |> distinct()) |> 

@@ -9,7 +9,12 @@ read_obs_par <- function(path, par){
   return(crhm_output)
 }
 
-warm_events <- c('2022-04-23', '2022-06-14', '2022-06-24', '2023-05-08', '2023-06-15', '2023-06-21')
+warm_events <- c('2022-04-23',
+                 # '2022-06-14',
+                 '2022-06-24',
+                 '2023-05-08',
+                 '2023-06-15',
+                 '2023-06-21')
 
 obs_tree <-
   readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 

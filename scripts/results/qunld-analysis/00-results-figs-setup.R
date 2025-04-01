@@ -101,3 +101,77 @@ mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes
 
 # need cal value to get weight of tree in kg for instrument error check
 tree_cal_val_88 <- readRDS('./../../analysis/interception/data/loadcell/FFR_tree_cal_value_pluvio_fsd_closed.rds')
+
+## obs ----
+
+# warm tree specific events
+# these ones differ from the cold ones below and may include some precip
+warm_events <- c(
+  '2022-04-21',
+  '2022-04-23',
+  '2022-06-14',
+  '2022-06-23',
+  '2022-06-24',
+  '2023-03-14',
+  '2023-03-25',
+  '2023-03-26',
+  '2023-03-28',
+  '2023-04-13',
+  '2023-04-17',
+  '2023-05-08',
+  '2023-06-15',
+  '2023-06-21'
+)
+
+obs_tree_warm <-
+  readRDS(paste0(
+    'data/clean-data/warm_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
+  filter(event_id %in% warm_events)
+
+all(warm_events %in% obs_tree_warm$event_id)
+
+# cold tree events
+cold_events <- c(
+  # new ones
+  #'2021-12-27', # wind event some precip, maybe blowing snow redist.
+  # '2022-01-18', # wind event too much precip during (maybe blowing snow redistribution?)
+  '2022-02-04', # wind event
+  #'2022-02-21', # wind event unloading not associated with wind or other here
+  # '2022-02-24', # wind event , tree increased due to vapour deposition likely
+  # '2022-03-04', # unloading due to branch bending from warming
+  # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
+  
+  # OG
+  '2022-03-02', 
+  '2022-03-09',
+  '2022-03-20', 
+  '2022-03-24',  
+  '2022-03-29',  
+  '2022-12-01',
+  '2023-01-28',
+  '2023-02-24',
+  '2023-02-26'
+)
+obs_tree_cold <-
+  readRDS(paste0(
+    'data/clean-data/all_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
+  filter(event_id %in% cold_events)
+
+obs_tree <- rbind(obs_tree_cold  |> 
+                    select(datetime, event_id, observed = tree_mm),
+                  obs_tree_warm |> 
+                    select(datetime, event_id, observed = tree_mm)) 
+
+w_tree_q_unld_15 <- obs_tree |>
+  group_by(event_id) |> 
+  mutate(
+    dL = lag(observed) - observed,
+    dL = ifelse(dL < 0, 0, dL)
+  ) |>
+  select(datetime, event_id, tree_mm = observed, dL)

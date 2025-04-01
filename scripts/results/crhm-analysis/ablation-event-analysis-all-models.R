@@ -8,7 +8,9 @@
 base_path <- 'figs/crhm-analysis/model-comparison/'
 
 # plot weighed tree obs vs. sim facet by event ----
-options(ggplot2.discrete.colour= c("#000000", "#DF536B", "#61D04F", "#2297E6", "#CD0BBC"))
+options(ggplot2.discrete.colour= c("#000000", "#E69F00", "#56B4E9", "#009E73", "#999999"))
+
+# "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
 # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
 # "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
 obs_mod_tree_comp |> 
@@ -60,7 +62,43 @@ dL_hourly <- dL_fifteen |>
   mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
   group_by(datetime, event_id, event_type, name) |>
   summarise(value = sum(value)) 
-  
+ 
+dL_hourly_err_summary <- dL_hourly |> 
+  pivot_wider() |> 
+  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
+  filter(observed > 0) |> 
+  mutate(diff = observed - value,
+         name = factor(name, c('observed', 'simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
+  group_by(name, event_type, event_id) |>
+  summarise(
+    MB = mean(diff, na.rm = T),
+    MAE = mean(abs(diff), na.rm = T),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    NRMSE = RMSE / mean(observed, na.rm = T),
+    R = cor(observed, value),
+    R2 = R^2)
+
+options(ggplot2.discrete.colour= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
+
+ggplot(dL_hourly_err_summary, aes(name, MB, colour = name)) + 
+  geom_boxplot() +
+  facet_wrap(~event_type, scale = 'free') +
+  ylab('Mean Bias (mm)') +
+  xlab(element_blank()) +
+  theme(legend.position = 'none')
+
+ggsave(
+  paste0(
+    base_path,
+    'obs_mod_canopy_snow_load_event_type_mean_bias_boxplot_',
+    run_tag_updt,
+    '.png'
+  ),
+  width = 8,
+  height = 4,
+  device = png
+)
 
 dL_hourly_err_summary <- dL_hourly |> 
     pivot_wider() |> 
@@ -89,6 +127,16 @@ write.csv(dL_hourly_err_summary,
             run_tag_updt,
             '.csv'
           ))
+
+saveRDS(dL_hourly_err_summary,
+          paste0(
+            'tbls/',
+            'obs_mod_canopy_snow_load_err_hourly_event_type',
+            run_tag_updt,
+            '.rds'
+          ))
+
+options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 
 dL_hourly_err_summary |> 
   mutate(name = factor(name, c('simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
@@ -143,10 +191,11 @@ dL_hourly_err_summary |>
   rename(mod_name = name) |> 
   mutate(mod_name = factor(mod_name, c('simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
   pivot_longer(melt:sublimation) |> 
-  ggplot(aes(value, MB)) + 
+  ggplot(aes(value, MB, colour = mod_name)) + 
   geom_point() + facet_grid(mod_name~name) + 
   xlab('Fraction of Event Ablation (-)') +
-  ylab('Mean Bias (mm)')
+  ylab('Mean Bias (mm)') +
+  theme(legend.position = 'none')
 
 ggsave(
   paste0(

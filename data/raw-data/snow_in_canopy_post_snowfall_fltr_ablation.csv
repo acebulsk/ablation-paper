@@ -1,0 +1,99 @@
+from,to,class,quality,weighed_tree_quality,mostly_sublimation,bad_troughs,is_melt_event,notes
+2021-12-14 17:15:00,2021-12-18 12:00:00,,1,1,,,,no time lapse imagery here
+2021-12-19 16:30:00,2021-12-21 11:00:00,,3,1,,,,outlier very old snow from around 10 days ago still in tree.. small increment of snow interrupted the previous event... not affected by 5ms wind speed
+2021-12-27 08:30:00,2021-12-28 07:00:00,,1,1,,,,likely includes some wind redistribution
+2021-12-29 12:45:00,2021-12-29 22:30:00,,1,1,,,,
+2021-12-30 00:45:00,2022-01-01 14:45:00,,1,1,,,,long cold event with minimal unloading
+2022-01-04 09:15:00,2022-01-06 08:30:00,,1,3,,,,tree is mostly loading here
+2022-01-06 17:30:00,2022-01-06 23:30:00,,1,1,1,,,"troughs dont align with weighed tree loss, likely sublimation"
+2022-01-07 16:30:00,2022-01-07 17:30:00,,1,1,,,,
+2022-01-08 12:45:00,2022-01-08 16:15:00,,1,1,,,,
+2022-01-08 21:00:00,2022-01-08 23:45:00,,1,1,1,,,removed as sublimation event with minimal unloading obs
+2022-01-09 04:00:00,2022-01-09 15:00:00,,1,3,,,,"Following significant snowfall mixing with unloading, just the remaining few clumps left in this event."
+2022-01-18 07:45:00,2022-01-20 22:15:00,,1,1,,,,tree lost a lot more than troughts likely okay due to high sublimation and wind redistribution
+2022-02-01 10:30:00,2022-02-04 12:00:00,,3,3,,,,do not include snowing while unloading
+2022-02-03 04:30:00,2022-02-04 02:45:00,,1,1,,,,shorter period inbetween snowfall
+2022-02-04 05:00:00,2022-02-04 15:00:00,,1,1,,,,shorter period inbetween snowfall
+2022-02-21 02:00:00,2022-02-23 19:30:00,,1,1,,closed,,
+2022-02-24 12:00:00,2022-02-26 20:15:00,,1,1,,mixed,,
+2022-03-02 00:45:00,2022-03-02 19:45:00,,1,1,,,,Ended it a bit late into precip to make up for trough losses has implecations for the jitter filter if used otherwise cut shorter
+2022-03-05 05:00:00,2022-03-05 19:15:00,,1,1,,closed,,massive sublimation near the end of this event not captured by crhm modelled sublimation
+2022-03-06 04:00:00,2022-03-06 16:30:00,,1,3,,,,weighed tree spiked during this event due to tower lowering so no weighed tree data for sublimation calculation
+2022-03-07 23:30:00,2022-03-08 15:15:00,,3,3,,,,incremental precip during 
+2022-03-09 02:45:00,2022-03-10 23:00:00,,1,1,,,,ended before precip starts as high winds cause noise in lysimeters
+2022-03-15 05:00:00,2022-03-15 11:45:00,,1,1,,,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-15 15:45:00,2022-03-15 16:45:00,,1,1,,,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-15 20:30:00,2022-03-16 00:45:00,,1,1,,,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-16 11:00:00,2022-03-17 00:45:00,,1,1,,closed sparse,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-16 11:00:00,2022-03-16 22:30:00,,1,1,,mixed sparse,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-16 11:00:00,2022-03-17 09:30:00,,1,1,,closed mixed,1,mostly sublimation but confirmed drip insitu on notesa and big mass clump unloading here associated with warming and sublimation
+2022-03-20 02:00:00,2022-03-21 03:00:00,,1,1,,,,
+2022-03-24 09:45:00,2022-03-24 11:15:00,,1,1,1,mixed closed,,"very impressive sublimation event here, no unloading observed in troughs or in timelapse imagery, very clear sublimation of canopy snow"
+2022-03-24 09:45:00,2022-03-24 15:15:00,,1,1,1,mixed sparse,,"very impressive sublimation event here, no unloading observed in troughs or in timelapse imagery, very clear sublimation of canopy snow"
+2022-03-25 01:30:00,2022-03-25 10:30:00,,1,1,1,closed,,"very impressive sublimation event here, no unloading observed in troughs or in timelapse imagery, very clear sublimation of canopy snow"
+2022-03-29 08:45:00,2022-03-29 19:00:00,,3,1,1,,,sublimation event with no unloading confirmed low w tree
+2022-04-05 19:30:00,2022-04-05 20:30:00,,1,3,,closed mixed,,too small less than 1 mm 
+2022-04-05 19:30:00,2022-04-05 20:45:00,,1,3,,sparse,,too small less than 1 mm 
+2022-04-21 04:30:00,2022-04-21 08:15:00,,1,1,,sparse mixed,,significant ablation observed by the tree but not in the troughs so must be maily sublimation here
+2022-04-21 04:30:00,2022-04-22 00:15:00,,1,1,,closed,,significant ablation observed by the tree but not in the troughs so must be maily sublimation here
+2022-04-23 08:00:00,2022-04-23 19:15:00,,1,1,,mixed,,"smaller event, some rime ice right before this event starts"
+2022-04-23 08:00:00,2022-04-23 16:00:00,,1,1,,closed sparse,,"smaller event, some rime ice right before this event starts"
+2022-05-09 09:00:00,2022-05-10 18:00:00,,3,1,,,1,incremental precip during event so cannot filter out snowfall evidence of drip here in situ
+2022-05-20 21:15:00,2022-05-21 09:00:00,,3,1,,,1,most of the snow unloads while it is snowing prior to the start of this event
+2022-05-22 00:45:00,2022-05-22 09:00:00,,1,1,,mixed closed,,
+2022-05-22 05:45:00,2022-05-22 08:30:00,,1,1,,sparse mixed,,
+2022-06-14 22:45:00,2022-06-15 22:45:00,,3,1,,,1,"all snow out of the tree once the precip starts, will have to think about how to analyze this"
+2022-06-23 14:00:00,2022-06-23 17:30:00,,3,1,,,1,troughs leaking
+2022-06-24 13:00:00,2022-06-24 16:00:00,,1,1,,sparse,,everything seems okay just getting less unloading to troughs compared to tree it looks like
+2022-10-23 07:00:00,2022-10-24 02:30:00,,1,3,,,,weighed tree dead still so wont have corresponding sublimation data
+2022-10-25 10:00:00,2022-10-26 14:00:00,,1,3,,closed,,weighed tree dead still so wont have corresponding sublimation data
+2022-10-28 15:45:00,2022-10-29 22:15:00,,1,3,,,,weighed tree dead still so wont have corresponding sublimation data
+2022-10-31 20:15:00,2022-11-01 02:30:00,,1,3,,closed,,weighed tree dead still so wont have corresponding sublimation data
+2022-11-02 15:00:00,2022-11-03 09:15:00,,1,3,,sparse,,weighed tree dead still so wont have corresponding sublimation data
+2022-11-06 11:30:00,2022-11-06 19:00:00,,1,3,,closed,,weighed tree dead still so wont have corresponding sublimation data
+2022-11-06 17:30:00,2022-11-06 19:00:00,,1,3,,sparse mixed,,weighed tree dead still so wont have corresponding sublimation data
+2022-11-07 20:30:00,2022-11-13 14:45:00,,1,3,,,,weighed tree dead still so wont have corresponding sublimation data
+2022-11-16 20:00:00,2022-11-17 17:00:00,,1,3,,mixed closed,,
+2022-11-16 20:00:00,2022-11-17 06:00:00,,1,3,,sparse,,
+2022-11-20 16:00:00,2022-11-20 18:00:00,,1,3,,mixed sparse,,
+2022-11-27 20:15:00,2022-11-30 03:15:00,,1,3,,closed,,
+2022-11-27 20:15:00,2022-11-29 14:30:00,,1,3,,mixed sparse,,
+2022-12-01 15:15:00,2022-12-04 22:15:00,,1,1,,,,pluvio shows some inc in precip here but I confirmed on the timelapse imagery that we have blue sky so must have been snow blowing into the clearing 
+2022-12-06 20:30:00,2022-12-07 06:15:00,,1,1,,,,"looks like some evidence of rime ice occuring on the timelapse imagery over this time period, some wind redistribution at the begining"
+2022-12-19 02:15:00,2022-12-20 06:15:00,,3,3,,,,rime accretion event
+2022-12-21 13:15:00,2022-12-23 04:15:00,,1,3,,,,bad tree but some good unloading obs
+2022-12-25 01:15:00,2022-12-25 05:45:00,,1,1,,closed,,bad tree but some good unloading obs
+2022-12-28 04:00:00,2022-12-28 14:45:00,,1,1,,closed,,
+2022-12-29 17:00:00,2022-12-30 22:45:00,,1,1,1,sparse mixed,,
+2022-12-31 01:00:00,2022-12-31 03:45:00,,1,1,,,,
+2023-01-28 05:45:00,2023-02-02 10:00:00,,1,1,,,,incremental precip during this interval but blue skies observed on timelapse imagery so possibly snow redistribution into pluvio
+2023-02-08 09:45:00,2023-02-09 15:45:00,,1,1,1,,,sublimation event with no unloading confirmed low w tree
+2023-02-13 16:00:00,2023-02-13 17:45:00,,1,1,,,,
+2023-02-24 06:15:00,2023-02-24 20:00:00,,1,1,,,,pluvio shows snow over this time interval but non obsreved in timelapse imagery so could be some riming or blowing snow redistribution still a bit of snow in the tree at the end here but does not unload even with further big wind gusts so potentially some threshold effect here where a small amout of old snow has a harder time unloading as opposed to a larger amount of old snow
+2023-02-26 20:45:00,2023-02-27 06:00:00,,1,3,,,,stopping at the end of this event due to 1 mm fresh snowfall
+2023-02-27 10:45:00,2023-02-28 04:00:00,,1,3,,closed,,new event split up from previous long event which included some precip
+2023-02-28 11:00:00,2023-02-28 16:00:00,,1,1,1,,,sublimation event with no unloading confirmed low w tree .. maybe 1mm rime accumulation here on the weighed tree 
+2023-03-01 07:45:00,2023-03-01 22:30:00,,1,1,,,,new event which seemed to have just been missed
+2023-03-02 22:15:00,2023-03-03 12:15:00,,1,1,,closed,,new event which seemed to have just been missed
+2023-03-04 01:00:00,2023-03-04 03:45:00,,1,1,,,,new event which seemed to have just been missed
+2023-03-06 11:00:00,2023-03-07 20:00:00,,3,1,,mixed,,removed due to increasing tree and trough weight with no precip evident of rime accretion
+2023-03-14 11:00:00,2023-03-14 14:15:00,,1,1,,mixed closed,1,a bit of drip near the end of this event
+2023-03-14 11:00:00,2023-03-16 10:30:00,,1,1,,sparse,1,a bit of drip near the end of this event
+2023-03-25 05:00:00,2023-03-25 13:15:00,,1,1,,,1,below zero but some mass unloading due to warming and lowish winds
+2023-03-25 14:45:00,2023-03-25 20:00:00,,1,1,,mixed,1,
+2023-03-26 00:15:00,2023-03-26 17:45:00,,1,1,,,1,below zero but some mass unloading due to warming and lowish winds
+2023-03-27 20:15:00,2023-03-28 07:45:00,,1,1,1,,,some riming after this event maybe > 5mm as no precip observed in pluvio or timelapse or lysimeters but tree increases substantially
+2023-03-28 09:15:00,2023-03-28 17:15:00,,1,1,,,1,very long event with refreezing overnight and melt during the day
+2023-03-28 21:00:00,2023-03-29 16:30:00,,1,1,,closed,,
+2023-03-31 02:30:00,2023-03-31 06:30:00,,1,1,,closed,,
+2023-04-03 07:00:00,2023-04-03 18:15:00,,1,1,,,1,this was cut off early before as 5 mm of precip observed at PWL pluvio but this must have been some snow caked to the rim as no precip observed at FRS or timelapse or lysimeters
+2023-04-04 01:00:00,2023-04-04 12:30:00,,1,1,,,,
+2023-04-04 20:30:00,2023-04-05 16:15:00,,1,1,,,,
+2023-04-12 21:45:00,2023-04-13 11:15:00,,1,1,,,1,had to split into 3 events due to small convective precip breaking up large snowfall event that preceeds this
+2023-04-14 10:00:00,2023-04-14 16:15:00,,1,1,,closed sparse,,
+2023-04-14 10:00:00,2023-04-14 13:45:00,,1,1,,closed mixed,,
+2023-04-16 13:30:00,2023-04-16 18:15:00,,3,1,,,,troughs loosing water here as are close to full and measure much less than TBs had to split into 3 events due to small convective precip breaking up large snowfall event that preceeds this
+2023-04-17 12:30:00,2023-04-17 16:30:00,,1,1,,closed,,medium trough close to full
+2023-05-08 08:30:00,2023-05-08 15:45:00,,1,1,,,1,temps above 0 deg celcius added this for tipping bucket analysis.. sparse trough leaks do not use
+2023-06-15 07:00:00,2023-06-15 12:00:00,,3,1,,closed,1,only medium trough good here 
+2023-06-21 06:00:00,2023-06-21 10:15:00,,3,1,,mixed,1,keep a close eye on medium trough here as looks close to full 

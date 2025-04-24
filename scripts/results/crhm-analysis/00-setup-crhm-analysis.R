@@ -6,10 +6,11 @@ options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 
 bad_events <- c(
   '2022-06-23', # crhm rain to snow paritioning is off here
+  '2023-04-13',
   # '2022-06-24', # crhm rain to snow paritioning is off here
-  # '2023-03-25', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
-  # '2023-03-26', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
-  # '2023-03-28', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
+  '2023-03-25', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
+  '2023-03-26', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
+  '2023-03-28', # confirmed obs are good for this day but not getting the unloading right, maybe temp induced unloading due to slight melt, on part of the canopy unloading a lot of snow
   '2022-02-04', # baseline crhm gets this (write answer wrong reason) wind event as temp increases during the wind unloading. rm as is slightly misleading since it is observed to be wind unloading
   '2023-01-28' # crhm gets this again write answer wrong reason due to time intercepted and maybe some sublimation
 )
@@ -30,7 +31,7 @@ run_tag_updt <- "new_event_set_output.txt"
 run_tag_updt <- "test_LW_in_eq_vf_4pir"
 run_tag_updt <- "ess03_vt0.0_avs_0.65_fix5"
 run_tag_updt <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
-
+run_tag_updt <- "no_subl_unld_updt_wind_pars2"
 
 to_long_tb <- function(unloading_start_date, end_date, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag){
   datetime <- seq(unloading_start_date, end_date, 900)
@@ -142,7 +143,7 @@ canopy_snow_events <-
   read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) 
+          event_id = format(from, "%Y-%m-%d %H")) 
 
 events_fltr_long <-
   purrr::pmap_dfr(canopy_snow_events, to_long)
@@ -197,6 +198,7 @@ cold_events <- c(
   '2022-02-04', # wind event
   #'2022-02-21', # wind event unloading not associated with wind or other here
   # '2022-02-24', # wind event , tree increased due to vapour deposition likely
+  #'2022-02-28', # too small
   # '2022-03-04', # unloading due to branch bending from warming
   # '2022-03-16', # wind event too much precip during (maybe blowing snow redistribution?
   
@@ -386,30 +388,6 @@ mod_tree <- crhm_output_updated |>
 
 obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree)
 
-### BASELINE CRHM ABLATION MODEL from Ellis2010/HP98 ----
-# Select model run with all unloading events weighed tree snow load assimilated
-prj_base <- "ffr_closed_canopy_cc0.88_crhm_baseline"
-
-run_tag_base <- "new_event_set"
-
-path <- list.files(
-  paste0(
-    "../../analysis/crhm-analysis/output/",
-    prj_base
-  ),
-  pattern = run_tag_base,
-  full.names = T
-)
-
-stopifnot(length(path) == 1)
-
-crhm_output_baseline <- CRHMr::readOutputFile(
-  path,
-  timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
-
-mod_tree <- crhm_output_baseline |> 
-  select(datetime, ellis2010 = Snow_load.1)
-
 obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree) |> 
   left_join(mod_d_drip_smry_frac)  |>
   mutate(event_type = case_when(
@@ -419,3 +397,4 @@ obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree) |>
     TRUE ~ 'mixed'
   )
   )
+

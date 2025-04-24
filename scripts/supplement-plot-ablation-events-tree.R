@@ -61,7 +61,7 @@ canopy_snow_events <-
   read.csv('../../analysis/ablation/data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) 
+          event_id = format(from, "%Y-%m-%d %H")) 
 events_fltr_long <-
   purrr::pmap_dfr(canopy_snow_events, to_long) |> 
   select(-quality)

@@ -25,7 +25,7 @@ to_long <- function(from,
   return(out)
 }
 
-load_suffix <- 'fsd_closed_0.88'
+load_suffix <- 'fsd_closed_0.88' # corresponds to avg of tipping buckets
 # load_suffix <- 'fsd_cal_for_each_trough'
 
 # weighed tree zeroed prior to snowfall events
@@ -41,7 +41,7 @@ canopy_snow_events <-
   read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) 
+          event_id = format(from, "%Y-%m-%d %H")) 
 
 events_fltr <- canopy_snow_events 
 

@@ -9,20 +9,15 @@ good_loads <- c('mixed', 'sparse', 'closed', 'tree_mm')
 
 raw_data_path <- 'data/raw-data'
 
-# file.copy(from = '../../analysis/ablation/data/snow_in_canopy_post_snowfall.csv',
-#           to = raw_data_path,
-#           recursive = F,
-#           overwrite = F,
-#           copy.date = T)
-canopy_snow_events <- read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
+# These events were defined with the SCLs in mind, so the events stop when the
+# SCLs start loosing mass due to wind transport/melt
+canopy_snow_events <- read.csv('data/raw-data/snow_in_canopy_post_snowfall_fltr_ablation.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) |> filter(quality < quality_th)
+         event_id = format(from, "%Y-%m-%d %H")) |> filter(quality < quality_th)
 
 # these are periods where we know snow is in the canopy and unloading is possible
-canopy_snow_long <- purrr::pmap_dfr(canopy_snow_events, to_long_melt)
-
-canopy_snow_long$event_id <- as.Date(canopy_snow_long$event_id)
+canopy_snow_long <- purrr::pmap_dfr(canopy_snow_events, to_long_melt_subl)
 
 # Load the canopy snow load periods during and after snowfall. We need this for
 # calculating the sublimation rate.
@@ -35,7 +30,7 @@ canopy_snow_long$event_id <- as.Date(canopy_snow_long$event_id)
 canopy_snow_events_pre_post <- read.csv('data/raw-data/snow_in_canopy_pre_and_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'), 
-         event_id = as.Date(from, tz = 'Etc/GMT+6'),
+          event_id = format(from, "%Y-%m-%d %H"),
          weighed_tree_quality = 1)
 
 canopy_snow_events_pre_post$event_id <- as.Date(canopy_snow_events_pre_post$event_id)
@@ -61,17 +56,18 @@ stopifnot(bad_ends == 0)
 
 # Load CRHM sublimation outputs ----
 
+# this is the pom98 dimensionless sublimation we multiply by the obs tree load
 # file.copy(from = '../../analysis/crhm-analysis/output/2023-08-09-16-29-11_fortress_forest_ridge_ac_output.txt',
 #           to = 'data/crhm-output',
 #           recursive = F,
 #           overwrite = F,
 #           copy.date = T)
-mod_df <- CRHMr::readOutputFile(
-  'data/crhm-output/2023-08-09-16-29-11_fortress_forest_ridge_ac_output.txt',
-  timezone = 'Etc/GMT+6'
-)
-
-mod_subl_cpy <- mod_df |> select(datetime, diml_subl_rate = pot_subl_cpy.1)
+# mod_df <- CRHMr::readOutputFile(
+#   'data/crhm-output/2023-08-09-16-29-11_fortress_forest_ridge_ac_output.txt',
+#   timezone = 'Etc/GMT+6'
+# )
+# 
+# mod_subl_cpy <- mod_df |> select(datetime, diml_subl_rate = pot_subl_cpy.1)
 
 weighed_tree_zeroed <- readRDS(paste0(
   'data/clean-data/unloading_events_zero_weighed_tree_kg_m2_pre_post_cnpy_snow_',
@@ -136,9 +132,16 @@ w_tree_kg_m2 <- readRDS(paste0('data/raw-data/treefort_weighed_tree_cal_kg_m2_pl
   # just remove the one spike due to tower lowering
   filter(datetime !=as.POSIXct('2022-03-07 12:00:00', tz = 'Etc/GMT+6')) 
 
-# file.copy('../../analysis/interception/data/loadcell/treefort_scl_qaqc.rds',
+
+# file.copy('../../analysis/interception/data/loadcell/treefort_load_main.rds',
 #           to = raw_data_path,
 #           overwrite = F,
 #           copy.date = T)
-scl_df_kg_m2 <- readRDS('data/raw-data/treefort_scl_qaqc.rds')
-
+scl_df_kg_m2_raw <- readRDS('data/raw-data/treefort_load_main.rds')
+# scl_df_kg_m2_raw |> select(-c(TB1_mm:TB4_mm)) |> pivot_longer(!datetime) |> 
+#   rbind(ffr_met_long |> filter(name == 'p')) |> 
+#   ggplot(aes(datetime, value, colour = name)) + 
+#   geom_line() +
+#   facet_grid(rows = vars(name), scales = 'free_y') +
+#   theme(legend.position = 'none')
+# plotly::ggplotly()

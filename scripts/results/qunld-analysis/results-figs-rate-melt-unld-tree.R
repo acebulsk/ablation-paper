@@ -3,6 +3,9 @@
 # Canopy snow unloading is determined as residual ablation after removing
 # q_subl^veg, q_drip, q_unld^wind
 
+options(ggplot2.discrete.colour= c("#000000", "#DF536B"))
+
+
 library(tidyverse)
 
 load_suffix <- 'fsd_closed_0.88'
@@ -14,7 +17,8 @@ bad_events <- c('2022-06-23',
 
 good_events <- mod_d_drip_smry_frac |> 
   filter(melt > 0.50,
-         !event_id %in% bad_events)
+         sublimation < 0.1)#,
+         #!event_id %in% bad_events)
 
 # LOAD DATA ----
 
@@ -126,11 +130,11 @@ obs_mod$tree_labs <- as.numeric(as.character(obs_mod$tree_labs))
 obs_mod_fltr <- obs_mod |> 
   filter(delmelt_veg_int.1 > 0,
          unld_melt_ratio < 20,
-         # est_q_unld_melt >= 0,
+         est_q_unld_melt >= 0,
          # event_id %in% events_w_melt,
          # !event_id %in% c('2022-06-14'),
          dL > 0.02,
-         # tree_mm > 2,
+         tree_mm > 2,
          # hru_p.1 == 0,
          # hru_u.1 < 1
   )
@@ -147,7 +151,17 @@ obs_mod_fltr_binned <- obs_mod_fltr |>
   group_by(tree_labs, event_id) |>
   summarise(melt = sum(delmelt_veg_int.1),
             unld = sum(est_q_unld_melt),
-            unld_melt_ratio = unld/melt) 
+            unld_melt_ratio = unld/melt,
+            unld_melt_ratio_sd = NA,
+            name = 'weighed tree unld / crhm drip') |> 
+  filter(unld > 0) |> 
+  select(tree_labs, event_id, unld_melt_ratio, unld_melt_ratio_sd, name) 
+
+
+tb_unld_melt_ratio <- 
+  readRDS('data/tipping-buckets/tipping_bucket_event_frac_unld_melt.rds')
+
+unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio)
 
 # option 1b avg over events
 # obs_mod_fltr_binned <- obs_mod_fltr |>
@@ -173,16 +187,15 @@ obs_mod_fltr_binned <- obs_mod_fltr |>
 # 
 #             )
 
-bin_unld_melt_lm <- lm(unld_melt_ratio ~ tree_labs, data = obs_mod_fltr_binned)
-summary(bin_unld_subl_lm)
+bin_unld_melt_lm <- lm(unld_melt_ratio ~ tree_labs, data = unld_melt_ratio)
 summary(bin_unld_melt_lm)
 saveRDS(bin_unld_melt_lm, 'data/lm_q_drip_vs_q_unld_melt.rds')
 # Extract the coefficient (slope) from the model
 r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
 
-ggplot(obs_mod_fltr_binned,
+ggplot(unld_melt_ratio,
        aes(tree_labs, unld_melt_ratio)) +
-  geom_point() +
+  geom_point(aes(colour = name)) +
   geom_smooth(method = "lm", se = F) +  # Use method="lm" for linear model
   annotate(
       'label',
@@ -196,7 +209,8 @@ ggplot(obs_mod_fltr_binned,
   labs(
     x = "Canopy Snow Load (mm)",
     y = "Unloading to Melt Ratio (-)"
-  ) 
+  ) +
+  theme(legend.position = 'bottom')
 
 ggsave(
   'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png',

@@ -129,14 +129,14 @@ subl_event_filter <- obs_mod |>
 
 obs_mod_fltr <- obs_mod |> 
   filter(#delmelt_veg_int.1 == 0,
-         # est_q_unld_subl >= 0,
+         est_q_unld_subl >= 0,
          # est_q_unld_subl < 1,
          delsub_veg_int.1 > 0,
          # Subl_Cpy.1 < 0.175,
          dL > 0.02,
          # tree_mm > 2,
          event_id %in% subl_event_filter$event_id,
-         hru_u.1 < 1.25
+         hru_u.1 < 1.25# important to remove some outliers due to wind unloading
          # hru_t.1 < 0
   ) |> 
   # convert mm/interval to mm/hour

@@ -32,7 +32,7 @@ to_long_short <- function(from, to, class, quality, notes, event_id){
 canopy_snow_events_pre_post <- read.csv('data/raw-data/snow_in_canopy_pre_and_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'), 
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) 
+          event_id = format(from, "%Y-%m-%d %H")) 
 
 canopy_snow_events_pre_post$event_id <- as.Date(canopy_snow_events_pre_post$event_id)
 
@@ -43,7 +43,7 @@ canopy_snow_long_pre_post <- purrr::pmap_dfr(canopy_snow_events_pre_post, to_lon
 canopy_snow_events <- read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-         event_id = as.Date(from, tz = 'Etc/GMT+6')) |> filter(quality < quality_th)
+          event_id = format(from, "%Y-%m-%d %H")) |> filter(quality < quality_th)
 
 for(row in 1:nrow(canopy_snow_events)){
   from_flag <- canopy_snow_events$from[row] %in% canopy_snow_long_pre_post$datetime

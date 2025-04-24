@@ -43,7 +43,7 @@ if(hourly == T){
     # mutate(datetime = as.POSIXct(datetime, tz = 'Etc/GMT+6')) |>
     # end to hourly
     inner_join(canopy_snow_long, by = 'datetime') |>  # limit to only periods where snow is in the canopy
-    filter(p == ppt_fltr) |> # limit to periods where there is no above canopy precip so our troughs are measuring unloading + drip and not throughfall
+    # filter(p == ppt_fltr) |> # limit to periods where there is no above canopy precip so our troughs are measuring unloading + drip and not throughfall
     mutate(diml_subl_rate = -diml_subl_rate) |> 
     select(datetime, event_id, name = tree_cal_trough_name, tree_cal_cc, t, t_ice_bulb, u, diml_subl_rate, tau_canopy_top, tau_canopy_low, tree_mm) 
 }

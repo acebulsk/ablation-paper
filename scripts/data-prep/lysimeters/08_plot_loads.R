@@ -64,5 +64,5 @@ lapply(
   plot_facet_two_vars,
   cur_load_met = plot_df,
   cur_var_names = plot_df$name |> unique(),
-  filename_prefix = 'figs/supplement/load_plots/timeseries_lysimeters_mod_obs_subl_'
+  filename_prefix = 'figs/supplement/load_plots/scl_mod_subl_w_tree/timeseries_lysimeters_mod_obs_subl_'
 )

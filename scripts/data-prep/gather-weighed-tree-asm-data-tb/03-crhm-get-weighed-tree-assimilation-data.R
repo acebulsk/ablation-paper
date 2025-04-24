@@ -19,7 +19,11 @@ warm_events <- c(
   '2023-06-21'
 )
 warm_tree_events_df <-
-  readRDS('data/clean-data/warm_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  readRDS(paste0(
+    'data/clean-data/warm_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
   select(datetime, event_id, obs_snow_load = tree_mm) |> 
   group_by(event_id) |> 
   summarise(
@@ -51,9 +55,12 @@ cold_events <- c(
   '2023-02-24',
   '2023-02-26'
 )
-
 cold_tree_events_df <- 
-  readRDS('data/clean-data/all_tree_events_zero_weighed_tree_fsd_closed_0.88_kg_m2_post_cnpy_snow.rds') |> 
+  readRDS(paste0(
+    'data/clean-data/all_tree_events_zero_weighed_tree_',
+    load_suffix,
+    '_kg_m2_post_cnpy_snow.rds'
+  )) |> 
   select(datetime, event_id, obs_snow_load = tree_mm) |> 
   group_by(event_id) |> 
   summarise(

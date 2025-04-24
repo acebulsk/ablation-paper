@@ -1,4 +1,5 @@
 # Bring in values for paper
+model_run_tag <- 'no_subl_unld_updt_wind_pars'
 fig_tbl_tag <- 'compare_baseline_updated_psp_w_new_wind_unld_w_temp_par'
 
 obs_mod_w_tree_fig <- paste0(
@@ -7,7 +8,13 @@ obs_mod_w_tree_fig <- paste0(
   '/obs_mod_canopy_snow_load.png'
 )
 
-# mod_coef_wind <- readRDS('data/model_coef_wind_temp_unld_per_second.rds')
+lm_multi_reg_tbl <- readRDS('data/stats/lm_multi_reg_q_unld_bins.rds')
+
+melt_only_r2 <- lm_multi_reg_tbl$R2[lm_multi_reg_tbl$`Model Name` == 'M9']
+melt_tree_only_r2 <- lm_multi_reg_tbl$R2[lm_multi_reg_tbl$`Model Name` == 'M5']
+
+wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') 
+q_unld_wind_r2 <- wind_err_tbl$Value[wind_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
 mod_coef_wind <- readRDS('data/model_coef_wind_unld_per_second.rds') # prior to adding temp inside wind unld fun
 mod_coef_duration <- readRDS('data/model_coef_duration_unld_per_second.rds')
 
@@ -27,23 +34,15 @@ q_unld_subl_p <-  summary(q_unld_subl_lm)$coefficients[2, 4] |> round(7)
 event_met <- readRDS('data/ablation_event_met_summary.rds') |> 
   select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 
   mutate(across(t:Qsi, round, 2))
-obs_mod_w_tree_err_tbl <- readRDS("tbls/crhm-snow-load-vs-wtree-errortbl_by_event_compare_baseline_updated_psp_w_new_wind_unld_w_temp_par.rds") |> 
-  filter(name == 'simulated_updated') |> 
-  select(event_id, 
-         `Mean Bias`,
-         `RMS Error`, 
-         `r^2`)
+
 event_ablation_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
 
 event_met_abl_frac <- left_join(event_met, event_ablation_frac)
 
-obs_mod_w_tree_err_tbl_typed <- read.csv('tbls/obs_mod_canopy_snow_load_err_hourly_event_type0.2_melt_ratio_0.1.csv')
-
-manuscript_run_tag <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
 obs_mod_stats_avg <- readRDS(paste0(
   'tbls/',
   'obs_mod_canopy_snow_load_err_tbl_avg_',
-  manuscript_run_tag,
+  model_run_tag,
   '.rds'
 ))
 
@@ -53,7 +52,7 @@ old_mods_mb_range <- obs_mod_stats_avg$MB[!obs_mod_stats_avg$name == 'simulated_
 obs_mod_stats_event_avg <- readRDS(paste0(
   'tbls/',
   'obs_mod_canopy_snow_load_err_hourly_event_type',
-  manuscript_run_tag,
+  model_run_tag,
   '.rds'
 ))
 
@@ -62,7 +61,7 @@ melt_new_model_mb_avg <- obs_mod_stats_event_avg |>
   pull(MB) |> 
   round(2)
 
-melt_new_model_mb_avg <- obs_mod_stats_event_avg |>
+melt_other_mb_avg <- obs_mod_stats_event_avg |>
   filter(event_type == 'melt', !name == 'simulated_new') |>
   pull(MB) |> 
   range() |> 

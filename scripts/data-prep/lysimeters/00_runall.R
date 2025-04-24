@@ -4,6 +4,10 @@ library(plotly)
 library(viridis)
 library(ggpubr)
 
+library(CRHMr)
+library(weatherdash)
+library(wxlogR)
+
 Lmax <- 50 # after Storck2002
 quality_th <- 3
 options(ggplot2.discrete.colour= c("#000000", "#E69F00", "#56B4E9"))

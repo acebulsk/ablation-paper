@@ -46,24 +46,31 @@ mod_temps <- crhm_output_newsim |>
   ) |> 
   mutate(CRHM_Tsnow_new = CRHM_Tsnow_new - 2.7316e2)
 
-mod_rh_u <- crhm_output_newsim |> 
+mod_rh_u_p <- crhm_output_newsim |> 
   select(datetime, 
          wind_speed = hru_u.1,
-         RH = hru_rh.1
+         RH = hru_rh.1,
+         rain = hru_rain.1
   ) |> 
   left_join(select_events_long) |> 
-  pivot_longer(c(wind_speed, RH)) |> 
-  mutate(group = ifelse(name == 'RH', 'Relative Humidity (%)', 'Wind Speed (m/s)'))
+  group_by(event_id) |> 
+  mutate(rain = cumsum(rain)) |> 
+  pivot_longer(c(wind_speed, RH, rain)) |> 
+  mutate(group = case_when(
+        name == 'RH' ~ 'Relative Humidity (%)',
+        name == 'wind_speed' ~ 'Wind Speed (m/s)',
+        name == 'rain' ~ 'Cumulative Rainfall (mm)'
+  ))
 
 obs_mod_temps <- left_join(mod_temps, irtc_temps, by = 'datetime') |> 
   left_join(select_events_long) |> 
   pivot_longer(c(CRHM_hru_t:IRTC_trunk)) |> 
   filter(abs(value) < 100) |> 
   mutate(group = 'Temperature (°C)') |> 
-  rbind(mod_rh_u)
+  rbind(mod_rh_u_p)
 
 event <- unique(select_events_long$event_id)[1]
-event <- '2023-03-25'
+event <- '2023-06-15'
 for (event in unique(select_events_long$event_id)) {
 
   # calculate stats on obs vs mod tree

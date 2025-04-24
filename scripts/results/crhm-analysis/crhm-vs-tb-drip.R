@@ -13,7 +13,9 @@ tb_d_drip <- tb_data_zeroed |>
 # stats over buckets
 tb_d_drip_stat <- tb_d_drip |> 
   group_by(datetime, event_id) |> 
-  summarise(cml_drip = mean(cml_drip, na.rm = T),
+  summarise(
+    name = 'TB_mean',
+    cml_drip_mean = mean(cml_drip, na.rm = T),
             sd = sd(cml_drip, na.rm = T)) 
 
 mod_d_drip <- crhm_output_newsim |> 
@@ -23,15 +25,23 @@ mod_d_drip <- crhm_output_newsim |>
          name = 'crhm_drip') |> 
   select(datetime, event_id, name, dU = crhm_drip) |> 
   group_by(event_id) |> 
-  mutate(cml_drip = cumsum(dU),
-         cml_drip = cml_drip - first(cml_drip)) # so each event starts at 0
+  mutate(cml_drip_mean = cumsum(dU),
+         cml_drip_mean = cml_drip_mean - first(cml_drip_mean)) # so each event starts at 0
 
-obs_mod_cml_drip <- rbind(tb_d_drip, mod_d_drip)
+obs_mod_cml_drip <- rbind(tb_d_drip_stat, mod_d_drip)
 
 obs_mod_cml_drip |> 
   filter(!is.na(event_id)) |> 
-  ggplot(aes(datetime, cml_drip, colour = name)) + 
+  ggplot(aes(datetime, cml_drip_mean, colour = name)) + 
   geom_line() +
+  geom_ribbon(
+    data = . %>% filter(name == "TB_mean"),
+    aes(ymin = cml_drip_mean - sd, 
+        ymax = cml_drip_mean + sd,
+        fill = "± 1 SD"),
+    alpha = 0.3,
+    colour = NA
+  ) +
   facet_wrap(~event_id, nrow = 5, scales = 'free') +
   ylab('Cumulative Drip (mm)') +
   xlab(element_blank())
@@ -75,7 +85,7 @@ met_smry <- crhm_output_newsim |>
   
 event_stats_indiv_tb <- left_join(tb_d_drip_smry, tree_dL_smry) |> 
   left_join(mod_subl_smry) |> 
-  left_join(wind_smry) |> 
+  left_join(met_smry) |> 
   mutate(
     unld_melt = obs_cml_dL - obs_cml_drip - mod_cml_subl,
     frac_unld_melt = unld_melt/obs_cml_drip) |> 
@@ -99,9 +109,6 @@ event_frac_unld_melt <- event_stats_indiv_tb |>
     mean_ = mean(frac_unld_melt, na.rm = T),
     sd_ = sd(frac_unld_melt, na.rm = T))
 
-
-
-
 ggplot(event_frac_unld_melt, aes(obs_cml_dL, mean_)) +
   geom_point() +
   geom_errorbar(aes(ymax = mean_+sd_, ymin = mean_-sd_)) +
@@ -120,6 +127,19 @@ ggsave(
   height = 4
 )
 
+event_frac_unld_melt_out <- event_frac_unld_melt |> 
+  mutate(name = 'weighed tree unld / tipping bucket drip') |> 
+  select(tree_labs = obs_cml_dL,
+         event_id,
+         unld_melt_ratio = mean_,
+         unld_melt_ratio_sd = sd_,
+         name
+         )
+
+saveRDS(
+  event_frac_unld_melt_out,
+  'data/tipping-buckets/tipping_bucket_event_frac_unld_melt.rds'
+)
 
 # plot w tree with obs drip 
 # 

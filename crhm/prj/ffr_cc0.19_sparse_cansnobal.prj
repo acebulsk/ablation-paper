@@ -11,7 +11,7 @@ Macros:
 ######
 Observations:
 ######
-/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data.obs
+/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data_cc0.19.obs
 ######
 Dates:
 ######
@@ -138,9 +138,9 @@ CanopyVectorBased CanopyWindSwitch <0 to 1>
 CanopyVectorBased Gap_diameter <10 to 1000>
 10 
 CanopyVectorBased Cc <0 to 1>
-0.88
+0.19
 CanopyVectorBased LAI <0.1 to 20>
-6.7 
+0.45 
 CanopyVectorBased Lmax <0 to 100>
 50
 CanopyVectorBased Surrounding_Ht <0.001 to 100>

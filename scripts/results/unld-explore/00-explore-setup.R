@@ -25,6 +25,8 @@ met_unld_w_bins <-
   ) |>
   left_join(wind_binned) |> 
   left_join(temp_binned) |> 
+  left_join(tau_binned) |> 
+  left_join(ti_dep_binned) |> 
   left_join(ft_met) |> 
   filter(
     # name %in% scl_names,
@@ -154,4 +156,84 @@ summarise_met_data <- function(df, bin_col1, bin_col2, min_n, min_snow) {
     ) |> 
     pivot_longer(cols = {{ bin_col1 }}) |> 
     filter(n >= min_n, sum_snow > min_snow)
+}
+
+summarize_by_predictors <- function(df, predictor_vars) {
+  df |> 
+    filter(!is.na(tree_mm)) |> 
+    group_by(across(all_of(predictor_vars))) |> 
+    summarise(
+      q_unl_avg = mean(q_unl, na.rm = TRUE),
+      q_unl_sd = sd(q_unl, na.rm = TRUE),
+      sd_low = ifelse((q_unl_avg - q_unl_sd) < 0, 0, q_unl_avg - q_unl_sd),
+      sd_hi = q_unl_avg + q_unl_sd,
+      ci_low = quantile(q_unl, 0.05, na.rm = TRUE),
+      ci_hi = quantile(q_unl, 0.95, na.rm = TRUE),
+      sum_snow = sum(dU, na.rm = TRUE),
+      n = n(),
+      .groups = "drop"
+    ) |> 
+    filter(n >= 3, sum_snow > 0.1)
+}
+
+# Main function to generate linear model summaries
+generate_lm_model_table <- function(df_raw, predictors_named) {
+  
+  # Ensure 'tree_labs' is always included in the model
+  fixed_predictor <- "L"
+  
+  # remove tree here to vary the other ones
+  variable_predictors <- setdiff(names(predictors_named), fixed_predictor)
+  
+  combos <- unlist(
+    lapply(1:length(variable_predictors), function(i) combn(variable_predictors, i, simplify = FALSE)),
+    recursive = FALSE
+  )
+  
+  format_estimate <- function(estimate, pval) {
+    sig <- case_when(
+      pval < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+    sprintf("%.2f (%s)", estimate, sig)
+  }
+  
+  results <- purrr::map_dfr(combos, function(vars) {
+    # Include 'tree_labs' in the combination
+    var_names_with_tree <- c(fixed_predictor, vars)
+    
+    actual_vars <- unname(predictors_named[var_names_with_tree])
+    
+    df_smry <- summarize_by_predictors(df_raw, actual_vars)
+    
+    if (nrow(df_smry) == 0) return(NULL)
+    
+    formula <- as.formula(paste("q_unl_avg ~", paste(actual_vars, collapse = " + ")))
+    model <- lm(formula, data = df_smry)
+    tidy_model <- broom::tidy(model)
+    glance_model <- broom::glance(model)
+    
+    # Initialize blank terms
+    terms <- setNames(rep("—", length(predictors_named)), names(predictors_named))
+    
+    for (term in tidy_model$term) {
+      if (term == "(Intercept)") next
+      estimate <- tidy_model$estimate[tidy_model$term == term]
+      pval <- tidy_model$p.value[tidy_model$term == term]
+      name <- names(predictors_named)[predictors_named == term]
+      terms[[name]] <- format_estimate(estimate, pval)
+    }
+    
+    intercept_row <- tidy_model |> dplyr::filter(term == "(Intercept)")
+    intercept_val <- format_estimate(intercept_row$estimate, intercept_row$p.value)
+    
+    tibble::tibble(
+      intercept = intercept_val,
+      !!!setNames(terms, names(terms)),
+      Adj_R2 = round(glance_model$adj.r.squared, 2),
+      AIC = round(glance_model$AIC, 1)
+    )
+  })
+  
+  return(results)
 }

@@ -1,19 +1,26 @@
 ---
-title: "Revisiting Canopy Snow Ablation Parameterisations: Insights from In-Situ Observations in the Canadian Rockies"
+title: "Ablation of Intercepted Snow: Insights from In-Situ Observations in the Canadian Rockies"
 format: 
   docx:
     reference-doc: ../config/snow-int-paper_NEW2_comp.docx
     number-sections: true
     toc: false
     lang: en-CA
-  # pdf
-  # html:
-  #   toc: false
-  #   self-contained: true
+  pdf:
+    pdf-engine: latexmk
+    pdf-engine-opt: -xelatex
+    colorlinks: false
+    keep-tex: true
+    # latex-clean: false # keeps log file
+    number-sections: true
+    toc: false
+    fig-pos: H # makes figs appear in the location specified. without this they sometimes appear in the middle of a paragraph.
+    linestretch: 1.5 # set inline instead
 editor: source
 bibliography: ../../papers/bibtex/better-bibtex.bib
 csl: '../../papers/bibtex/csl-styles/apa-disable-disambiguate-add-names.csl'
 ---
+\setstretch{1.5} 
 
 <!-- For most journals, Research Articles are allowed to be up to 25 publication units (PU), where 1 PU is 500 words or 1 display element (figure or table). Research Letters for Geophysical Research Letters have a maximum length of 12 publication units. Longer papers are not considered in GRL and will be returned for shortening. -->
 
@@ -48,8 +55,8 @@ John W. Pomeroy^1^ (ORCID ID - 0000-0002-4782-7457)
 
 **Key Points:**
 
--   New insights on the processes driving canopy snow ablation are presented based on in-situ observations and a revised process-based hydrological model.
--   Canopy snow unloading was observed to be strongly associated with wind speed, melt and sublimation.
+-   New insights on the processes driving canopy snow ablation are presented based on in-situ observations and simulations from a novel process-based hydrological model.
+-   Canopy snow unloading was observed to be strongly associated with wind speed and canopy snowmelt.
 -   Implementation of a revised canopy snow energy balance and unloading routine resulted in enhanced prediction of canopy snow ablation particularly for warm events compared to conventional approaches.
 
 # Introduction
@@ -60,6 +67,10 @@ Research Questions:
 
 1. How does air temperature, wind, canopy snow sublimation and snowmelt influence the rate of snow unloading?
 
+2. To what extent do current theoretical models of canopy snow ablation align with in-situ observations?
+
+3. What modifications of existing models, if any, are necessary to accurately represent ablation of snow intercepted in the canopy and what is the performance of the updated model?
+
 Hypotheses:
 
   a. Melt induces unloading (loss of structural integrity, particle bond weakening, lubrication)
@@ -67,54 +78,54 @@ Hypotheses:
   c. Wind induces unloading (shear stress on snow, wind erosion and branch movement)
   d. Temperature induces unloading (increased elasticity of branches)
 
-2. To what extent do current theoretical models of canopy snow ablation align with in-situ observations?
-
-3. What modifications of existing models, if any, are necessary to accurately represent ablation of snow intercepted in the canopy and what is the performance of the updated model?
-
 <!-- ![The @Ellis2010 and @Floyd2012 predicted unloading and drip rate (left) and the @Roesch2001 unloading rate (right) with increasing air temperature. Wind speed for the RW01 parameterisation was set to zero.](figs/examples/unloading_drip_hp98_rw01.png){#fig-unl-ex-temp} -->
 
 <!-- ![The @Roesch2001 (RW01) predicted unloading rate with increasing wind speed and constant air temperature of -10°C.](figs/examples/roesch_unloading.png){#fig-unl-ex-wind} -->
 
 # Study Site and Instrumentation
 
-The observations presented in this study were collected at Fortress Mountain Research Basin (FMRB), AB, -115° W, 51° N, a continental headwater basin in the Canadian Rockies at 2100 m above sea level. Air temperature, humidity, and wind speed were measured at a height of 4.3 m at Forest Tower Station (@fig-site-map). The precipitation rate was measured by an Alter-shielded OTT Pluvio weighing precipitation gauge installed 2.6 m above ground at Powerline Station. Incoming and outgoing solar radiation was measured by a Kipp & Zonen CNR4 4-Component Net Radiometer installed 3.27 m above the ground at Fortress Ridge Station. Three subcanopy lysimeters, consisting of a plastic horse-watering trough with an opening of 0.9 m^2^ and depth of 20 cm suspended from a load cell, were installed to measure canopy snow unloading. A weighed tree lysimeter (subalpine fir) suspended from a load cell (Artech S-Type 20210-100) measured the weight of canopy snow load (kg) and was scaled to an areal estimate of snow load (mm) using snow surveys as in @Pomeroy1993a. Additional details on this study site and the meteorological and lysimeter measurements have been described in @Cebulski2025a. Four tipping bucket rain gauges, 3 Texas Electronics TR-525M and 1 Hyquest Solutions TB4MM were installed along a 15 m transect adjacent to the dense canopy subcanopy lysimeter to measure canopy snowmelt drainage. To isolate the subcanopy lysimeter measurements of canopy snow unloading from throughfall, 15-min intervals were selected that met the following criteria: no atmospheric precipitation, and snow was observed to be intercepted in the canopy using the weighed tree and timelapse imagery investigation.
+The observations presented in this study were collected at Fortress Mountain Research Basin (FMRB), AB, -115° W, 51° N, a continental headwater basin in the Canadian Rockies at 2100 m above sea level. Air temperature, humidity, and wind speed were measured at a height of 4.3 m at Forest Tower (FT) Station (@fig-site-map). The precipitation rate was measured by an Alter-shielded OTT Pluvio weighing precipitation gauge installed 2.6 m above ground at Powerline Station. Incoming and outgoing solar radiation was measured by a Kipp & Zonen CNR4 4-Component Net Radiometer installed 3.27 m above the ground at Fortress Ridge Station. Three subcanopy lysimeters, consisting of a plastic horse-watering trough with an opening of 0.9 m^2^ and depth of 20 cm suspended from a load cell, were installed to measure canopy snow unloading. A weighed tree lysimeter (subalpine fir) suspended from a load cell (Artech S-Type 20210-100) measured the weight of canopy snow load (kg) and was scaled to an areal estimate of snow load (mm) using snow surveys as in @Pomeroy1993a. Additional details on this study site and the meteorological and lysimeter measurements have been described in @Cebulski2025a. Four tipping bucket rain gauges, 3 Texas Electronics TR-525M and 1 Hyquest Solutions TB4MM were installed along a 15 m transect adjacent to the dense canopy subcanopy lysimeter to measure canopy snowmelt drainage. To isolate the subcanopy lysimeter measurements of canopy snow unloading from throughfall, 15-min intervals were selected that met the following criteria: no atmospheric precipitation, and snow was observed to be intercepted in the canopy using the weighed tree and timelapse imagery investigation.
 
 ![Map showing the location of forest plots, flux towers, subcanopy lysimeter instruments, and survey transects. The inset map on the lower right shows the regional location of Fortress Mountain Research basin.](figs/study-site/site_map_inset.png){#fig-site-map}
 
 # Methods
 
-The rate of canopy snow unloading due to wind was quantified by the subcanopy lysimeters during intervals without canopy snowmelt. By excluding periods influenced by melt, the snow captured by the lysimeters is attributed primarily to wind-driven unloading. While unloading caused by snow metamorphism or thermally induced branch bending may also contribute, the measured unloading is interpreted to be predominantly from wind-induced unloading over these intervals. The subcanopy lysimeters had a relatively low accumulation of unloaded snow over the 15-min intervals, leading to high relative instrument error of measured unloading. To improve instrument accuracy, while maintain consistency of the unloading measurements with wind speed, the 15-min interval measurements of unloading were aggregated over differing bins of wind speed. Wind speed bins that had accumulated unloaded snow less than 0.1 mm were removed which resulted in a mean instrument error of +/- 2% for the remaining bins.
+## Modelled Canopy Snow Energy and Mass Balance
 
-A mass balance approach was incorporated to determine the unloading rate resulting from canopy snow melt ($q_{unld}^{melt}$, mm s^-1^). Since direct measurements of canopy snow unloading are challenging to obtain independently from canopy snowmelt drainage [@Storck2002], the following mass balance was incorporated to determine $q_{unld}^{melt}$ as a residual:
+The energy and mass balance of canopy snow was simulated using the Cold Regions Hydrological Model (CRHM) which is described in @Pomeroy2007 and source code is available at https://github.com/srlabUsask/crhmcode. Different parameterisations that simulate canopy snow unloading, melt, and sublimation were implemented in CRHM to compare existing approaches against the updated parameterisation described in the following section. Canopy snow sublimation simulations also provided the rate of sublimation needed in @eq-unld-melt-mass-bal. Two eddy covariance systems were installed with the goal of quantifying canopy snow sublimation rate following methods outlined by @Sexstone2018, however invalidation of the assumptions behind the eddy covariance method at our study site and the resulting invalid measurements prevented the use of these measurements in this analysis. Therefore simulated canopy snow sublimation using CRHM was used in this analysis.
+
+Canopy snow sublimation was estimated using the method described in @Pomeroy1998b and @Essery2003. The maximum canopy snow load, used in both @Pomeroy1998b and @Essery2003 to scale the rate of canopy snow sublimation based on how full the canopy is with snow, was adjusted for this study site as the method from @Hedstrom1998 was found to underestimate the maximum canopy snow load in @Cebulski2025a. A value of 50 mm was chosen to represent the maximum canopy snow load in Equation 11 in @Pomeroy1998b based on observations by @Storck2002 and @Floyd2012 that have shown observations of canopy snow load up to this amount.
+
+Canopy snow unloading was estimated using the method outlined by @Ellis2010, @Roesch2001, and @Andreadis2009 which are described in detail in @Cebulski2025. New canopy snow unloading parameterisations were also developed based on the measurements presented in this study and were implemented in CRHM for assessment.
+
+## Statistics on Canopy Snow Unloading Relationships
+
+### Combined influence of predictors on unloading 
+
+The influence of air temperature, wind speed, snow load, melt, and sublimation on the unloading process was assessed using a multivariate ordinary least squares regression. The subcanopy lysimeter unloading measurements had a high relative instrument error due to the relatively small accumulation of unloaded snow over the 15-min intervals. To improve instrument accuracy, while maintain consistency of the unloading measurements with wind speed, the 15-min interval measurements of unloading were aggregated over differing predictor variable bins. The predictor variable bins included: air temperature and wind speed measured at FT station, canopy snow load from the weighed tree lysimeter (scaled to the canopy of each respective subcanopy lysimeter), and canopy snowmelt and sublimation simulated in CRHM. Bins that had accumulated unloaded snow less than 0.1 mm were removed which resulted in a mean instrument error of +/- 2% for the remaining bins. The individual processes found to be significant predictors of unloading in the multivariate regression (i.e., wind speed and melt) were then isolated to parameterise a model of their effects.
+
+### Wind induced unloading
+
+The rate of canopy snow unloading due to wind and canopy snow load was quantified by the subcanopy lysimeters during intervals without canopy snowmelt. By excluding periods influenced by melt, the snow captured by the lysimeters is attributed primarily to wind-driven unloading. While unloading caused by snow metamorphism or thermally induced branch bending may also contribute, the measured unloading is interpreted to be predominantly from wind-induced unloading over these intervals. The relationship between wind speed, canopy snow load, and unloading was investigated for these periods using a non-linear least squares regression.
+
+### Canopy snowmelt induced unloading 
+
+A mass balance approach was incorporated to determine the unloading rate resulting from canopy snowmelt ($q_{unld}^{melt}$, mm s^-1^). The influence of canopy snowmelt on $q_{unld}^{melt}$ was then assessed by fitting a linear model using an ordinary least squares regression. Since direct measurements of canopy snow unloading are challenging to obtain independently from canopy snowmelt drainage [@Storck2002], the following mass balance was incorporated to determine $q_{unld}^{melt}$ as a residual:
 
 $$
 \frac{dL}{dt} = 
-[q_{sf} - q_{tf} + q_{ros}] - q_{unld} - q_{drip} - q_{wind}^{veg} - q_{sub}^{veg}
+[q_{sf} - q_{tf} + q_{ros}] - [q_{unld}^{melt} + q_{unld}^{wind}] - q_{drip} - q_{wind}^{veg} - q_{sub}^{veg}
 $$ {#eq-canopy-mass-bal}
 
-where $\frac{dL}{dt}$ is the change in canopy snow load over time, (mm s^-1^), $q_{sf}$ is the snowfall rate (mm s^-1^), $q_{tf}$ (mm s^-1^) is the throughfall rate (mm s^-1^), $q_{ros}$ (mm s^-1^) is the rate of rainfall falling on snow intercepted in the canopy, $q_{unld}$ is the canopy snow unloading rate (mm s^-1^), $q_{drip}$ is the canopy snow drip rate due to canopy snowmelt (mm s^-1^), $q_{wind}^{veg}$ is the wind transport rate in or out of the control volume (mm s^-1^), and $q_{sub}^{veg}$ is the intercepted snow sublimation rate (mm s^-1^). Figure 1 in @Cebulski2025 presents a visual representation of this mass balance. 
+where $\frac{dL}{dt}$ is the change in canopy snow load over time, (mm s^-1^), $q_{sf}$ is the snowfall rate (mm s^-1^), $q_{tf}$ (mm s^-1^) is the throughfall rate (mm s^-1^), $q_{ros}$ (mm s^-1^) is the rate of rainfall falling on snow intercepted in the canopy, $q_{unld}^{melt}$ is the canopy snow unloading rate due to melt (mm s^-1^), $q_{unld}^{wind}$ is the canopy snow unloading rate due to wind (mm s^-1^), $q_{drip}$ is the canopy snow drip rate due to canopy snowmelt (mm s^-1^), $q_{wind}^{veg}$ is the wind transport rate in or out of the control volume (mm s^-1^), and $q_{sub}^{veg}$ is the intercepted snow sublimation rate (mm s^-1^). Figure 1 in @Cebulski2025 presents a visual representation of this mass balance. 
 
-Assuming that canopy snow unloading $q_{unld}$ originates from two sources: $q_{unld}^{melt}$ and wind-induced unloading ($q_{unld}^{wind}$):
-
-$$
-q_{unld} = q_{unld}^{wind} + q_{unld}^{melt}
-$${#eq-unl-ode}
-
-then @eq-canopy-mass-bal was rearranged to solve for $q_{unld}^{melt}$ during intervals without $[q_{sf} - q_{tf} + q_{ros}]$ or $q_{wind}^{veg}$ as:
+Then @eq-canopy-mass-bal was rearranged to solve for $q_{unld}^{melt}$ during intervals without $[q_{sf} - q_{tf} + q_{ros}]$ or $q_{wind}^{veg}$ as:
 
 $$
 q_{unld}^{melt} = -\frac{dL}{dt} - q_{drip} - q_{unld}^{wind} - q_{sub}^{veg}
 $${#eq-unld-melt-mass-bal}
 
 While some components of the canopy snow mass balance can be measured directly with relative ease, such as $\frac{\Delta L}{\Delta t}$ with the weighed tree, sublimation of canopy snow is more difficult to quantify directly especially in forested mountain environments [@Helgason2012b; @Conway2018] and thus $q_{sub}^{veg}$ was simulated in this study in CRHM using @eq-ql from @Essery2003. $q_{drip}$ was measured where possible using the tipping buckets, however problems with freezing of liquid water in the devices limited the amount of $q_{drip}$ that could be collected. Thus, $q_{drip}$ was also supplemented with simulated canopy snowmelt in CRHM as in @eq-eb. Canopy snow ablation periods that were dominated by melt were selected for calculating $q_{unld}^{melt}$ where the contribution of $q_{unld}^{wind}$ and $q_{sub}^{veg}$ to canopy snow ablation was less than 5%. 
-
-## Modelled Canopy Snow Ablation
-
-Canopy snow ablation was simulated using the Cold Regions Hydrological Model (CRHM) which is described in @Pomeroy2007 and source code is available at https://github.com/srlabUsask/crhmcode. Different parameterisations that simulate canopy snow unloading, melt, and sublimation were implemented in CRHM to compare existing approaches against the updated parameterisation described in the following section. Canopy snow sublimation simulations also provided the rate of sublimation needed in @eq-unld-melt-mass-bal. Two eddy covariance systems were installed with the goal of quantifying canopy snow sublimation rate following methods outlined by @Sexstone2018, however invalidation of the assumptions behind the eddy covariance method at our study site and the resulting invalid measurements prevented the use of these measurements in this analysis.
-
-Canopy snow sublimation was estimated using the method described in @Pomeroy1998b and @Essery2003. The maximum canopy snow load, used in both @Pomeroy1998b and @Essery2003 to scale the rate of canopy snow sublimation based on how full the canopy is with snow, was adjusted for this study site as the method from @Hedstrom1998 was found to underestimate the maximum canopy snow load in @Cebulski2025a. A value of 50 mm was chosen to represent the maximum canopy snow load in Equation 11 in @Pomeroy1998b based on observations by @Storck2002 and @Floyd2012 that have shown observations of canopy snow load up to this amount.
-
-Canopy snow unloading was estimated using the method outlined by @Ellis2010, @Roesch2001, and @Andreadis2009 which are described in detail in @Cebulski2025. New canopy snow unloading parameterisations were also developed based on the measurements presented in this study and were implemented in CRHM for assessment.
 
 # Canopy Snow Energy Balance 
 
@@ -146,7 +157,7 @@ $$ {#eq-lw}
 where $Q_{lw}^{atm}$ is the downwelling longwave radiation from the atmosphere (W m^-2^), $Q_{lw}^{veg}$ is the longwave radiation upwelling from vegetation elements underlying snow intercepted in the canopy (W m^-2^), $Q_{lw}^{veg2veg}$ is the downwelling longwave radiation emitted from the underside of the vegetation elements reflected by the subcanopy snowpack (W m^-2^), and $Q_{lw}^{vs}$ (W m^-2^) is the outgoing longwave radiation from the top and bottom of the canopy snow layer calculated as:
 
 $$
-Q_{lw}^{vs} = 2 \epsilon_{i} \sigma T_{vs}^4
+Q_{lw}^{vs} = 2 \epsilon_{s} \sigma T_{vs}^4
 $$ {#eq-lw-vs}
 
 where $\epsilon_s$ is the emissivity (-) of snow taken as 0.99 and $\sigma$ is the Stefan–Boltzmann (5.67e-10 W m^-1^ K^-4^). $Q_{lw}^{atm}$ was approximated in this study as in @Sicart2006 to take into account the influence of atmospheric moisture on emissivity. $Q_{lw}^{veg}$ was calculated with the assumption that canopy elements were in equilibrium with the air temperature plus any change in vegetation temperature from the extinction of $\downarrow Q_{sw}$ in the canopy [@Pomeroy2009, Eq. 4].
@@ -187,11 +198,13 @@ The above sensible and latent heat flux equations assume neutral atmospheric sta
 
 ## Canopy Snow Unloading Relationships
 
-The influence of snow load, canopy snowmelt and wind speed on the canopy snow unloading rate, measured by the subcanopy lysimeters, was observed to be statistically significant (*p* < 0.05, *R^2^* = `r lm_multi_reg_tbl$R2[1] |> round(2)`) from the multiple linear regression (@tbl-q-unld-bins). The mean unloading rate was also observed to increase with increasing canopy snowmelt and wind speed in @fig-q-unld-all-bins. The effect of air temperature and canopy snow sublimation was found to be insignificant (*p* > 0.05) and resulted in nearly the same *R^2^* value when adding either or both predictors to the model with canopy snow load, canopy snowmelt, and wind speed (@tbl-q-unld-bins). Air temperature and canopy snow sublimation were positively associated with canopy snow unloading, though for sublimation this relationship was limited to positive values (@fig-q-unld-all-bins). Across all bins, the canopy snow unloading rate was observed to be higher for increasing canopy snow loads (@fig-q-unld-all-bins). Most of the variability in canopy snow unloading was described by the canopy snowmelt rate (*p* < 0.05, *R^2^* = `r melt_only_r2 |> round(2)`) increasing slightly when adding canopy snow load to (*p* < 0.05, *R^2^* = `r melt_tree_only_r2 |> round(2)`). However, canopy snow unloading exhibited a much higher degree of variance (0–2 mm/hr) across the canopy snowmelt and sublimation bins compared to the air temperature and wind speed bins, which only varied between 0–0.5 mm/hr. This greater variability may explain the higher explanatory power of the canopy snowmelt predictor.
+A statistically significant positive relationship (*p* < 0.05, *R^2^* = `r lm_multi_reg_tbl$R2[1] |> round(2)`) was identified between canopy load, canopy snowmelt, wind speed, and the rate of canopy snow unloading, as measured by the subcanopy lysimeters (@tbl-q-unld-bins). The effect of air temperature and canopy snow sublimation was found to be insignificant (*p* > 0.05) and resulted in the same *R^2^* value when adding either or both predictors to the model which included canopy load, canopy snowmelt, and wind speed (@tbl-q-unld-bins). The linear regression that only included canopy snowmelt (M9, @tbl-q-unld-bins), shows that most of the variability in canopy snow unloading was described by the canopy snowmelt rate (*p* < 0.05, *R^2^* = `r melt_only_r2 |> round(2)`) increasing slightly when adding canopy load to (*p* < 0.05, *R^2^* = `r melt_tree_only_r2 |> round(2)`), and to (*p* < 0.05, *R^2^* = `r lm_multi_reg_tbl$R2[1] |> round(2)`) with wind and canopy load included. Canopy snow unloading exhibited a much higher degree of variance (0–2 mm/hr) across the canopy snowmelt and sublimation bins compared to the air temperature and wind speed bins, which only varied between 0–0.5 mm/hr. This greater variability may explain the higher explanatory power of canopy snowmelt.
+
+The mean unloading rate was observed in @fig-q-unld-all-bins to increase with canopy snowmelt, wind speed, and canopy load. Despite the insignificant relationships, air temperature and canopy snow sublimation were positively associated with canopy snow unloading, though for sublimation this relationship was limited to sublimation rates between 0 and 0.3 mm hr^-1^ (@fig-q-unld-all-bins). For sublimation rates higher than 0.3 hr^-1^, unloading is observed to decline with increasing sublimation, as more canopy snow is partitioned to the atmosphere. A decline in unloading is observed for wind speed bins above 3 m s^-1^ which is attributed to some wind transport of canopy snow, and potential entrainment into the atmosphere, and corresponding increased sublimation rates.
 
 ```{r tbl-q-unld-wind, echo=FALSE}
 #| label: tbl-q-unld-bins
-#| tbl-cap: "Summary of multiple linear regression results evaluating all combinations of predictor variables for canopy snow unloading. Columns L to Ta show the coefficient estimate for each respective term, and the significance of each term is shown in brackets. Significance codes: '*' = p < 0.05; ns = not significant (p > 0.05). The models are ranked by their corresponding AIC value."
+#| tbl-cap: "Summary of multiple linear regression results evaluating all combinations of predictor variables for canopy snow unloading including: canopy load ($L$), wind speed ($u$), canopy snowmelt rate ($q_{melt}$), canopy snow sublimation rate ($q_{subl}$), and air temperature ($T_a$). Columns L to Ta show the coefficient estimate for each respective term, and the significance of each term is shown in brackets. Significance codes: * = p < 0.05; ns = not significant (p > 0.05). The models are ranked by their corresponding AIC value."
 #| tbl-colwidths: [11, 13, 13, 14, 12, 14, 14, 8, 8]
 
 
@@ -214,13 +227,13 @@ lm_multi_reg_tbl |>
 
 ### Wind Induced Unloading
 
-Canopy snow unloading measurements from the subcanopy lysimeters, filtered to include intervals without canopy snowmelt, followed an exponential relationship with wind speed (*p* < 0.05, *R^2^* = `r q_unld_wind_r2`). The wind-induced unloading rate was observed to be higher for bins with higher canopy snow load across most bins (@fig-q-unld-wind). The *R^2^* of this relationship is much higher than the amount of variance explained by wind speed when including intervals with melting snow, as suggested by the difference in *R^2^* between the M1 and M5 models of ~0.03 (@tbl-q-unld-bins). The increased liquid water content during the canopy snowmelt process may provide some resistance to wind induced unloading. Moreover, increased canopy snow unloading during low wind speeds, resulting from high melt rates could also contribute to the lower explanatory power of wind speed in the M1 model in @tbl-q-unld-bins.
+Canopy snow unloading measurements from the subcanopy lysimeters, filtered to include intervals without canopy snowmelt, followed an exponential relationship with wind speed (*p* < 0.05, *R^2^* = `r q_unld_wind_r2`). The wind-induced unloading rate was observed to be higher for bins with higher canopy snow load across nearly all bins (@fig-q-unld-wind). The *R^2^* of this relationship is much higher than the amount of variance explained by wind speed when including intervals with melting snow (@tbl-q-unld-bins). The increased liquid water content during the canopy snowmelt process may provide some resistance to wind induced unloading. Moreover, increased canopy snow unloading during low wind speeds, resulting from high melt rates could also contribute to the lower explanatory power of wind speed in the M1 model in @tbl-q-unld-bins.
 
 ![Canopy snow unloading rate measured by the subcanopy lysimeters during periods without canopy snowmelt. The dots show the mean unloading rate for wind speed bins (0–0.5 m s^-1^, 0.5–1.0 m s^-1^, ..., 3.0–3.5 m s^-1^). The error bars show +/- 1 standard deviation above and below the mean. The fitted lines show predictions from @eq-fu. )](figs/results/modelled_wind_unloading_w_obs.png){#fig-q-unld-wind}
 
 ```{r tbl-q-unld-wind, echo=FALSE}
 #| label: tbl-q-unld-wind
-#| tbl-cap: "Summary of the performance and regression coefficiencts for the relationship between canopy snow unloading with wind speed as shown in @fig-q-unld-wind."
+#| tbl-cap: "Summary of the performance and regression coefficients for the relationship between canopy snow unloading with wind speed as shown in @fig-q-unld-wind."
 
 wind_err_tbl |> knitr::kable()
 ```
@@ -239,15 +252,15 @@ $$ {#eq-fu}
 
 where $u_{mid}$ is the wind speed at mid canopy height, $a$ is a constant of `r mod_coef_wind[['a']] |> round(7)` (m^-1^), and $b$ is a constant of `r mod_coef_wind[['b']] |> round(2)` (m^-1^).
 
-### Canopy snowmelt
+### Melt induced unloading
 
-A linear relationship was found between the canopy snow unloading to melt ratio and canopy snow load (*p* < 0.05, *R^2^* = `r q_unld_melt_r2`) and is shown in @fig-unld-melt-ratio. This was represented by the equation:
+A positive linear relationship was found between the canopy snow unloading to melt ratio and canopy snow load (*p* < 0.05, *R^2^* = `r q_unld_melt_r2`) for canopy snow ablation events with less than 5% contribution of wind induced unloading and/or sublimation (@fig-unld-melt-ratio). This was represented by the equation:
 
 $$
-q_{unld}^{melt} = f(m) \cdot q_{drip}(L)
+q_{unld}^{melt} = f(m) \cdot q_{melt}(L)
 $${#eq-q-unld-melt}
 
-where $f(m)$ is the ratio of unloading to canopy snowmelt. @eq-q-unld-melt is similar to Equation 33 in @Andreadis2009; however, instead of assuming a constant value of 0.4 for $f(m)$, it was determined as:
+where $f(m)$ is the ratio of unloading to canopy snowmelt and $q_{melt}$ is the canopy snowmelt rate (mm hr^-1^). @eq-q-unld-melt is similar to Equation 33 in @Andreadis2009; however, instead of assuming a constant value of 0.4 for $f(m)$, it was determined as:
 
 $$
 f(m) = m \cdot L + b
@@ -259,7 +272,21 @@ where $m$ and $b$ were determined as `r q_unld_melt_m` and `r q_unld_melt_b`, re
 
 ## Evaluation of canopy snow ablation parameterisations
 
-The updated canopy snow ablation routine resulted in a reduced mean bias of `r new_model_mb_avg` mm compared to existing models which had a mean biases ranging from `r old_mods_mb_range[1]` to `r old_mods_mb_range[2]` mm when assessed with hourly weighed tree ablation and averaged across all events. For snowmelt dominant events, defined as events with over 60% of their simulated canopy snow ablation coming from snowmelt, the new routine was most improved with an average mean bias of `r melt_new_model_mb_avg` mm compared to the existing parameterisations which had a mean biases ranging from `r melt_other_mb_avg[1]` to `r melt_other_mb_avg[2]` mm (@fig-obs-mod-cpy-load-mb). For sublimation dominant events, with over 60% of their simulated canopy snow ablation from sublimation, there was less of a difference between the updated and existing routines (@fig-obs-mod-cpy-load-mb). Since the @Essery2003 sublimation parameterisation, used in the updated routine is largely based on the @Pomeroy1998b routine used by the other simulations these were expected to be similar. A slight improvement in performance was observed for sublimation events in the updated routine, particularly during clear-sky nights, which led to cooling of the canopy snow surface temperature. This effect could be represented in the @Essery2003 routine but not in the @Pomeroy1998b routine, which assumes that the canopy snow surface temperature remains in thermoequilibrium with the air temperature (@fig-obs-mod-w-tree). See event '2022-03-24' in @fig-obs-mod-w-tree for an example of this where the rate of sublimation slows at night an better matches the observation compared to the other models. Events with over 60% of their canopy snow ablation coming from wind-induced unloading, show the importance of taking into account this process, with models that simulate wind-induced unloading having lower mean bias of `r wind_roesch_mb_avg` for the @Roesch2001 linear model and `r wind_new_model_mb_avg` in the exponential model proposed in @fig-q-unld-wind compared to the mean bias of `r wind_nr_mb_avg` for the two simulations that do not directly incorporate wind-induced unloading. The inconsistent performance of the wind unloading parameterisations shown in @fig-obs-mod-w-tree, and reduced performance compared to the melt and sublimation events, may be explained by in-situ observations of an inconsistent relationship of wind speed and unloading which may be attributed to melt/freeze of snow adhering to the canopy and thermal equilibrium metamorphasism increasing the cohesion of snowclumps. 
+The updated canopy snow ablation routine resulted in a reduced mean bias of `r new_model_mb_avg` mm compared to existing models which had a mean biases ranging from `r old_mods_mb_range[1]` to `r old_mods_mb_range[2]` mm when assessed with hourly weighed tree ablation and averaged across all events. For snowmelt dominant events, defined as events with over 60% of their simulated canopy snow ablation coming from snowmelt, the new routine was most improved with an average mean bias of `r melt_new_model_mb_avg` mm compared to the existing parameterisations which had a mean biases ranging from `r melt_other_mb_avg[1]` to `r melt_other_mb_avg[2]` mm (@fig-obs-mod-cpy-load-mb). For sublimation dominant events, with over 60% of their simulated canopy snow ablation from sublimation, there was less of a difference between the updated and existing routines (@fig-obs-mod-cpy-load-mb). Since the @Essery2003 sublimation parameterisation, used in the updated routine is largely based on the @Pomeroy1998b routine used by the other simulations these were expected to be similar. A slight improvement in performance was observed for sublimation events in the updated routine, particularly during clear-sky nights, which led to cooling of the canopy snow surface temperature. This effect could be represented in the @Essery2003 routine but not in the @Pomeroy1998b routine, which assumes that the canopy snow surface temperature remains in thermoequilibrium with the air temperature (@fig-obs-mod-w-tree). See event '2022-03-24' in @fig-obs-mod-w-tree for an example of this where the rate of sublimation slows at night an better matches the observation compared to the other models. Events with over 60% of their canopy snow ablation coming from wind-induced unloading, show the importance of taking into account this process, with models that simulate wind-induced unloading having lower mean bias of `r wind_roesch_mb_avg` for the @Roesch2001 linear model and `r wind_new_model_mb_avg` in the exponential model proposed in @fig-q-unld-wind compared to the mean bias of `r wind_nr_mb_avg` for the two simulations that do not directly incorporate wind-induced unloading. The inconsistent performance of the wind unloading parameterisations shown in @fig-obs-mod-w-tree, and reduced performance compared to the melt and sublimation events, may be explained by in-situ observations of an inconsistent relationship of wind speed and unloading which may be attributed to melt/freeze of snow adhering to the canopy and thermal equilibrium metamorphasism increasing the cohesion of snowclumps.
+
+\pagebreak
+\setstretch{1.0} 
+```{r tbl-event-met, echo=FALSE}
+#| label: tbl-event-met
+#| tbl-cap: "Meteorology of the 17 select ablation events. Air temperature, relative humidity, and wind speed were measured at FT station. The process fractions show the fraction of canopy snow ablation for each process."
+
+pretty_table <- readRDS('tbls/select_event_met_stats_maxmin_pretty_gt_table.rds')
+pretty_table
+# gt::as_raw_html(pretty_table)
+
+# knitr::include_graphics('figs/event_avgs_maxmin_pretty_gt_table_screenshot.png')
+```
+\setstretch{1.5}
 
 ```{r tbl-obs-mod-stats-avg, echo=FALSE}
 #| label: tbl-obs-mod-stats-avg
@@ -269,61 +296,65 @@ The updated canopy snow ablation routine resulted in a reduced mean bias of `r n
 obs_mod_stats_avg |> knitr::kable()
 ```
 
+![Bar chart showing the simulated fraction of total canopy snow ablation attributed to the individual processes melt, sublimation and wind induced unloading for the 17 selected ablation events. .](figs/crhm-analysis/model-comparison/mod_frac_ablation_no_subl_unld_updt_wind_pars2.png){#fig-sim-frac-abl}
+
 ![Boxplots illustrating the distribution of mean bias in canopy snow ablation simulations across different parameterisation sets for each event type, evaluated using observations from the weighed tree.](figs/crhm-analysis/model-comparison/obs_mod_canopy_snow_load_event_type_mean_bias_boxplot_no_subl_unld_updt_wind_pars.png){#fig-obs-mod-cpy-load-mb}
 
 ![Canopy snow load time series for individual events measured by the weighed tree (Observed) and simulated using the various parameterisation sets.](figs/crhm-analysis/model-comparison/obs_mod_canopy_snow_load_no_subl_unld_updt_wind_pars.png){#fig-obs-mod-w-tree width=85%}
 
 ![Cumulative canopy snow drip from the mean of the tipping buckets (TB_mean) and the updated canopy snowmelt routine (crhm_drip).](figs/results/crhm_vs_tb_drip_events_no_subl_unld_updt_wind_pars.png){#fig-obs-mod-cpy-load-mb width=85%}
 
-<!-- # Discussion -->
+# Discussion
 
-<!-- The inclusion of processes that ablate snow intercepted in the canopy is prevalent in many parameterisations for the initial loading of snow within the canopy. Many of these processes are related to the amount of time that snow resides in the canopy prior to the interception measurement was conducted in addition to wind and temeprature induced unloading processes. After filtering out unloading due to temperature and wind the duration snow was intercepted in the canopy was found as a third important factor to consider. Unloading due to duration initially starts high while the snow is fresh and has low cohesion and adhesion and as the snow metamorphasizes the adhesion and cohsesion increases for the first 15 hours and the probability of unloading declines. After 15 hours the probability of unloading increases potentially due to increased sublimation and metamorphasism of snow intercepted in the canopy which reduces its adhesion and cohesion.  -->
+The inclusion of processes that ablate snow intercepted in the canopy is prevalent in many parameterisations for the initial loading of snow within the canopy. Many of these processes are related to the amount of time that snow resides in the canopy prior to the interception measurement was conducted in addition to wind and temeprature induced unloading processes. After filtering out unloading due to temperature and wind the duration snow was intercepted in the canopy was found as a third important factor to consider. Unloading due to duration initially starts high while the snow is fresh and has low cohesion and adhesion and as the snow metamorphasizes the adhesion and cohsesion increases for the first 15 hours and the probability of unloading declines. After 15 hours the probability of unloading increases potentially due to increased sublimation and metamorphasism of snow intercepted in the canopy which reduces its adhesion and cohesion.
 
-<!-- A new unloading routine could be established based on these observations after filtering to remove temperature and wind induced unloading which show the probability of unloading after this filtering is high after initial loading of snow intercepted in the canopy, followed by a decline in probability until around 15 hours, and increases afterwards. This could be combined with the unloading rate which was observed to be high as the snow was initially loaded in the canopy and then declines steadily with increasing duration.  -->
+A new unloading routine could be established based on these observations after filtering to remove temperature and wind induced unloading which show the probability of unloading after this filtering is high after initial loading of snow intercepted in the canopy, followed by a decline in probability until around 15 hours, and increases afterwards. This could be combined with the unloading rate which was observed to be high as the snow was initially loaded in the canopy and then declines steadily with increasing duration.
 
-<!-- Based on the canopy snowmelt model, the @Storck2002 ratio based melt based unloading parameterisation over estimates drip. It could also be that the parv snowmelt model is underestimating the canopy snow temperature.  -->
+Based on the canopy snowmelt model, the @Storck2002 ratio based melt based unloading parameterisation over estimates drip. It could also be that the parv snowmelt model is underestimating the canopy snow temperature.
 
-<!-- Generally, model over estimates canopy snow wind induced unloading when wind speed < 1 m/s (see weighed tree events 2023-02-26, 2023-01-28). Under estimates when wind speed > 1 m/s (see events 2023-02-24).   -->
+Generally, model over estimates canopy snow wind induced unloading when wind speed < 1 m/s (see weighed tree events 2023-02-26, 2023-01-28). Under estimates when wind speed > 1 m/s (see events 2023-02-24).
 
-<!-- Sometimes the overestimate of wind unloading for < 1 m/s is associated with higher canopy snow loads (see 2023-02-24 at the start, and 2023-03-14 at the start). But not necessarily for 2022-12-01 and 2023-03-25/26/28 which both either underestimate $q_unld^wind$ or have good performance with high canopy snow loads. -->
+Sometimes the overestimate of wind unloading for < 1 m/s is associated with higher canopy snow loads (see 2023-02-24 at the start, and 2023-03-14 at the start). But not necessarily for 2022-12-01 and 2023-03-25/26/28 which both either underestimate $q_unld^wind$ or have good performance with high canopy snow loads.
 
-<!-- Underestimates canopy snow melt for colder/near 0 events (see 2023-03-25) -->
+Underestimates canopy snowmelt for colder/near 0 events (see 2023-03-25)
 
-<!-- 2023-03-26 not sure why ablation late on the 26th, as high humidity (~100%) and not too high wind speeds (~1m/s) -->
+2023-03-26 not sure why ablation late on the 26th, as high humidity (~100%) and not too high wind speeds (~1m/s)
 
-<!-- The wind dominated ablation events have much poorer performance, aside from 2022-12-01 which aligns well on average.  -->
+The wind dominated ablation events have much poorer performance, aside from 2022-12-01 which aligns well on average.
 
-<!-- The sublimation or snowmelt dominated events, which are less influenced by wind have the best performance. -->
+The sublimation or snowmelt dominated events, which are less influenced by wind have the best performance.
 
-<!--  The wind model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships.  -->
+ The wind model is slightly less sensitive, with lower unloading rates at the same wind speeds compared to the @Roesch2001 relationships.
 
-<!-- Not currently taking into account different density of unloaded snow, or over time as it melts in the canopy. -->
+Not currently taking into account different density of unloaded snow, or over time as it melts in the canopy.
 
-<!-- The melt unloading ratio increases with canopy snow melt rate which as a result also increases as a function of canopy snowmelt. Air temperature is also indirectly included as canopy snowmelt is also a function of air temperature in this model. Air temperature could also have a negative impact on canopy snow unloading as a result of melt but this was not found in the observations presented here due to the larger effect of melt on unloading compared to the relationship with adhesion and cohesion and air temperature along.  -->
+The melt unloading ratio increases with canopy snowmelt rate which as a result also increases as a function of canopy snowmelt. Air temperature is also indirectly included as canopy snowmelt is also a function of air temperature in this model. Air temperature could also have a negative impact on canopy snow unloading as a result of melt but this was not found in the observations presented here due to the larger effect of melt on unloading compared to the relationship with adhesion and cohesion and air temperature along.
 
-<!-- Model does not account for wind redistribution of snow which may underestimate for some windy events or branch bending due to warming (directy) or warming of the canopy surface greater than the air temperature. -->
+Model does not account for wind redistribution of snow which may underestimate for some windy events or branch bending due to warming (directy) or warming of the canopy surface greater than the air temperature.
 
-<!-- Unloading rate proportional to sublimation may also handle unloading/snowmelt not captured by curent canopy snow algorithm which has canopy snow temperature equal to air temperature  -->
+Unloading rate proportional to sublimation may also handle unloading/snowmelt not captured by curent canopy snow algorithm which has canopy snow temperature equal to air temperature
 
-<!-- Energy balance method relies on quality net radiation measurements which are not always certain while air temperature based methods may be more reliable. -->
+Energy balance method relies on quality net radiation measurements which are not always certain while air temperature based methods may be more reliable.
 
-<!-- The improved representation of the canopy snowmelt process is attributed to an improved representation of the energy to the canopy snowpack as described in @eq-eb. This allows rate of canopy snowmelt to better reflect the available energy and also @eq-q-unld-melt helps represent the associated increase in canopy snow unloading with snowmelt (@fig-obs-mod-w-tree). Another benefit of the energy balance method is it allows the canopy snow to cool during clear nights where the LW losses are greater than incoming LW from the atmosphere due to low atmosphereic emissivity from lack of clouds which improved the simulation of the sublimation events [see event 2022-03-24 in @fig-obs-mod-w-tree]. Compared to the previous model which ablate at a higher rate due to increased sublimation driven by low humidities without considering the surface temperature cooling.  -->
+The improved representation of the canopy snowmelt process is attributed to an improved representation of the energy to the canopy snowpack as described in @eq-eb. This allows rate of canopy snowmelt to better reflect the available energy and also @eq-q-unld-melt helps represent the associated increase in canopy snow unloading with snowmelt (@fig-obs-mod-w-tree). Another benefit of the energy balance method is it allows the canopy snow to cool during clear nights where the LW losses are greater than incoming LW from the atmosphere due to low atmosphereic emissivity from lack of clouds which improved the simulation of the sublimation events [see event 2022-03-24 in @fig-obs-mod-w-tree]. Compared to the previous model which ablate at a higher rate due to increased sublimation driven by low humidities without considering the surface temperature cooling.
 
-<!-- Improved representation of wind-induced unloading could be obtained by tracking the adhesion of snow to the canopy through melt/freeze or vapour deposition processes and cohesion due to equitemperature metamorphasism.  -->
+Improved representation of wind-induced unloading could be obtained by tracking the adhesion of snow to the canopy through melt/freeze or vapour deposition processes and cohesion due to equitemperature metamorphasism.
 
-<!-- remaining gap on how much liquid water the canopy / canopy snow can hold. -->
+remaining gap on how much liquid water the canopy / canopy snow can hold.
 
-<!-- much higher snow loads observed in @Cebulski2025b and thus the exposure coef in @Pomeroy1998 was adjusted -->
+much higher snow loads observed in @Cebulski2025b and thus the exposure coef in @Pomeroy1998 was adjusted
 
-<!-- # Conclusions -->
+# Conclusions
 
-<!-- -   Over two winter seasons, the primary processes contributing to canopy snow ablation were unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a small component of the mass balance.  -->
-<!-- -   A high probability of unloading was associated with air temperatures above -6°C and wind speeds above 1 m s^-1^. The assocaition between wind speed and the probability of unloading was found to be stronger when temperatures were lower potentially due to increased cohesion and adhesion of snow to the canopy at lower air temperatures. The association between air temperature and the probability of unloading was also found to be stronger when the wind speed was lower which may be attributed to evaporative cooling of the canopy snow at higher wind speeds. -->
-<!-- -   The observed associations of canopy snow unloading with wind speed and air temperature were represented in a new canopy snow ablation routine. An exponential function represents the increase in canopy snow unloading with wind speed which is also moderated by air temperature and canopy snow load. Mass unloading of canopy snow is calculated as a linear function of snowmelt using a physically based routine. This routine accounts for cooling effects when snow evaporates from the canopy decreasing the rate of temperature induced unloading for increased wind speeds. -->
-<!-- -   The canopy snow exposure coef from existing studies was found to be too small at this site and needed to be increased substantially  -->
-<!-- -   The amount of drip compared to mass release of canopy snow was found to be significatnly less in this study compared to previous studies which suggested primarily drip -->
+-   Over two winter seasons, the primary processes contributing to canopy snow ablation were unloading, drip, and sublimation. Wind redistribution of canopy snow was determined to be a small component of the mass balance.
+-   A high probability of unloading was associated with air temperatures above -6°C and wind speeds above 1 m s^-1^. The assocaition between wind speed and the probability of unloading was found to be stronger when temperatures were lower potentially due to increased cohesion and adhesion of snow to the canopy at lower air temperatures. The association between air temperature and the probability of unloading was also found to be stronger when the wind speed was lower which may be attributed to evaporative cooling of the canopy snow at higher wind speeds.
+-   The observed associations of canopy snow unloading with wind speed and air temperature were represented in a new canopy snow ablation routine. An exponential function represents the increase in canopy snow unloading with wind speed which is also moderated by air temperature and canopy snow load. Mass unloading of canopy snow is calculated as a linear function of snowmelt using a physically based routine. This routine accounts for cooling effects when snow evaporates from the canopy decreasing the rate of temperature induced unloading for increased wind speeds.
+-   The canopy snow exposure coef from existing studies was found to be too small at this site and needed to be increased substantially
+-   The amount of drip compared to mass release of canopy snow was found to be significatnly less in this study compared to previous studies which suggested primarily drip
 
-<!-- results show updated model is more consistent across temperaturs and wind speed -->
+results show updated model is more consistent across temperaturs and wind speed
+
+@Essery2003 latent heat resistance as function of canopy fullness not included in @Essery2025
 
 
 # References

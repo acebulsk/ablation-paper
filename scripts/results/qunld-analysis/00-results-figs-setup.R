@@ -1,4 +1,7 @@
 library(tidyverse)
+library(purrr)
+library(broom)
+
 # options(ggplot2.discrete.colour= palette.colors(palette = "R4")[2:6])
 # "#DF536B" "#61D04F" "#2297E6" "#28E2E5" "#CD0BBC"
 # functions ----
@@ -84,7 +87,7 @@ scl_names <- c('mixed', 'closed') # removed sparse trough here because was obvio
 # LOAD DATA ----
 
 ft_met <- 
-  readRDS('../../analysis/met-data-processing/data/ffr_crhm_modelling_obs.rds') 
+  readRDS('../../analysis/met-data-processing/data/ffr_crhm_obs_qaqc_gap_fill.rds') 
 
 pwl_met <- 
   readRDS('../../analysis/met-data-processing/data/pwl_crhm_modelling_obs.rds') 
@@ -135,6 +138,49 @@ wind_binned$wind_labs <- cut(wind_binned[,'u', drop = TRUE],
 wind_binned$wind_labs <- as.numeric(as.character(wind_binned$wind_labs))
 wind_binned <- wind_binned |> select(-u)
 
+### shear stress ----
+
+# shear stress is calculated below as tau = wind^2 * coef (coef was found using
+# observed tau at 3m at forest tower using OLS regression) since we have a lot
+# of EC data gaps when we have unloading data
+
+lm_mid_wnd_sqrd_low_tau <-
+  readRDS('../../analysis/eddy-cov/data/est_tau_from_wnd/lm_mid_wnd_sqrd_low_tau.rds')
+
+# since we forced the above through the origin we just need to multiply by the slope 
+
+tau_binned <- ft_met |> 
+  select(datetime, u) |> 
+  mutate(tau = u^2 * lm_mid_wnd_sqrd_low_tau$slope) |> 
+  select(-u)
+
+min_mid_can_tau <- 0
+max_mid_can_tau <- round(
+  max(tau_binned$tau, na.rm = T))
+
+mid_can_tau_step <- 0.05
+
+mid_can_tau_breaks <- seq(
+  min_mid_can_tau,
+  max_mid_can_tau+0.2,
+  mid_can_tau_step)
+
+mid_can_tau_labs_seq <- label_bin_fn(bins = mid_can_tau_breaks)
+
+stopifnot(tail(mid_can_tau_breaks, 1) > max(tau_binned$tau, na.rm = T))
+stopifnot(length(wind_labs_seq) + 1 == length(wind_breaks))
+
+tau_binned$tau_binned <- cut(tau_binned[,'tau', drop = TRUE], mid_can_tau_breaks)
+
+tau_binned$tau_labs <- cut(tau_binned[,'tau', drop = TRUE], 
+                        mid_can_tau_breaks, 
+                        labels = mid_can_tau_labs_seq
+)
+
+tau_binned$tau_labs <- as.numeric(as.character(tau_binned$tau_labs))
+
+tau_binned <- tau_binned |> select(-tau)
+
 ### temp ---- 
 
 temp_binned <- ft_met |> 
@@ -165,6 +211,38 @@ temp_binned$temp_labs <- cut(temp_binned[,'t', drop = TRUE],
 
 temp_binned$temp_labs <- as.numeric(as.character(temp_binned$temp_labs))
 temp_binned <- temp_binned |> select(-t)
+
+### ice bulb depression ----
+
+ti_dep_binned <- ft_met |> 
+  mutate(ti_dep = t - t_ice_bulb) |> 
+  select(datetime, ti_dep)
+
+# note zeros are not included in binning, to add set inlcude.lowest = T
+min_ti_dep <- round(
+  min(ti_dep_binned$ti_dep, na.rm = T),3)
+max_ti_dep <- round(
+  max(ti_dep_binned$ti_dep, na.rm = T),3)
+ti_dep_step <- 0.5
+
+ti_dep_breaks <- seq(
+  min_ti_dep,
+  max_ti_dep+ti_dep_step,
+  ti_dep_step)
+
+ti_dep_labs_seq <- label_bin_fn(bins = ti_dep_breaks)
+
+stopifnot(tail(ti_dep_breaks, 1) > max(ti_dep_binned$ti_dep, na.rm = T))
+stopifnot(length(ti_dep_labs_seq) + 1 == length(ti_dep_breaks))
+
+ti_dep_binned$ti_dep_binned <- cut(ti_dep_binned[,'ti_dep', drop = TRUE], ti_dep_breaks)
+
+ti_dep_binned$ti_dep_labs <- cut(ti_dep_binned[,'ti_dep', drop = TRUE], 
+                             ti_dep_breaks, 
+                             labels = ti_dep_labs_seq)
+
+ti_dep_binned$ti_dep_labs <- as.numeric(as.character(ti_dep_binned$ti_dep_labs))
+ti_dep_binned <- ti_dep_binned |> select(-ti_dep)
 
 ## SCL data ----
 

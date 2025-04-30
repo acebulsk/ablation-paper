@@ -2,113 +2,22 @@
 # doesnt work on raw data due to instrument error OR with time aggregated data
 # due to non-stationarity
 
-library(dplyr)
-library(purrr)
-library(broom)
-library(tidyr)
-
 # avg unloading rate for each combination of bins ----
 
-met_unld_w_bins_smry <- met_unld_w_bins |> 
-  filter(is.na(tree_mm) == F) |> 
-  group_by(
-    wind_labs,
-    tree_labs,
-    canopy_snowmelt_labs,
-    # subl_labs,
-    # temp_labs,
-    # tau_labs,
-    # ti_dep_labs
-  ) |>
-  summarise(q_unl_avg = mean(q_unl, na.rm = T),
-            q_unl_sd = sd(q_unl, na.rm = T),
-            sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
-            sd_hi = q_unl_avg + q_unl_sd,
-            ci_low = quantile(q_unl,0.05),
-            ci_hi = quantile(q_unl, 0.95),
-            sum_snow = sum(dU),
-            n = n()) |> 
-  filter(n >= 3,
-         # wind_labs < 3, # wind transport potential above this threshold
-         sum_snow > 0.1)
+predictors <- c(
+  L = "tree_labs",
+  u = "wind_labs",
+  q_melt = "canopy_snowmelt_labs",
+  q_subl = "subl_labs", # consider removing, similar to ice bulb dep...
+  T_a = "temp_labs",
+  tau = "tau_labs",
+  T_ib_dep = "ti_dep_labs"
+)
 
-# print the indiv bins
-met_unld_w_bins_smry$wind_labs |> unique()
-met_unld_w_bins_smry$temp_labs |> unique()
-met_unld_w_bins_smry$subl_labs |> unique()
-met_unld_w_bins_smry$canopy_snowmelt_labs |> unique()
-
-# MAIN EFFECTS ----
-
-# fn to test each individual combination of predictors
-# TODO add in partial R2 for each term, could reduce number of models shown
-generate_lm_model_table <- function(df) {
-  
-  predictors <- c(
-    # T_a = "temp_labs",
-    L = "tree_labs",
-    u = "wind_labs",
-    q_melt = "canopy_snowmelt_labs"
-    # q_subl = "subl_labs",
-    # tau = "tau_labs",
-    # T_ib_dep = "ti_dep_labs"
-  )
-  
-  combos <- unlist(lapply(1:length(predictors), function(i) combn(predictors, i, simplify = FALSE)), recursive = FALSE)
-  
-  format_estimate <- function(estimate, pval) {
-    sig <- case_when(
-      # pval < 0.001 ~ "***",
-      # pval < 0.01  ~ "**",
-      pval < 0.05  ~ "*",
-      TRUE ~ "ns"
-    )
-    sprintf("%.2f (%s)", estimate, sig)
-  }
-  
-  results <- purrr::map_dfr(combos, function(vars) {
-    formula <- as.formula(paste("q_unl_avg ~", paste(vars, collapse = " + ")))
-    model <- lm(formula, data = df)
-    tidy_model <- broom::tidy(model)
-    glance_model <- broom::glance(model)
-    
-    # Format terms
-    terms <- setNames(rep("—", length(predictors)), names(predictors))
-    for (term in tidy_model$term) {
-      if (term == "(Intercept)") next
-      name_index <- match(term, predictors)
-      if (!is.na(name_index)) {
-        name <- names(predictors)[name_index]
-        estimate <- tidy_model$estimate[tidy_model$term == term]
-        pval <- tidy_model$p.value[tidy_model$term == term]
-        terms[[name]] <- format_estimate(estimate, pval)
-      }
-    }
-    
-    intercept_row <- tidy_model |> dplyr::filter(term == "(Intercept)")
-    intercept_val <- format_estimate(intercept_row$estimate, intercept_row$p.value)
-    
-    tibble::tibble(
-      intercept = intercept_val,
-      # T_a = terms["T_a"],
-      L = terms["L"],
-      u = terms["u"],
-      q_melt = terms["q_melt"],
-      # q_subl = terms["q_subl"],
-      # tau = terms["tau"],
-      # T_ib_dep = terms["T_ib_dep"],
-      R2 = round(glance_model$r.squared, 2),
-      AIC = round(glance_model$AIC, 1)
-    )
-  })
-  
-  return(results)
-}
-
-
-lm_table <- generate_lm_model_table(met_unld_w_bins_smry) |> 
-  arrange(AIC) |> 
+lm_table <- generate_lm_model_table(met_unld_w_bins, predictors) |>
+  arrange(desc(Adj_R2)) |>
   mutate(`Model Name` = paste0('M', row_number()), .before = intercept)
+
 print(lm_table)
 saveRDS(lm_table, 'data/stats/lm_multi_reg_q_unld_bins.rds')
 

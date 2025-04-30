@@ -10,10 +10,11 @@ base_path <- 'figs/crhm-analysis/model-comparison/'
 # plot weighed tree obs vs. sim facet by event ----
 options(ggplot2.discrete.colour= c("#000000", "#E69F00", "#56B4E9", "#009E73", "#999999"))
 
-# "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
-# "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
-# "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
-obs_mod_tree_comp |> 
+ # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+ # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+ # "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
+ 
+p_main <- obs_mod_tree_comp |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
   mutate(name = factor(name, c('observed', 'simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001')),
          facet_title = paste(event_type, '-', event_id)) |> 
@@ -35,7 +36,7 @@ obs_mod_tree_comp |>
     andreadis2009 = "dashed",
     ellis2010 = "dashed"
   ))
-
+p_main
 ggsave(
   paste0(
     base_path,
@@ -48,6 +49,36 @@ ggsave(
   device = png
 )
 
+# add in bar graph of ablation fraction
+options(ggplot2.discrete.fill= c("salmon", "#0072B2", "#999999"))
+
+p_bar <- obs_mod_tree_comp |> 
+  distinct(event_id, event_type, melt, sublimation, wind) |>
+  pivot_longer(cols = c(melt, sublimation, wind), names_to = "Process", values_to = "Fraction of Total Ablation (-)") |>
+  mutate(facet_title = paste(event_type, '-', event_id)) |>
+  ggplot(aes(x = `Fraction of Total Ablation (-)`, y = Process, fill = Process)) +
+  geom_col() +
+  facet_wrap(~facet_title, ncol = 3) +
+  ylab(element_blank()) +
+  theme(legend.position = 'none')
+
+p_bar
+
+ggsave(
+  paste0(
+    base_path,
+    'mod_frac_ablation_',
+    run_tag_updt,
+    '.png'
+  ),
+  width = 6,
+  height = 8,
+  device = png
+)
+
+# this is kind of ugle but works to combine the two plots
+# library(patchwork)
+# (p_main | p_bar) + plot_layout(ncol = 2, widths = c(3, 1))
 
 # hourly analysis
 

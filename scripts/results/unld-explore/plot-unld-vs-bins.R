@@ -6,17 +6,27 @@
 
 xlabs_dict <- data.frame(
   name = c('wind_labs',
+           'tau_labs',
            'temp_labs',
            'canopy_snowmelt_labs',
+           'ti_dep_labs',
            'subl_labs'),
   name_pretty = c('Wind Speed (m/s)',
+                  'Shear Stress (N/m^2)',
                   'Air Temperature (°C)',
-                  'Canopy Snowmelt (mm/hr)',
-                  'Canopy Snow Sublimation (mm/hr)')
+                  'Snowmelt (mm/hr)',
+                  'Ice Bulb Temp. Depression (°C)',
+                  'Sublimation (mm/hr)')
 )
 
 met_unld_w_bins_smry_wind <- summarise_met_data(met_unld_w_bins,
                                                 wind_labs,
+                                                tree_labs,
+                                                3,
+                                                0.1)
+
+met_unld_w_bins_smry_tau <- summarise_met_data(met_unld_w_bins,
+                                                tau_labs,
                                                 tree_labs,
                                                 3,
                                                 0.1)
@@ -39,12 +49,21 @@ met_unld_w_bins_smry_subl <- summarise_met_data(met_unld_w_bins,
                                                 3,
                                                 0.1)
 
+met_unld_w_bins_smry_ti_dep <- summarise_met_data(met_unld_w_bins,
+                                                ti_dep_labs,
+                                                tree_labs,
+                                                3,
+                                                0.1)
+
 
 bins_df <- rbind(met_unld_w_bins_smry_wind, met_unld_w_bins_smry_temp) |> 
   rbind(met_unld_w_bins_smry_melt) |> 
   rbind(met_unld_w_bins_smry_subl) |> 
+  rbind(met_unld_w_bins_smry_tau) |> 
+  rbind(met_unld_w_bins_smry_ti_dep) |> 
   left_join(xlabs_dict)
 
+# all plots together
 ggplot(bins_df, 
        aes(x = value, y = q_unl_avg, colour = as.factor(round(tree_labs)))) + 
   # geom_point(data = met_unld_w_bins, aes(u, q_unl), alpha = 0.1, colour = 'black') +

@@ -11,7 +11,7 @@ Macros:
 ######
 Observations:
 ######
-/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data.obs
+/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data_hourly.obs
 ######
 Dates:
 ######
@@ -143,11 +143,9 @@ CanopyVectorBased Zref <0.01 to 100>
 4.32 
 CanopyVectorBased Zvent <0 to 1>
 0.75 
-CanopyVectorBased Sbar <0 to 20>
-6.6
 CanSnobalCRHM Lmax <0 to 100>
 50
-CanSnobalCRHM max_liq_veg <0 to 50>
+CanSnobalCRHM max_liq_veg_frac <0 to 50>
 0.0
 CanSnobalCRHM Albedo_vegsnow <0.6 to 0.9>
 0.8

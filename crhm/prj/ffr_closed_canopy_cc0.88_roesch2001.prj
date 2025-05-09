@@ -156,7 +156,7 @@ CanSnobalCRHM SW_to_LW_fn <0.0001 to 0.5>
 CanSnobalCRHM CanopyWindSwitchCanSno <0 to 1>
 1
 CanSnobalCRHM MassUnloadingSwitch <0 to 2>
-0
+2
 evap_Resist evap_type <0 to 2>
 0 
 evap_Resist F_Qg <0 to 1>

@@ -471,6 +471,8 @@ met_unld_no_melt <-
     by = c('datetime', 'name')
   ) |>
   left_join(wind_binned) |> 
+  left_join(tau_binned) |> 
+  left_join(temp_binned) |> 
   left_join(ft_met) |> 
   filter(
     # name %in% scl_names,

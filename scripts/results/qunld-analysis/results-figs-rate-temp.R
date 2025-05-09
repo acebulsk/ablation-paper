@@ -1,4 +1,4 @@
-# script to generate model of wind induced unloading
+# script to explore temp induced unloading during non-melt periods
 
 ## BIN TREE DATA ----
 
@@ -44,12 +44,12 @@ met_unld_no_melt |>
 met_unld_no_melt_cold <- met_unld_no_melt |> 
   filter(
     #t < -6, 
-         # q_subl_veg < 0.1
-         )
+    # q_subl_veg < 0.1
+  )
 
-met_unld_no_melt_wind_smry <- met_unld_no_melt_cold |> 
+met_unld_no_melt_temp_smry <- met_unld_no_melt_cold |> 
   filter(is.na(tree_mm) == F) |> 
-  group_by(wind_labs, tree_labs) |> 
+  group_by(temp_labs, tree_labs) |> 
   summarise(q_unl_avg = mean(q_unl, na.rm = T),
             q_unl_sd = sd(q_unl, na.rm = T),
             sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
@@ -59,18 +59,18 @@ met_unld_no_melt_wind_smry <- met_unld_no_melt_cold |>
             sum_snow = sum(dU),
             n = n()) |> 
   filter(n >= 3,
-         # wind_labs < 3, # wind transport potential above this threshold
+         # temp_labs < 3, # temp transport potential above this threshold
          sum_snow > 0.1)
 
 ## PLOT BINS ----
 
-### wind vs unloading rate ----
+### temp vs unloading rate ----
 
-ggplot(met_unld_no_melt_wind_smry, 
-       aes(x = wind_labs, y = q_unl_avg, colour = as.character(round(tree_labs)))) + 
-  geom_point(data = met_unld_no_melt_cold, aes(u, q_unl), alpha = 0.1, colour = 'black') +
+ggplot(met_unld_no_melt_temp_smry, 
+       aes(x = temp_labs, y = q_unl_avg, colour = as.character(round(tree_labs)))) + 
+  geom_point(data = met_unld_no_melt_cold, aes(t, q_unl), alpha = 0.1, colour = 'black') +
   geom_errorbar(aes(
-    x = wind_labs, 
+    x = temp_labs, 
     ymax = sd_hi,
     ymin = sd_low
   ), width = 0.2)  +
@@ -80,13 +80,13 @@ ggplot(met_unld_no_melt_wind_smry,
   theme_bw() +
   # theme_bw(base_size = 14) +
   theme(legend.position = 'bottom') +
-  # ylim(NA, 3.1) +
+  ylim(NA, 2) +
   # xlim(NA, 3.5) +
   # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Mean Canopy Load (mm)')# + facet_grid(cols = vars(name))
 
 ggsave(
-  'figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png',
+  'figs/results/binned_unloading_rate_and_temp_mid_class_tree_load.png',
   device = png,
   width = 4,
   height = 4,
@@ -117,6 +117,15 @@ model_nls <- nls(q_unl_avg/(60*60) ~ wind_labs * a * tree_labs * exp(b * wind_la
 summary(model_nls)
 nls_coefs <- coef(model_nls)
 saveRDS(nls_coefs, 'data/model_coef_wind_unld_per_second.rds')
+nls_smry <- summary(model_nls)
+coefs_df <- as.data.frame(coef(nls_smry))
+coefs_df <- coefs_df |> 
+  rownames_to_column(var = "term") |> 
+  select(term, Estimate, p_value = `Pr(>|t|)`) |> 
+  pivot_wider(names_from = term, values_from = c(Estimate, p_value), names_glue = "{term}_{.value}") |> 
+  mutate(across(contains("Estimate"), ~ formatC(.x, format = "e", digits = 2))) |> 
+  mutate(across(contains("p_value"), ~ ifelse(.x < 0.05, 'p < 0.05', 'n.s.')))
+
 met_unld_no_melt_wind_smry <- met_unld_no_melt_wind_smry |> 
   mutate(
     model_nls_pred = wind_labs * nls_coefs[[1]] * tree_labs * exp(nls_coefs[[2]]* wind_labs) # Linear model prediction
@@ -132,21 +141,11 @@ model_nls <- nls(q_unl_avg ~ wind_labs * a * tree_labs * exp(b * wind_labs),
                  data = met_unld_no_melt_wind_smry, 
                  start = list(a = a_lm, b = b_lm))
 summary(model_nls)
-nls_smry <- summary(model_nls)
-
 RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
 TSS <- sum((met_unld_no_melt_wind_smry$q_unl_avg - mean(met_unld_no_melt_wind_smry$q_unl_avg))^2)  # Total sum of squares
 rsq_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
 
 modelr::rsquare(model_nls, met_unld_no_melt_wind_smry) # check is the same as our manually defined method
-
-coefs_df <- as.data.frame(coef(nls_smry))
-coefs_df <- coefs_df |> 
-  rownames_to_column(var = "term") |> 
-  select(term, Estimate, p_value = `Pr(>|t|)`) |> 
-  pivot_wider(names_from = term, values_from = c(Estimate, p_value), names_glue = "{term}_{.value}") |> 
-  mutate(across(contains("Estimate"), ~ formatC(.x, format = "e", digits = 2))) |> 
-  mutate(across(contains("p_value"), ~ ifelse(.x < 0.05, 'p < 0.05', 'n.s.')))
 
 ### Fit a non linear least squares model on the RAW data ----
 # model_nls <- nls(q_unl ~ u * a * tree_mm * exp(b * u), 
@@ -208,31 +207,27 @@ coefs_df <- coefs_df |>
 
 
 # Look at the different models for the warm events 
-ex_wind_labs <- seq(0,6,0.05) |> round(2)
+ex_wind_labs <- seq(0,6,0.1)
 ex_tree_labs <- c(1, 4, 13)
 wind_ex_df <- expand.grid(wind_labs = ex_wind_labs, tree_labs = ex_tree_labs)
 wind_ex_df$new_predicted_y <- predict(model_nls, newdata = wind_ex_df)
 
-stopifnot(all(met_unld_no_melt_wind_smry$wind_labs %in% ex_wind_labs))
-
 ## PLOT MODEL ----
 
-wind_plot_df <- wind_ex_df |> left_join(met_unld_no_melt_wind_smry) |> 
-  filter(!(tree_labs == 13 & wind_labs > 3.5),
-         !(tree_labs == 4 & wind_labs > 5)) |> 
-  pivot_longer(wind_labs, names_to = 'x_var_name', values_to = 'x_var_value') |> 
-  select(-log_q_unl_avg, -model_nls_pred)
-
-
-ggplot(wind_plot_df, aes(x = x_var_value)) +
-  geom_line(aes(y = new_predicted_y, colour = factor(tree_labs))) +
-  geom_errorbar(aes(
+ggplot(wind_ex_df |> filter(!(tree_labs == 13 & wind_labs > 3.5),
+                            !(tree_labs == 4 & wind_labs > 5)
+)) +
+  geom_line(aes(wind_labs, new_predicted_y, colour = factor(tree_labs))) +
+  geom_errorbar(data = met_unld_no_melt_wind_smry,
+                aes(
+                  x = wind_labs,
                   ymax = sd_hi,
                   ymin = sd_low,
                   width = 0.05,
                   colour = as.character(round(tree_labs))
                 )) +
-  geom_point(aes(y = q_unl_avg, colour = as.character(round(tree_labs))),
+  geom_point(data = met_unld_no_melt_wind_smry,
+             aes(wind_labs, q_unl_avg, colour = as.character(round(tree_labs))),
              size = 2) +
   ylab('Unloading Rate (mm/hr)') +
   xlab('Wind Speed (m/s)') +

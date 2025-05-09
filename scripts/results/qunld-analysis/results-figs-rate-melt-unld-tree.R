@@ -153,7 +153,7 @@ obs_mod_fltr_binned <- obs_mod_fltr |>
             unld = sum(est_q_unld_melt),
             unld_melt_ratio = unld/melt,
             unld_melt_ratio_sd = NA,
-            name = 'weighed tree unld / crhm drip') |> 
+            name = 'CRHM') |> 
   filter(unld > 0) |> 
   select(tree_labs, event_id, unld_melt_ratio, unld_melt_ratio_sd, name) 
 
@@ -200,7 +200,7 @@ ggplot(unld_melt_ratio,
   annotate(
       'label',
       x = 4,
-      y = 3,
+      y = 4.5,
       label = paste("R² =", round(r2_adj_lm, 2))
   ) +
   # geom_errorbar(aes(ymax = unld_melt_ratio_hi, ymin = unld_melt_ratio_lo), width = 1, alpha = 0.5)  +
@@ -208,7 +208,8 @@ ggplot(unld_melt_ratio,
   #      x = c(0, NA)) +
   labs(
     x = "Canopy Snow Load (mm)",
-    y = "Unloading to Melt Ratio (-)"
+    y = "Unloading to Melt Ratio (-)",
+    colour = 'Melt'
   ) +
   theme(legend.position = 'bottom')
 

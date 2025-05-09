@@ -293,7 +293,7 @@ for (i in 1:nrow(time_forcing)) {
 time_forcing_15min <- time_forcing |> 
   mutate(group = '15min')
 
-dt <- 60*60 # seconds 
+dt <- 60*60*7 # seconds 
 time_forcing <- data.frame(
   time = seq(as.POSIXct('2024-01-01 00:00:00'), as.POSIXct('2024-01-07 00:00:00'), by = dt),
   u = 2,
@@ -318,11 +318,14 @@ for (i in 1:nrow(time_forcing)) {
 }
 
 time_forcing_60min <- time_forcing |> 
-  mutate(group = '60min')
+  mutate(group = 'Weekly')
 
 rbind(time_forcing_15min,
       time_forcing_60min) |> pivot_longer(starts_with("L_")) |> 
   ggplot(aes(time, value, colour = group, linetype = name)) +
-  geom_line()
+  geom_line() +
+  ylab('Canopy Snow Load (mm)')
+
+ggsave('figs/examples/numerical_deamons.png', width = 7, height = 5)
 plotly::ggplotly()
 

@@ -29,7 +29,7 @@ met_unld_w_bins_smry <- met_unld_w_bins |>
   group_by(
     wind_labs,
     tree_labs,
-    # canopy_snowmelt_labs,
+    canopy_snowmelt_labs
     # subl_labs,
     # temp_labs,
     # tau_labs,
@@ -51,10 +51,11 @@ ggplot(met_unld_w_bins_smry,
        aes(x = tree_labs, y = q_unl_avg, colour = wind_labs)) + 
   geom_point(size = 3)
 
-# no interaction
+# check interaction
+# it makes the melt model worse..
 lm_model <- lm(q_unl_avg ~
-                 tree_labs, 
-                 # wind_labs +
+                 # tree_labs*wind_labs +
+                  tree_labs*canopy_snowmelt_labs,
                  # canopy_snowmelt_labs,
                  # subl_labs,
                  # temp_labs,

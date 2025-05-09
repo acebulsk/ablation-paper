@@ -59,8 +59,35 @@ CRHMr::writeObsFile(ft_obs_irtc_tree,
                     'crhm/obs/ffr_crhm_modelling_obs_w_asm_data.obs',
                     comment = 'This file consists of air temp, rh, and wind speed from the Waterloo Forest Tower (aka Fortress Forest Ride) see the R proj met-data-processing for qaqc and gap fill procedures. The radiation data is from Fortress Ridge and has been gap filled with Fortress Ridge South.')
 
+ffr_qc_fill_out_hourly <- ft_obs_irtc |> 
+  mutate(
+    # datetime = datetime - (15*60), # shift so datetime corresponds to start of measurement interval, this is to avoid measurements with the 00:00 timestamp which correspond to the average from 23:45 to 00:00 to be assigned incorrectly to the next day.
+    # datetime = format(datetime, '%Y-%m-%d %H:00:00'),
+    # datetime = as.POSIXct(datetime, tz = 'Etc/GMT+6'),
+    # datetime = datetime + 60*60 
+    datetime = lubridate::ceiling_date(datetime, unit = 'hour') # checked and this is the same as above
+  ) |> 
+  group_by(datetime) |> 
+  mutate(n = n()) |> 
+  filter(n == 4) |> 
+  summarise(
+    t = mean(t),
+    rh = mean(rh),
+    u = mean(u),
+    Qsi = mean(Qsi),
+    p = sum(p),
+    obs_canopy_temp = 9999, # need some additional thought on how to assimilate for events that do not start on the hour... 
+    obs_snow_load = 9999
+    ) |> 
+  as.data.frame()  
+
+CRHMr::writeObsFile(ffr_qc_fill_out_hourly,
+                    'crhm/obs/ffr_crhm_modelling_obs_w_asm_data_hourly.obs',
+                    comment = 'This file consists of air temp, rh, and wind speed from the Waterloo Forest Tower (aka Fortress Forest Ride) see the R proj met-data-processing for qaqc and gap fill procedures. The radiation data is from Fortress Ridge and has been gap filled with Fortress Ridge South. Converted to hourly from fifteen minute using lubridate::ceiling_date.')
+
+
 obs_event <- ft_obs_irtc_tree |> filter(datetime >= as.POSIXct('2022-03-24 00:15:00', tz = 'Etc/GMT+6'),
-                                       datetime <= as.POSIXct('2022-03-28 00:00:00', tz = 'Etc/GMT+6'))
+                                        datetime <= as.POSIXct('2022-03-28 00:00:00', tz = 'Etc/GMT+6'))
 
 CRHMr::writeObsFile(obs_event,
                     'crhm/obs/ffr_crhm_modelling_obs_w_asm_data_fltr_event.obs',

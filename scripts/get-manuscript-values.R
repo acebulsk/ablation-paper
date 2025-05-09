@@ -8,15 +8,36 @@ obs_mod_w_tree_fig <- paste0(
   '/obs_mod_canopy_snow_load.png'
 )
 
-lm_multi_reg_tbl <- readRDS('data/stats/lm_multi_reg_q_unld_bins.rds')
+select_models <- c(
+  'M1', # best one with L, u and melt
+  'M10', # as above but adds temp
+  'M24', # as w M1 but adds subl
+  'M4', # as w M1 but tau instead of u
+  'M7', # just sublimation and melt
+  'M40', # L , wind, air temp
+  'M63' # L, wind, subl
+)
 
-melt_only_r2 <- lm_multi_reg_tbl$R2[lm_multi_reg_tbl$`Model Name` == 'M9']
-melt_tree_only_r2 <- lm_multi_reg_tbl$R2[lm_multi_reg_tbl$`Model Name` == 'M5']
+lm_multi_reg_tbl <- readRDS('data/stats/lm_multi_reg_q_unld_bins.rds') 
+lm_multi_reg_tbl_slim <- lm_multi_reg_tbl |> 
+  filter(`Model Name` %in% select_models) |> 
+  select(-T_ib_dep)
 
-wind_err_tbl <- readRDS('data/modelled_wind_unloading_error_table.rds') 
-q_unld_wind_r2 <- wind_err_tbl$Value[wind_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
-mod_coef_wind <- readRDS('data/model_coef_wind_unld_per_second.rds') # prior to adding temp inside wind unld fun
-mod_coef_duration <- readRDS('data/model_coef_duration_unld_per_second.rds')
+# find where only melt term is non 'nan'
+melt_only_r2 <- lm_multi_reg_tbl$Adj_R2[lm_multi_reg_tbl$u == '—' &
+                                          lm_multi_reg_tbl$q_subl == '—' &
+                                          lm_multi_reg_tbl$T_a == '—' &
+                                          lm_multi_reg_tbl$tau == '—' &
+                                          lm_multi_reg_tbl$T_ib_dep == '—']
+
+wind_tau_err_tbl <- readRDS('data/modelled_combined_wind_tau_unloading_error_table.rds') 
+mod_coef_wind_a <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient a'] |> as.numeric()
+mod_coef_wind_b <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient b']
+q_unld_wind_r2 <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
+
+mod_coef_tau_a <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == 'Coefficient a'] |> as.numeric()
+mod_coef_tau_b <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == 'Coefficient b']
+q_unld_tau_r2 <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
 
 q_unld_melt_lm <- readRDS('data/lm_q_drip_vs_q_unld_melt.rds')
 q_unld_melt_b <- coef(q_unld_melt_lm)[[1]] |> round(2)
@@ -82,3 +103,4 @@ wind_nr_mb_avg <- obs_mod_stats_event_avg |>
   pull(MB) |> 
   mean() |> 
   round(1)
+

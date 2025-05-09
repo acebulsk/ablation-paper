@@ -23,7 +23,8 @@ select_events_long <- obs_tree |> select(datetime, event_id)
 ### UPDATED ABLATION MODEL WITH PSP ----
 # Select model run with all unloading events weighed tree snow load assimilated
 # prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
-prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
+prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal_hourly"
+# prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
 
 
 # specify certain model run
@@ -33,11 +34,12 @@ prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
 # run_tag_updt <- "obs_irtc_trunk_temp_as_canopy_snow_temp"
 run_tag_updt <- "new_event_set_output.txt"
 run_tag_updt <- "test_LW_in_eq_vf_4pir"
-run_tag_updt <- "no_unld_melt_4cal"
+run_tag_updt <- "cansnobal_fix_out"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/"
+    "crhm/output/",
+    prj_updt
   ),
   pattern = run_tag_updt,
   recursive = T,
@@ -64,7 +66,7 @@ crhm_output_updated <- CRHMr::readOutputFile(
 # crhm_output_updated$Subl_Cpy.1 |> sum()
 
 mod_tree <- crhm_output_updated |> 
-  select(datetime, ellis2010 = Snow_load.1, simulated_new = m_s_veg.1)
+  select(datetime, simulated_new = m_s_veg.1)
 
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 

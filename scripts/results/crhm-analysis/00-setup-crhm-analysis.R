@@ -20,7 +20,7 @@ bad_events <- c(
 # Select model run with all unloading events weighed tree snow load assimilated
 # prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
-
+# prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal_hourly"
 
 # specify certain model run
 # run_tag_updt <- "psp_temp_as_canopy_snow_temp"
@@ -31,7 +31,9 @@ run_tag_updt <- "new_event_set_output.txt"
 run_tag_updt <- "test_LW_in_eq_vf_4pir"
 run_tag_updt <- "ess03_vt0.0_avs_0.65_fix5"
 run_tag_updt <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
-run_tag_updt <- "no_subl_unld_updt_wind_pars2"
+run_tag_updt <- "shear_stress_unld_v4" # on commit id 39f9a516c819d258530ad5dbba7a5e053bcd8bb4
+run_tag_updt <- "cansnobal_v_2_0_run8"
+run_tag_updt <- "2025-05-09-10-30-14_ffr_closed_canopy_cc0.88_cansnobal_cansnobal_v_3_0_w_asm_output"
 
 to_long_tb <- function(unloading_start_date, end_date, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag){
   datetime <- seq(unloading_start_date, end_date, 900)
@@ -341,7 +343,7 @@ run_tag_roesch <- "new_event_set"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
+  "../../analysis/crhm-analysis/output/",
     prj_roesch
   ),
   pattern = run_tag_roesch,
@@ -365,12 +367,12 @@ prj_andreadis <- "ffr_closed_canopy_cc0.88_andreadis2009"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_andreadis <- "new_event_set"
+run_tag_andreadis <- "2025-05-09-09-56-25_ffr_closed_canopy_cc0.88_andreadis2009_cansnobal_v_3_0_w_asm_output"
 # run_tag <- "testing123"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
+    "crhm/output/",
     prj_andreadis
   ),
   pattern = run_tag_andreadis,
@@ -384,7 +386,7 @@ crhm_output_updated <- CRHMr::readOutputFile(
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
 
 mod_tree <- crhm_output_updated |> 
-  select(datetime, andreadis2009 = Snow_load.1)
+  select(datetime, andreadis2009 = m_s_veg.1)
 
 obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree)
 

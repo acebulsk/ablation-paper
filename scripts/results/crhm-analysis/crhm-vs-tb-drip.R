@@ -128,7 +128,7 @@ ggsave(
 )
 
 event_frac_unld_melt_out <- event_frac_unld_melt |> 
-  mutate(name = 'weighed tree unld / tipping bucket drip') |> 
+  mutate(name = 'TB') |> 
   select(tree_labs = obs_cml_dL,
          event_id,
          unld_melt_ratio = mean_,

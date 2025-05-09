@@ -318,9 +318,25 @@ event_error_met <- left_join(dL_hourly_err_summary, event_met)
 # below shows crhm_updated is more consistent across temperaturs and wind speed
 
 event_error_met |> 
-  ggplot(aes(t_mean, MB, colour = rh_mean)) + 
+  ggplot(aes(t_mean, MB, colour = u_mean)) + 
   geom_point() + 
-  facet_wrap(~name)
+  scale_color_viridis_c() +
+  facet_wrap(~name) +
+  ylab('Mean Bias (mm)') +
+  xlab('Mean Air Temperature (°C)') +
+  labs(colour = 'Mean Wind\nSpeed (m s⁻¹)')
+
+ggsave(
+  paste0(
+    base_path,
+    'obs_mod_mean_bias_vs_temp_',
+    run_tag_updt,
+    '.png'
+  ),
+  width = 8,
+  height = 6,
+  device = png
+)
 
 event_error_met |> 
   ggplot(aes(rh_mean, MB, colour = t_mean)) + 

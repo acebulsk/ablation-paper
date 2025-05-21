@@ -30,7 +30,7 @@ longVt CRHM 02/10/16
 netall CRHM 03/22/16
 evap_Resist CRHM 11/21/16
 tsurface#2 CRHM 12/14/16
-CanopyVectorBased#3 CRHM 11/12/24
+CanopyClearingGap#3 CRHM 6/13/17
 XG CRHM 06/09/17
 pbsmSnobal CRHM 01/05/17
 SnobalCRHM#1 CRHM 11/21/16
@@ -118,46 +118,30 @@ basin StateVars_to_Update
 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 
 basin TraceVars
 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 
-CanopyVectorBased alpha <0 to 1>
-1 
-CanopyVectorBased Alpha_c <0.05 to 0.2>
-0.17 
-CanopyVectorBased B_canopy <0 to 0.2>
-0.038 
-CanopyVectorBased CanopyClearing <0 to 2>
-0 
-CanopyVectorBased SublimationSwitch <0 to 1>
-1
-CanopyVectorBased MassUnloadingSwitch <0 to 1>
+CanopyClearingGap Alpha_c <0.05 to 0.2>
+0.17
+CanopyClearingGap B_canopy <0 to 0.2>
+0.038
+CanopyClearingGap CanopyClearing <0 to 2>
 0
-CanopyVectorBased MeltwaterSwitch <0 to 1>
-0
-CanopyVectorBased CanopyWindSwitch <0 to 1>
-1
-CanopyVectorBased Gap_diameter <10 to 1000>
-10 
-CanopyVectorBased Cc <0 to 1>
-0.88
-CanopyVectorBased LAI <0.1 to 20>
-6.7 
-CanopyVectorBased Lmax <0 to 100>
-50
-CanopyVectorBased Surrounding_Ht <0.001 to 100>
-0.1 
-CanopyVectorBased unload_t <-10 to 20>
--3 
-CanopyVectorBased unload_t_water <-10 to 20>
-6 
-CanopyVectorBased Z0snow <0.0001 to 0.01>
-0.01 
-CanopyVectorBased Zref <0.01 to 100>
-4.32 
-CanopyVectorBased Zvent <0 to 1>
+CanopyClearingGap Gap_diameter <10 to 1000>
+10
+CanopyClearingGap LAI <0.1 to 20>
+1.44 
+CanopyClearingGap Sbar <0 to 100>
+8.7
+CanopyClearingGap Surrounding_Ht <0.001 to 100>
+0.1
+CanopyClearingGap unload_t <-10 to 20>
+-3
+CanopyClearingGap unload_t_water <-10 to 20>
+6
+CanopyClearingGap Z0snow <0.0001 to 0.01>
+0.01
+CanopyClearingGap Zref <0.01 to 100>
+4.32
+CanopyClearingGap Zvent <0 to 1>
 0.75 
-CanopyVectorBased Sbar <0 to 20>
-6.6
-CanopyVectorBased melt_drip_ratio <0 to 10.
-4.069
 evap_Resist evap_type <0 to 2>
 0 
 evap_Resist F_Qg <0 to 1>
@@ -484,15 +468,12 @@ obs hru_u 1
 obs hru_p 1
 obs hru_rain 1
 SnobalCRHM SWE 1 
-CanopyVectorBased direct_snow 1
-CanopyVectorBased net_rain 1
-CanopyVectorBased net_snow 1
-CanopyVectorBased Subl_Cpy 1
-CanopyVectorBased SUnload 1
-CanopyVectorBased SUnload_H2O 1
-CanopyVectorBased canopy_snowmelt 1
-CanopyVectorBased SUnloadMelt 1
-CanopyVectorBased SUnloadWind 1
+CanopyClearingGap direct_snow 1
+CanopyClearingGap net_rain 1
+CanopyClearingGap net_snow 1
+CanopyClearingGap Subl_Cpy 1
+CanopyClearingGap SUnload 1
+CanopyClearingGap SUnload_H2O 1
 CanopyVectorBased drip_cpy 1 
 CanopyVectorBased Snow_load 1 
 CanopyVectorBased rain_load 1 

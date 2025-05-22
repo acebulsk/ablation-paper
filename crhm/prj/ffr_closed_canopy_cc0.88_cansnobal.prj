@@ -143,12 +143,10 @@ CanopyVectorBased Zref <0.01 to 100>
 4.32 
 CanopyVectorBased Zvent <0 to 1>
 0.75 
-CanopyVectorBased Sbar <0 to 20>
-6.6
 CanSnobalCRHM Lmax <0 to 100>
 50
-CanSnobalCRHM max_liq_veg <0 to 50>
-0.0
+CanSnobalCRHM max_liq_veg_frac <0 to 50>
+0.01
 CanSnobalCRHM Albedo_vegsnow <0.6 to 0.9>
 0.8
 CanSnobalCRHM SW_to_LW_fn <0.0001 to 0.5>
@@ -492,6 +490,7 @@ CanSnobalCRHM snow_h2o_veg 1
 CanSnobalCRHM liq_h2o_veg 1
 CanSnobalCRHM m_s_veg 1
 CanSnobalCRHM delsub_veg_int 1
+CanSnobalCRHM delevap_veg_int 1
 CanSnobalCRHM delmelt_veg_int 1
 CanSnobalCRHM deldrip_veg_int 1
 CanSnobalCRHM delunld_int 1 

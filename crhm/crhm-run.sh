@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # A script to run CRHM CLI with proper logging and error handling
+# To use: ./crhm-run.sh <prj_name> <runtag>
 
 cur_datetime=$(date +"%Y-%m-%d-%H-%M-%S")
 

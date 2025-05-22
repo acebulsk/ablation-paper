@@ -477,6 +477,7 @@ CanopyClearingGap SUnload_H2O 1
 CanopyVectorBased drip_cpy 1 
 CanopyVectorBased Snow_load 1 
 CanopyVectorBased rain_load 1 
+CanopyClearingGap Snow_load 1
 ######
 Display_Observation:
 ######

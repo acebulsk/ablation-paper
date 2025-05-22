@@ -11,7 +11,7 @@ Macros:
 ######
 Observations:
 ######
-/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data.obs
+/home/alex/local-usask/working-papers/ablation-paper/crhm/obs/ffr_crhm_modelling_obs_w_asm_data_cc0.54.obs
 ######
 Dates:
 ######
@@ -127,13 +127,7 @@ CanopyVectorBased B_canopy <0 to 0.2>
 0.038 
 CanopyVectorBased CanopyClearing <0 to 2>
 0 
-CanopyVectorBased SublimationSwitch <0 to 1>
-1
-CanopyVectorBased MassUnloadingSwitch <0 to 1>
-1
-CanopyVectorBased MeltwaterSwitch <0 to 1>
-1
-CanopyVectorBased CanopyWindSwitch <0 to 1>
+CanopyVectorBased CanopyWindSwitchIP <0 to 1>
 1
 CanopyVectorBased Gap_diameter <10 to 1000>
 10 
@@ -141,33 +135,25 @@ CanopyVectorBased Cc <0 to 1>
 0.54
 CanopyVectorBased LAI <0.1 to 20>
 1.58 
-CanopyVectorBased Lmax <0 to 100>
-50
 CanopyVectorBased Surrounding_Ht <0.001 to 100>
 0.1 
-CanopyVectorBased unload_t <-10 to 20>
--3 
-CanopyVectorBased unload_t_water <-10 to 20>
-6 
 CanopyVectorBased Z0snow <0.0001 to 0.01>
 0.01 
 CanopyVectorBased Zref <0.01 to 100>
 4.32 
 CanopyVectorBased Zvent <0 to 1>
 0.75 
-CanopyVectorBased Sbar <0 to 20>
-6.6
-CanopyVectorBased melt_drip_ratio <0 to 10>
-6.0
-CanSnobalCRHM max_liq_veg <0 to 50>
-0.0
+CanSnobalCRHM Lmax <0 to 100>
+50
+CanSnobalCRHM max_liq_veg_frac <0 to 50>
+0.01
 CanSnobalCRHM Albedo_vegsnow <0.6 to 0.9>
 0.8
 CanSnobalCRHM SW_to_LW_fn <0.0001 to 0.5>
 0.2
-CanSnobalCRHM unld_to_melt_ratio <0 to 10>
-0.1
-CanSnobalCRHM unld_to_subl_ratio <0 to 10>
+CanSnobalCRHM CanopyWindSwitchCanSno <0 to 1>
+1
+CanSnobalCRHM MassUnloadingSwitch <0 to 2>
 0
 evap_Resist evap_type <0 to 2>
 0 
@@ -494,24 +480,28 @@ obs hru_rh 1
 obs hru_u 1
 obs hru_p 1
 obs hru_rain 1
-SnobalCRHM SWE 1 
-CanopyVectorBased direct_snow 1
-CanopyVectorBased net_rain 1
-CanopyVectorBased net_snow 1
-CanopyVectorBased Subl_Cpy 1
-CanopyVectorBased drip_cpy 1 
-CanopyVectorBased Snow_load 1 
-CanopyVectorBased rain_load 1 
+CanopyVectorBased Clca 1
+CanopyVectorBased intercepted_snow 1
+CanopyVectorBased intercepted_rain 1
+CanopyVectorBased throughfall_snow 1
+CanopyVectorBased throughfall_rain 1
 CanSnobalCRHM T_s_veg 1
 CanSnobalCRHM snow_h2o_veg 1
 CanSnobalCRHM liq_h2o_veg 1
 CanSnobalCRHM m_s_veg 1
 CanSnobalCRHM delsub_veg_int 1
+CanSnobalCRHM delevap_veg_int 1
 CanSnobalCRHM delmelt_veg_int 1
+CanSnobalCRHM deldrip_veg_int 1
 CanSnobalCRHM delunld_int 1 
 CanSnobalCRHM delunld_wind_int 1
 CanSnobalCRHM delunld_melt_int 1 
 CanSnobalCRHM delunld_subl_int 1 
+CanSnobalCRHM net_rain 1 
+CanSnobalCRHM net_snow 1 
+CanSnobalCRHM net_p 1 
+SnobalCRHM SWE 1 
+SnobalCRHM snowmelt_int 1
 ######
 Display_Observation:
 ######

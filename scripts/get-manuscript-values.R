@@ -1,12 +1,10 @@
 # Bring in values for paper
-model_run_tag <- 'no_subl_unld_updt_wind_pars'
-fig_tbl_tag <- 'compare_baseline_updated_psp_w_new_wind_unld_w_temp_par'
+library(dplyr)
+library(gt)
 
-obs_mod_w_tree_fig <- paste0(
-  'figs/crhm-analysis/subl_drip_unld/select_post_agu_events/',
-  fig_tbl_tag,
-  '/obs_mod_canopy_snow_load.png'
-)
+pretty_table <- readRDS('tbls/select_event_met_stats_maxmin_pretty_gt_table.rds')
+
+model_run_tag <- 'store_liquid_new_evap6'
 
 select_models <- c(
   'M1', # best one with L, u and melt
@@ -56,51 +54,73 @@ event_met <- readRDS('data/ablation_event_met_summary.rds') |>
   select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 
   mutate(across(t:Qsi, round, 2))
 
-event_ablation_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
+event_ablation_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds') |> 
+  mutate(event_id = as.Date(event_id))
 
 event_met_abl_frac <- left_join(event_met, event_ablation_frac)
 
-obs_mod_stats_avg <- readRDS(paste0(
+obs_mod_stats_avg <- readRDS( paste0(
   'tbls/',
-  'obs_mod_canopy_snow_load_err_tbl_avg_',
+  'mb_by_event_w_mean_overall',
   model_run_tag,
   '.rds'
 ))
 
-new_model_mb_avg <- obs_mod_stats_avg$MB[obs_mod_stats_avg$name == 'simulated_new'] |> round(2)
-old_mods_mb_range <- obs_mod_stats_avg$MB[!obs_mod_stats_avg$name == 'simulated_new'] |> range() |> round(2)
+new_model_mb_avg <- obs_mod_stats_avg$MB[obs_mod_stats_avg$name == 'CP25' &
+                                           obs_mod_stats_avg$event_type == 'all'] |> round(2)
+old_mods_mb_range <- obs_mod_stats_avg$MB[!obs_mod_stats_avg$name == 'CP25' &
+                                            obs_mod_stats_avg$event_type == 'all'] |> range() |> round(2)
 
-obs_mod_stats_event_avg <- readRDS(paste0(
-  'tbls/',
-  'obs_mod_canopy_snow_load_err_hourly_event_type',
-  model_run_tag,
-  '.rds'
-))
-
-melt_new_model_mb_avg <- obs_mod_stats_event_avg |>
-  filter(event_type == 'melt', name == 'simulated_new') |>
+melt_new_model_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'melt', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
-melt_other_mb_avg <- obs_mod_stats_event_avg |>
-  filter(event_type == 'melt', !name == 'simulated_new') |>
+melt_a09_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'melt', name == 'SA09') |>
+  pull(MB) |> 
+  round(2)
+
+melt_other_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'melt', name %in% c('E10', 'R01')) |>
   pull(MB) |> 
   range() |> 
   round(2)
 
-wind_new_model_mb_avg <- obs_mod_stats_event_avg |>
-  filter(event_type == 'wind', name == 'simulated_new') |>
+
+subl_all_mb <- obs_mod_stats_avg |>
+  filter(event_type == 'sublimation') |>
+  pull(MB) |> 
+  range() |> 
+  round(2)
+
+subl_new_model_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'sublimation', name == 'CP25') |>
+  pull(MB) |> 
+  round(3)
+
+subl_other_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'sublimation', name != 'CP25') |>
+  pull(MB) |> 
+  range() |> 
+  round(2)
+
+wind_new_model_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'wind', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
-wind_roesch_mb_avg <- obs_mod_stats_event_avg |>
-  filter(event_type == 'wind', name == 'roesch2001') |>
+wind_roesch_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'wind', name == 'R01') |>
   pull(MB) |> 
   round(2)
 
-wind_nr_mb_avg <- obs_mod_stats_event_avg |>
-  filter(event_type == 'wind', !name %in% c('simulated_new', 'roesch2001')) |>
+wind_nr_mb_avg <- obs_mod_stats_avg |>
+  filter(event_type == 'wind', !name %in% c('CP25', 'R01')) |>
   pull(MB) |> 
-  mean() |> 
-  round(1)
+  min() |> 
+  round(2)
+
+
+atm_ground_part <- readRDS('data/atmosphere_ground_partition_by_model.rds')
 

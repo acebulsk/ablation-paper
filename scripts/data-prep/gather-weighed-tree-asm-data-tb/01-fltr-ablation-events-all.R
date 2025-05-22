@@ -41,7 +41,7 @@ canopy_snow_events <-
   read.csv('data/raw-data/snow_in_canopy_post_snowfall.csv') |> 
   mutate(from =  as.POSIXct(from, tz = 'Etc/GMT+6'),
          to = as.POSIXct(to, tz = 'Etc/GMT+6'),
-          event_id = format(from, "%Y-%m-%d %H")) 
+          event_id = format(from, "%Y-%m-%d")) 
 
 events_fltr <- canopy_snow_events 
 

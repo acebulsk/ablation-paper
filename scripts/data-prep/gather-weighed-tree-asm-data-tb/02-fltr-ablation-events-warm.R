@@ -32,7 +32,7 @@ warm_tree_events <-
   filter(quality < 3) |> 
   mutate(
     across(from:to, ~as.POSIXct(.x, tz = 'Etc/GMT+6')),
-     event_id = format(from, "%Y-%m-%d %H"))
+     event_id = format(from, "%Y-%m-%d"))
 warm_tree_events_long <-
   purrr::pmap_dfr(warm_tree_events |> select(from, to, event_id), to_long) 
 

@@ -10,8 +10,8 @@ to_long <- function(from,
 }
 
 # weighed tree zeroed prior to snowfall events
-# load_suffix <- 'fsd_closed_0.88' # corresponds to avg of tipping buckets
-load_suffix <- 'fsd_cal_for_each_trough_vza_15'
+load_suffix <- 'fsd_closed_0.88' # corresponds to avg of tipping buckets
+# load_suffix <- 'fsd_cal_for_each_trough_vza_15'
 
 
 # weighed tree zeroed prior to snowfall events
@@ -32,7 +32,7 @@ warm_tree_events <-
   filter(quality < 3) |> 
   mutate(
     across(from:to, ~as.POSIXct(.x, tz = 'Etc/GMT+6')),
-     event_id = format(from, "%Y-%m-%d %H"))
+     event_id = format(from, "%Y-%m-%d"))
 warm_tree_events_long <-
   purrr::pmap_dfr(warm_tree_events |> select(from, to, event_id), to_long) 
 

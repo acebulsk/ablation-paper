@@ -82,6 +82,6 @@ ggplot(bins_df,
   # xlim(NA, 3.5) +
   scale_color_viridis_d(begin = 0, end = 0.8) +
   # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
-  labs(color = 'Mean Canopy Load (mm)') + facet_wrap(~name_pretty, scales = 'free_x')
+  labs(color = 'Canopy Load (mm)') + facet_wrap(~name_pretty, scales = 'free_x')
 
 ggsave('figs/results/explore/scl_q_unld_vs_bins.png', width = 6, height = 5)

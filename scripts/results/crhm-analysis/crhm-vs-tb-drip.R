@@ -1,4 +1,5 @@
 # Script to compare drip output from CRHM to drip measured by tipping buckets
+options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 
 # by each bucket
 tb_d_drip <- tb_data_zeroed |> 
@@ -14,15 +15,15 @@ tb_d_drip <- tb_data_zeroed |>
 tb_d_drip_stat <- tb_d_drip |> 
   group_by(datetime, event_id) |> 
   summarise(
-    name = 'TB_mean',
+    name = 'TB',
     cml_drip_mean = mean(cml_drip, na.rm = T),
             sd = sd(cml_drip, na.rm = T)) 
 
 mod_d_drip <- crhm_output_newsim |> 
   left_join(tb_d_drip |> select(datetime, event_id) |> distinct()) |> 
   mutate(crhm_canopy_snowmelt = delmelt_veg_int.1,
-         crhm_drip = delmelt_veg_int.1,
-         name = 'crhm_drip') |> 
+         crhm_drip = deldrip_veg_int.1,
+         name = 'CRHM') |> 
   select(datetime, event_id, name, dU = crhm_drip) |> 
   group_by(event_id) |> 
   mutate(cml_drip_mean = cumsum(dU),
@@ -35,11 +36,11 @@ obs_mod_cml_drip |>
   ggplot(aes(datetime, cml_drip_mean, colour = name)) + 
   geom_line() +
   geom_ribbon(
-    data = . %>% filter(name == "TB_mean"),
+    data = . %>% filter(name == "TB"),
     aes(ymin = cml_drip_mean - sd, 
         ymax = cml_drip_mean + sd,
         fill = "± 1 SD"),
-    alpha = 0.3,
+    alpha = 0.2,
     colour = NA
   ) +
   facet_wrap(~event_id, nrow = 5, scales = 'free') +

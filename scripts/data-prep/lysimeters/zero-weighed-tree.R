@@ -120,12 +120,15 @@ fill_val2 <- weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post
 weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == bad1,]$tree_mm <- fill_val1
 weighed_tree_zeroed_pre_post_cnpy_snow[weighed_tree_zeroed_pre_post_cnpy_snow$datetime == bad2,]$tree_mm <- fill_val2
 
+weighed_tree_zeroed_pre_post_cnpy_snow <- weighed_tree_zeroed_pre_post_cnpy_snow |> select(datetime:tree_mm)
+
 ggplot(weighed_tree_zeroed_pre_post_cnpy_snow, aes(datetime, tree_mm, colour = name, group = name)) +
   geom_line() +
   facet_grid(rows = vars(tree_cal_cc))
-plotly::ggplotly()
+ggsave('figs/supplement/weighed_tree_zeroed_pre_post.png', width = 22, height = 7)
 
-
+p <- plotly::ggplotly()
+htmlwidgets::saveWidget(p, 'figs/supplement/weighed_tree_zeroed_pre_post.html')
 
 saveRDS(
   weighed_tree_zeroed_pre_post_cnpy_snow,

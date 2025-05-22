@@ -20,7 +20,7 @@ bad_events <- c(
 # Select model run with all unloading events weighed tree snow load assimilated
 # prj_updt <- "ffr_closed_canopy_cc0.88_vector_based_new_ablation_psp"
 prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal"
-# prj_updt <- "ffr_closed_canopy_cc0.88_cansnobal_hourly"
+# prj_updt <- "ffr_cc0.54_closed_cansnobal"
 
 # specify certain model run
 # run_tag_updt <- "psp_temp_as_canopy_snow_temp"
@@ -33,7 +33,7 @@ run_tag_updt <- "ess03_vt0.0_avs_0.65_fix5"
 run_tag_updt <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
 run_tag_updt <- "shear_stress_unld_v4" # on commit id 39f9a516c819d258530ad5dbba7a5e053bcd8bb4
 run_tag_updt <- "cansnobal_v_2_0_run8"
-run_tag_updt <- "2025-05-09-10-30-14_ffr_closed_canopy_cc0.88_cansnobal_cansnobal_v_3_0_w_asm_output"
+run_tag_updt <- "store_liquid_new_evap6"
 
 to_long_tb <- function(unloading_start_date, end_date, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag){
   datetime <- seq(unloading_start_date, end_date, 900)
@@ -67,9 +67,12 @@ to_long <- function(from,
 }
 
 load_suffix <- 'fsd_closed_0.88'
-# load_suffix <- 'fsd_cal_for_each_trough' # use this one if needing to compare the weighed tree to the troughs, mainly just used for the wind unloading analysis
+# load_suffix <- 'fsd_cal_for_each_trough_vza_15' # use this one if needing to compare the weighed tree to the troughs, mainly just used for the wind unloading analysis
 
 # LOAD DATA ---- 
+
+ft_met <- 
+  readRDS('../../analysis/met-data-processing/data/ffr_crhm_obs_qaqc_gap_fill.rds') 
 
 # recent_tree_files <- 
 #   list.files('../../analysis/crhm-analysis/output/weighed_tree_vector_based_new_ablation_psp',
@@ -157,6 +160,7 @@ obs_tree <-
     '.rds'
   )) 
 
+
 obs_tree_post_sf <- obs_tree |> 
   select(datetime, tree_mm) |> 
   left_join(events_fltr_long |> select(datetime, event_id, weighed_tree_quality),
@@ -188,6 +192,7 @@ obs_tree_warm <-
     load_suffix,
     '_kg_m2_post_cnpy_snow.rds'
   )) |> 
+  mutate(event_id = substr(event_id, 1, 10)) |> 
   filter(event_id %in% warm_events)
 
 all(warm_events %in% obs_tree_warm$event_id)
@@ -221,6 +226,7 @@ obs_tree_cold <-
     load_suffix,
     '_kg_m2_post_cnpy_snow.rds'
   )) |> 
+  mutate(event_id = substr(event_id, 1, 10)) |> 
   filter(event_id %in% cold_events)
 
 all(cold_events %in% obs_tree_cold$event_id)
@@ -250,7 +256,15 @@ tb_data_zeroed <- tb_data |>
     dU = ifelse(name == 'TB3_mm' & TB3_flag == T, NA, dU),
     dU = ifelse(name == 'TB4_mm' & TB4_flag == T, NA, dU)
   )
-mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
+mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds') |> 
+  mutate(event_id = as.Date(event_id))   |>
+  mutate(event_type = case_when(
+    melt >= 0.6 ~ 'melt',
+    sublimation >= 0.6 ~ 'sublimation',
+    wind >= 0.6 ~ 'wind',
+    TRUE ~ 'mixed'
+  )
+  )
 
 
 obs_tree <- rbind(obs_tree_cold  |> 
@@ -259,6 +273,8 @@ obs_tree <- rbind(obs_tree_cold  |>
                     select(datetime, event_id, observed = tree_mm)) 
 
 select_events_long <- obs_tree |> select(datetime, event_id)
+
+saveRDS(select_events_long, 'data/clean-data/select_cpy_snow_ablation_events.rds')
 
 ft_met_xtra <- readRDS('../../analysis/met-data-processing/data/1000x_wnd_irtc.rds')
 
@@ -272,6 +288,7 @@ fig_tbl_tag <- 'cansnobal_init_testing'
 # LOAD DATA ----
 
 ## OBSERVED ----
+
 obs_tree <- rbind(obs_tree_cold  |> 
                     select(datetime, event_id, observed = tree_mm),
                   obs_tree_warm |> 
@@ -282,7 +299,7 @@ select_events_long <- obs_tree |> select(datetime, event_id)
 # obs_tree <- obs_tree_post_sf
 # select_events_long <- obs_tree |> select(datetime, event_id)
 
-## MODELLED ----
+## MODELLED UPDATED ----
 
 path <- list.files(
   paste0(
@@ -300,7 +317,7 @@ crhm_output_newsim <- CRHMr::readOutputFile(
   timezone = 'Etc/GMT+6')# |> filter(datetime %in% obs_tree$datetime)
 
 mod_tree <- crhm_output_newsim |> 
-  select(datetime, simulated_new = m_s_veg.1)
+  select(datetime, CP25 = m_s_veg.1)
 
 obs_mod_tree <- left_join(obs_tree, mod_tree)
 
@@ -308,13 +325,14 @@ obs_mod_tree <- left_join(obs_tree, mod_tree)
 
 ### BASELINE CRHM ABLATION MODEL from Ellis2010/HP98 ----
 # Select model run with all unloading events weighed tree snow load assimilated
+# need run crhm at commit: 39f9a516c819d258530ad5dbba7a5e053bcd8bb4
 prj_base <- "ffr_closed_canopy_cc0.88_crhm_baseline"
 
-run_tag_base <- "new_event_set"
+run_tag_base <- "orig_cancleargap_module3"
 
 path <- list.files(
   paste0(
-    "../../analysis/crhm-analysis/output/",
+    "crhm/output/",
     prj_base
   ),
   pattern = run_tag_base,
@@ -328,22 +346,24 @@ crhm_output_baseline <- CRHMr::readOutputFile(
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
 
 mod_tree <- crhm_output_baseline |> 
-  select(datetime, ellis2010 = Snow_load.1)
+  select(datetime, E10 = Snow_load.1)
 
 obs_mod_tree_comp <- left_join(obs_mod_tree, mod_tree)
 
 ### Roesch 2001 ----
 # Select model run with all unloading events weighed tree snow load assimilated
+# need run crhm at commit: 39f9a516c819d258530ad5dbba7a5e053bcd8bb4
+
 prj_roesch <- "ffr_closed_canopy_cc0.88_roesch2001"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_roesch <- "new_event_set"
+run_tag_roesch <- "no_snowmelt"
 # run_tag <- "testing123"
 
 path <- list.files(
   paste0(
-  "../../analysis/crhm-analysis/output/",
+    "crhm/output/",
     prj_roesch
   ),
   pattern = run_tag_roesch,
@@ -352,12 +372,12 @@ path <- list.files(
 
 stopifnot(length(path) == 1)
 
-crhm_output_updated <- CRHMr::readOutputFile(
+crhm_output_roesch <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
 
-mod_tree <- crhm_output_updated |> 
-  select(datetime, roesch2001 = Snow_load.1)
+mod_tree <- crhm_output_roesch |> 
+  select(datetime, R01 = Snow_load.1)
 
 obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree)
 
@@ -367,7 +387,7 @@ prj_andreadis <- "ffr_closed_canopy_cc0.88_andreadis2009"
 
 # specify certain model run
 #run_tag <- "turn_off_duration_based_ablation_output.txt" # baseline prior to ratio based unloading
-run_tag_andreadis <- "2025-05-09-09-56-25_ffr_closed_canopy_cc0.88_andreadis2009_cansnobal_v_3_0_w_asm_output"
+run_tag_andreadis <- "45_ffr_closed_canopy_cc0.88_andreadis2009_add_store_liq_output"
 # run_tag <- "testing123"
 
 path <- list.files(
@@ -381,22 +401,16 @@ path <- list.files(
 
 stopifnot(length(path) == 1)
 
-crhm_output_updated <- CRHMr::readOutputFile(
+crhm_output_andreadis <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> filter(datetime %in% obs_tree$datetime)
 
-mod_tree <- crhm_output_updated |> 
-  select(datetime, andreadis2009 = m_s_veg.1)
-
-obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree)
+mod_tree <- crhm_output_andreadis |> 
+  select(datetime, SA09 = m_s_veg.1)
 
 obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree) |> 
-  left_join(mod_d_drip_smry_frac)  |>
-  mutate(event_type = case_when(
-    melt >= 0.6 ~ 'melt',
-    sublimation >= 0.6 ~ 'sublimation',
-    wind >= 0.6 ~ 'wind',
-    TRUE ~ 'mixed'
-  )
-  )
+  mutate(event_id = as.Date(event_id))
+
+obs_mod_tree_comp <- left_join(obs_mod_tree_comp, mod_tree) |> 
+  left_join(mod_d_drip_smry_frac)
 

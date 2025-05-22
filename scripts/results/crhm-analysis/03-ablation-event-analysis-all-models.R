@@ -16,7 +16,7 @@ options(ggplot2.discrete.colour= c("#000000", "#E69F00", "#56B4E9", "#009E73", "
  
 p_main <- obs_mod_tree_comp |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
-  mutate(name = factor(name, c('observed', 'simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001')),
+  mutate(name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01')),
          facet_title = paste(event_type, '-', event_id)) |> 
   ggplot(aes(datetime, value, 
              colour = name, 
@@ -24,17 +24,17 @@ p_main <- obs_mod_tree_comp |>
   geom_line() +
   facet_wrap(~facet_title, scales = 'free', ncol = 3) +
   # facet_wrap(~event_id, scales = 'free') +
-  ylab("Canopy Snow Load (mm)") +
+  ylab("Canopy Load (mm)") +
   xlab(element_blank()) +
   labs(colour = 'Data Type', linetype = 'Data Type') +  # Same label for both
   theme(legend.position = 'bottom') +
   scale_x_datetime(date_labels = "%H") +
   scale_linetype_manual(values = c(
     observed = "solid",
-    simulated_new = "solid",
-    roesch2001 = "dashed",
-    andreadis2009 = "dashed",
-    ellis2010 = "dashed"
+    CP25 = "solid",
+    R01 = "dashed",
+    SA09 = "dashed",
+    E10 = "dashed"
   ))
 p_main
 ggsave(
@@ -94,12 +94,14 @@ dL_hourly <- dL_fifteen |>
   group_by(datetime, event_id, event_type, name) |>
   summarise(value = sum(value)) 
  
-dL_hourly_err_summary <- dL_hourly |> 
+dL_hourly_err_summary_by_event_type <- dL_hourly |> 
   pivot_wider() |> 
   pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
-  filter(observed > 0) |> 
+  filter(#observed > 0,
+         #value > 0
+         ) |> 
   mutate(diff = observed - value,
-         name = factor(name, c('observed', 'simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
+         name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
   group_by(name, event_type, event_id) |>
   summarise(
     MB = mean(diff, na.rm = T),
@@ -112,7 +114,7 @@ dL_hourly_err_summary <- dL_hourly |>
 
 options(ggplot2.discrete.colour= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 
-ggplot(dL_hourly_err_summary, aes(name, MB, colour = name)) + 
+ggplot(dL_hourly_err_summary_by_event_type, aes(name, MB, colour = name)) + 
   geom_boxplot() +
   facet_wrap(~event_type, scale = 'free') +
   ylab('Mean Bias (mm)') +
@@ -131,7 +133,7 @@ ggsave(
   device = png
 )
 
-dL_hourly_err_summary <- dL_hourly |> 
+dL_hourly_err_summary_by_type <- dL_hourly |> 
     pivot_wider() |> 
     pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
     filter(observed > 0) |> 
@@ -151,26 +153,26 @@ dL_hourly_err_summary <- dL_hourly |>
   mutate(across(MB:R2, round, digits = 3)) |> 
   arrange(event_type, MB) 
 
-write.csv(dL_hourly_err_summary,
+write.csv(dL_hourly_err_summary_by_type,
           paste0(
             'tbls/',
-            'obs_mod_canopy_snow_load_err_hourly_event_type',
+            'obs_mod_canopy_snow_load_err_hourly_type',
             run_tag_updt,
             '.csv'
           ))
 
-saveRDS(dL_hourly_err_summary,
+saveRDS(dL_hourly_err_summary_by_type,
           paste0(
             'tbls/',
-            'obs_mod_canopy_snow_load_err_hourly_event_type',
+            'obs_mod_canopy_snow_load_err_hourly_type',
             run_tag_updt,
             '.rds'
           ))
 
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 
-dL_hourly_err_summary |> 
-  mutate(name = factor(name, c('simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
+dL_hourly_err_summary_by_type |> 
+  mutate(name = factor(name, c('CP25', 'E10', 'SA09', 'R01'))) |> 
   ggplot(aes(name, MB, fill = name)) + 
   geom_bar(stat = 'identity') +
   facet_wrap(~event_type, scales = 'free') +
@@ -192,7 +194,7 @@ ggsave(
 
 # generate error table by event
 
-dL_hourly_err_summary <- dL_hourly |> 
+dL_hourly_err_summary_by_event <- dL_hourly |> 
   pivot_wider() |> 
   pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
   filter(observed > 0) |> 
@@ -207,10 +209,10 @@ dL_hourly_err_summary <- dL_hourly |>
     R = cor(observed, value),
     R2 = R^2) |> 
   mutate(across(MB:R2, round, digits = 3)) |> 
-  arrange(event_id, RMSE) |> 
-  left_join(mod_d_drip_smry_frac)
+  arrange(event_id, RMSE)  |> 
+  left_join(mod_d_drip_smry_frac) 
 
-write.csv(dL_hourly_err_summary,
+write.csv(dL_hourly_err_summary_by_event,
           paste0(
             'tbls/',
             'obs_mod_canopy_snow_load_err_tbl_hourly_by_event_',
@@ -218,9 +220,9 @@ write.csv(dL_hourly_err_summary,
             '.csv'
           ))
 
-dL_hourly_err_summary |> 
+dL_hourly_err_summary_by_event |> 
   rename(mod_name = name) |> 
-  mutate(mod_name = factor(mod_name, c('simulated_new', 'ellis2010', 'andreadis2009', 'roesch2001'))) |> 
+  mutate(mod_name = factor(mod_name,c('CP25', 'E10', 'SA09', 'R01'))) |> 
   pivot_longer(melt:sublimation) |> 
   ggplot(aes(value, MB, colour = mod_name)) + 
   geom_point() + facet_grid(mod_name~name) + 
@@ -239,7 +241,6 @@ ggsave(
   height = 8,
   device = png
 )
-
 
 # obs vs mod weighed tree error table avg by model
 
@@ -272,6 +273,21 @@ saveRDS(obs_mod_tree_err_tbl_avgs,
         paste0(
           'tbls/',
           'obs_mod_canopy_snow_load_err_tbl_avg_',
+          run_tag_updt,
+          '.rds'
+        ))
+
+# add in the mean overall ablation to the by event table 
+
+obs_mod_tree_err_tbl_avgs_mean <- obs_mod_tree_err_tbl_avgs |> 
+  mutate(event_type = 'all', .before = MB) 
+
+mb_by_event_w_mean_overall <- rbind(dL_hourly_err_summary_by_type,
+                                  obs_mod_tree_err_tbl_avgs_mean)
+saveRDS(mb_by_event_w_mean_overall,
+        paste0(
+          'tbls/',
+          'mb_by_event_w_mean_overall',
           run_tag_updt,
           '.rds'
         ))
@@ -313,7 +329,7 @@ ggsave(
 # compare error with met
 event_met <- readRDS('data/ablation_event_met_summary.rds')
 
-event_error_met <- left_join(dL_hourly_err_summary, event_met)
+event_error_met <- left_join(dL_hourly_err_summary_by_event, event_met)
 
 # below shows crhm_updated is more consistent across temperaturs and wind speed
 

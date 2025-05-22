@@ -21,7 +21,7 @@ var_name_dict <-
 
 event_met <- select_events_long |>
   left_join(ft_met) |> 
-  left_join(mod_d_drip_smry_frac)
+  left_join(mod_d_drip_smry_frac |> mutate(event_id = as.character(event_id)))
 
 event_df_long <- event_met |>
   pivot_longer(c(t:u)) |>
@@ -44,15 +44,17 @@ ggsave('figs/crhm-analysis/met-figs/histogram_met_select_ablation_events.png', w
 # table of event met stats ----
 
 event_avgs <- event_met |>
-  group_by() |>
+  group_by(event_id) |>
   summarise(
-    # duration = difftime(max(datetime), min(datetime), units = 'hours'),
+    duration = difftime(max(datetime), min(datetime), units = 'hours'),
     melt = first(melt),
     wind = first(wind),
     sublimation = first(sublimation),
     t = mean(t, na.rm = TRUE),
     rh = mean(rh, na.rm = TRUE),
-    u = mean(u, na.rm = TRUE)
+    u = mean(u, na.rm = TRUE),
+    p = sum(p, na.rm = TRUE),
+    p_hr = p / as.numeric(duration)
   )
 
 # saveRDS(event_avgs, 'data/event_met/event_avgs.rds')
@@ -85,14 +87,11 @@ event_avgs_maxmin <- event_met |>
   )
   )
 
-
-
-saveRDS(event_avgs_maxmin, 'data/event_met/event_avgs_maxmin.rds')
-
 # pretty table of event met stats ----
 library(gt)
 pretty_table <- event_avgs_maxmin |>
   arrange(event_type) |>
+  mutate(event_id = as.character(event_id)) |> 
   select(
     event_id,
     event_type,
@@ -146,8 +145,12 @@ pretty_table <- event_avgs_maxmin |>
     sublimation ~ px(60)
   ) |>
   fmt_number(
-    columns = c(starts_with("min_"), starts_with("mean_"), starts_with("max_"), melt, wind, sublimation),
+    columns = c(starts_with("min_"), starts_with("mean_"), starts_with("max_")),
     decimals = 1
+  ) |>
+  fmt_number(
+    columns = c(melt, wind, sublimation),
+    decimals = 2
   )
 
 pretty_table

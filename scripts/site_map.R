@@ -7,40 +7,27 @@ library(sf)
 library(tmap)
 
 # MAIN MAP ----
-plot_name_dict <- data.frame(
-  name = c('PWL_E', 'FSR_S'),
-  plot_name = c('PWL Plot', 'FT Plot')
-)
 
-fsr_plots <- st_read('/home/alex/local-usask/analysis/lidar-processing/data/gis/shp/fsr_forest_plots_v_1_0.shp') |>
-  filter(name %in%  c('PWL_E', 'FSR_S')) |>
-  left_join(plot_name_dict)
+# bring in uav rgb raster
+# bg_full <- rast('data/gis/22_292FT_RGB.tif')
 
+# Resample to 25 cm resolution using mean (or another function)
+# bg_25cm <- aggregate(bg_full, fact=10, fun=mean)  # you can also use 'max', 'min', etc.
 
-lidr_flight_path <- st_read('/home/alex/local-usask/analysis/lidar-processing/data/metadata/drone_trajectory/shp/23_073_all_lidar_trajectory_lines.gpkg')
+# Save or plot
+# plot(bg_25cm)
+# writeRaster(bg_25cm, 'data/gis/22_292FT_RGB_resamp_25cm.tif', overwrite=TRUE)
 
-# detailed path
-ss_transect_path <- st_read('/home/alex/local-usask/analysis/lidar-processing/data/gis/shp/23_73_transect.shp')
-# rough path
-ss_transect_path_rough <- st_read('/home/alex/local-usask/analysis/lidar-processing/data/gis/shp/fsr_snow_survey_transect_polyline.shp')
-
-ss_coords <- sf::read_sf('../../analysis/interception/data/gis/gnss/avg_gnss_coords.gpkg') |>
-  mutate(type = 'Snow Survey') |>
-  select(type)
-
+bg_resamp <- rast('data/gis/22_292FT_RGB_resamp_25cm.tif')
 bad_names <- c('EC low',
-               'SR50',
-               'TB1',
-               'TB2',
-               'TB3',
-               'TB4')
+               'SR50')
 
-scl_name_dict <- data.frame(name = c('SCL 1', 'SCL 2', 'SCL 3'),
-                            new_name = c('SCL Mixed', 'SCL Sparse', 'SCL Dense'))
+scl_name_dict <- data.frame(name = c('SCL 1', 'SCL 2', 'SCL 3', 'TB1', 'TB2', 'TB3', 'TB4'),
+                            new_name = c('SCL Mixed', 'SCL Sparse', 'SCL Dense', 'TB 1', 'TB 2', 'TB 3', 'TB 4'))
 
 inst_coords <- sf::read_sf('../../analysis/interception/data/lai/instrument_coords.gpkg') |>
   filter(!name %in% bad_names) |>
-  st_transform(st_crs(ss_coords)) |>
+  st_transform(st_crs(bg_resamp)) |>
   mutate(name = gsub('Trough', 'SCL', name)) |>
   left_join(scl_name_dict, by = 'name') |>
   select(name = new_name, type, geometry = geom)
@@ -50,57 +37,54 @@ stns <- data.frame(
   type = 'Flux Tower',
   x = c(626890.966, 627006.643),
   y = c(5632024.896, 5631995.019)) |>
-  st_as_sf(coords = c("x", "y"), crs = st_crs(ss_coords)) |> rbind(inst_coords)
+  st_as_sf(coords = c("x", "y"), crs = st_crs(bg_resamp)) |> rbind(inst_coords)
 
 # st_write(stns, 'data/gis/stn_coords.gpkg')
 
-bg <- terra::rast('/media/alex/phd-data/local-usask/analysis/lidar/gis/22_292FT_RGB_resamp_10cm.tif')
 
-bg_resamp <- terra::rast('/media/alex/phd-data/local-usask/analysis/lidar/gis/22_292FT_RGB_resamp_25cm.tif')
-
-bbox <- st_bbox(lidr_flight_path)
-bbox['xmax'] <- bbox['xmax'] + 0
+bbox <- st_bbox(stns)
+buffer_dist <- 10
+bbox_buffered <- bbox
+bbox_buffered["xmin"] <- bbox["xmin"] - buffer_dist
+bbox_buffered["xmax"] <- bbox["xmax"] + buffer_dist
+bbox_buffered["ymin"] <- bbox["ymin"] - buffer_dist
+bbox_buffered["ymax"] <- bbox["ymax"] + buffer_dist+50
+# bbox['xmax'] <- bbox['xmax'] + 50
 # bbox['ymax'] <- bbox['ymax'] + 50
-main_map <- tm_shape(bg_resamp, bbox = bbox) +
-  tm_rgb(colorNA = NULL)  +
+main_map <- tm_shape(bg_resamp, bbox = bbox_buffered) +
+  tm_rgb()  +
   tm_graticules(
     ticks = TRUE,
     lines = FALSE,
     n.x = 2,
     n.y = 1
   ) +
-  tm_shape(fsr_plots) +
-  tm_polygons('plot_name', palette = c('salmon', 'dodgerblue'), title = '', alpha = .5) +
-  tm_shape(lidr_flight_path) +
-  tm_lines(col = 'blue', lty = 'dashed', lwd = 2, legend.col.show = T) +
+  # tm_shape(fsr_plots) +
+  # tm_polygons('plot_name', palette = c('salmon', 'dodgerblue'), title = '', fill_alpha = .5) +
+  # tm_lines(col = 'blue', lty = 'dashed', lwd = 2, legend.col.show = T) +
   # tm_shape(ss_transect_path_rough) +
   # tm_lines(col = 'orange', lty = 'solid', lwd = 2) +
   tm_shape(stns) +
-  tm_symbols(size = 0.5, col = 'name', palette = rev(palette("Okabe-Ito")[1:5]), title.col = '') +
-  tm_scale_bar(position = c(0, 0)) +
-  tm_compass(position = c(0, 0.1)) +
+  tm_symbols(size = 1,
+             # size.scale = tm_scale_continuous(values.scale = 1.25),
+             # size.legend.show = FALSE,  # hide size from legend
+             fill = 'name',
+             shape = 'type',
+             fill.scale = tm_scale_categorical(values = cols4all::c4a('carto.safe'))
+             ) +
+  tm_scalebar(position = c(-0.025, 0)) +
+  tm_compass(position = c(0, .2)) +
   tm_layout(
-    legend.frame = 'black',
+    # legend.frame = 'black',
     legend.bg.color = 'antiquewhite',
     legend.position = c('right', 'top')
     # legend.outside = T
-  ) +
-  # tm_add_legend(type = 'symbol',
-  #               shape = 24,
-  #               col = palette("Okabe-Ito")[1:2],
-  #               labels = stns$name)+
-  tm_add_legend(type = 'line',
-                lty = 'dashed',
-                lwd = 2,
-                col = "blue",
-                labels = c("UAV Transect"))#+
-  # tm_add_legend(type = 'line',
-  #               col = 'orange',
-  #               labels = c("In-situ Transect"))
+    # outer.margins = 0.05
+  ) 
 
-# main_map
+main_map
 
-tmap::tmap_save(main_map, 'figs/study-site/site_map.png', width = 6, unit = 'in')
+tmap::tmap_save(main_map, 'figs/study-site/site_map.png', height = 6, unit = 'in')
 
 # INSET MAP ----
 
@@ -149,8 +133,8 @@ inset_map <-
   tm_shape(canusa, bbox = bb) +
   tm_polygons() +
   tm_shape(sites_sf) +
-  tm_dots(col = 'red', size = 0.1) +
-  tm_text("site", size = 0.75, auto.placement = F, just = 'bottom', ymod = 0.1) +
+  tm_dots(col = 'red', size = 0.25) +
+  tm_text("site", size = 0.75, options = opt_tm_text(point.label = F, just = 'bottom'), ymod = 0.1) +
   # tm_graticules(n.x = 3, n.y = 4, ) +
   tm_layout(legend.position = c('left', 'bottom'))
 inset_map
@@ -167,18 +151,17 @@ norm_dim = function(obj){
   return(c(w, h))
 }
 
-main_dim = norm_dim(lidr_flight_path)
 ins_dim = norm_dim(site_sf_buff)
 
-main_vp <- viewport(width = main_dim[1], height = main_dim[2],default.units = 'snpc')
-ins_vp <- viewport(width = ins_dim[1] * 0.3, height = ins_dim[2] * 0.3,
-                  x = unit(15.5, "cm"), y = unit(3.5, "cm"))
+ins_vp <- viewport(width = ins_dim[1] * 0.4, height = ins_dim[2] * 0.4,
+                  x = unit(1.7, "in"), y = unit(5, "in"))
 
 tmap::tmap_save(
   main_map,
   filename = 'figs/study-site/site_map_inset.png',
-  width = 7,
-  height = 7,
+  # width = 6,
+  height = 6,
+  unit = 'in',
   insets_tm = inset_map,
   insets_vp = ins_vp
 )

@@ -73,7 +73,7 @@ main_map <- tm_shape(bg_resamp, bbox = bbox_buffered) +
              fill.scale = tm_scale_categorical(values = cols4all::c4a('carto.safe'))
              ) +
   tm_scalebar(position = c(-0.025, 0)) +
-  tm_compass(position = c(0, .2)) +
+  tm_compass(position = c(0, 0.15)) +
   tm_layout(
     # legend.frame = 'black',
     legend.bg.color = 'antiquewhite',

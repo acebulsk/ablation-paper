@@ -1,4 +1,5 @@
 # Script to total canopy snow sublimation vs. unloading + melt + drip for each model
+options(ggplot2.discrete.fill= c("salmon", "#0072B2", "#999999"))
 
 crhm_output_newsim_subl_tf <- crhm_output_newsim |> 
   inner_join(obs_tree) |>
@@ -54,8 +55,8 @@ ggplot(subl_tf_smry_by_model_and_event |>
        y = 'Fraction of Total Ablation (-)')
 
 ggsave('figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event.png',
-       width = 7,
-       height = 10,
+       width = 8.5,
+       height = 9,
        )
 
 

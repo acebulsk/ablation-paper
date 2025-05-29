@@ -8,11 +8,12 @@
 base_path <- 'figs/crhm-analysis/model-comparison/'
 
 # plot weighed tree obs vs. sim facet by event ----
-options(ggplot2.discrete.colour= c("#000000", "#E69F00", "#56B4E9", "#009E73", "#999999"))
+options(ggplot2.discrete.colour= c("black", "#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
- # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
- # "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
- # "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
+# "#E65518" "#F2B701" "#009988" "#88CCEE" "#9467BD" "#225522" "#882255"
+#  "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+#  "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
+#  "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
  
 p_main <- obs_mod_tree_comp |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
@@ -44,8 +45,8 @@ ggsave(
     run_tag_updt,
     '.png'
   ),
-  width = 7,
-  height = 10,
+  width = 8.5,
+  height = 9,
   device = png
 )
 
@@ -112,10 +113,53 @@ dL_hourly_err_summary_by_event_type <- dL_hourly |>
     R = cor(observed, value),
     R2 = R^2)
 
-options(ggplot2.discrete.colour= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
+dL_hourly_err_summary_avg_by_type <- dL_hourly |> 
+  pivot_wider() |> 
+  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
+  # filter(observed > 0) |> 
+  mutate(diff = observed - value) |> 
+  group_by(name, event_type, event_id) |>
+  summarise(
+    MB = mean(diff, na.rm = T),
+    MAE = mean(abs(diff), na.rm = T),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+    min_b = min(diff, na.rm =T),
+    max_b = max(diff, na.rm =T),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    NRMSE = RMSE / mean(observed, na.rm = T),
+    R = cor(observed, value),
+    R2 = R^2) |> 
+  group_by(name, event_type) |> 
+  summarise(
+    across(MB:R2, mean, digits = 3)) |> 
+  mutate(across(MB:R2, round, digits = 3)) |> 
+  arrange(event_type, MB) 
+
+write.csv(dL_hourly_err_summary_avg_by_type,
+          paste0(
+            'tbls/',
+            'obs_mod_canopy_snow_load_err_hourly_type',
+            run_tag_updt,
+            '.csv'
+          ))
+
+saveRDS(dL_hourly_err_summary_by_type,
+        paste0(
+          'tbls/',
+          'obs_mod_canopy_snow_load_err_hourly_type',
+          run_tag_updt,
+          '.rds'
+        ))
+
+
+options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
 ggplot(dL_hourly_err_summary_by_event_type, aes(name, MB, colour = name)) + 
   geom_boxplot() +
+  geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = MB), 
+             shape = 18, size = 3, colour = "black") +  # mean points
+  geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = RMSE), 
+             shape = 24, size = 3, colour = "black") +  # mean points
   facet_wrap(~event_type, scale = 'free') +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
@@ -132,42 +176,6 @@ ggsave(
   height = 4,
   device = png
 )
-
-dL_hourly_err_summary_by_type <- dL_hourly |> 
-    pivot_wider() |> 
-    pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
-    filter(observed > 0) |> 
-    mutate(diff = observed - value) |> 
-    group_by(name, event_type, event_id) |>
-    summarise(
-      MB = mean(diff, na.rm = T),
-      MAE = mean(abs(diff), na.rm = T),
-      RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
-      # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-      NRMSE = RMSE / mean(observed, na.rm = T),
-      R = cor(observed, value),
-      R2 = R^2) |> 
-  group_by(name, event_type) |> 
-  summarise(
-    across(MB:R2, mean, digits = 3)) |> 
-  mutate(across(MB:R2, round, digits = 3)) |> 
-  arrange(event_type, MB) 
-
-write.csv(dL_hourly_err_summary_by_type,
-          paste0(
-            'tbls/',
-            'obs_mod_canopy_snow_load_err_hourly_type',
-            run_tag_updt,
-            '.csv'
-          ))
-
-saveRDS(dL_hourly_err_summary_by_type,
-          paste0(
-            'tbls/',
-            'obs_mod_canopy_snow_load_err_hourly_type',
-            run_tag_updt,
-            '.rds'
-          ))
 
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 

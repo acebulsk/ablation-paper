@@ -1,4 +1,8 @@
 
+options(ggplot2.discrete.colour= c("black", "#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
+
+# options(ggplot2.discrete.colour= cols4all::c4a('cols4all.friendly7'))
+
 # LOAD DATA ----
 
 events <- readRDS('data/clean-data/select_cpy_snow_ablation_events.rds')
@@ -22,7 +26,7 @@ stopifnot(length(path) == 1)
 crhm_output <- CRHMr::readOutputFile(
   path,
   timezone = 'Etc/GMT+6') |> 
-  mutate(name = 'crhm', melt_unld = deldrip_veg_int.1 + delunld_int.1) |> 
+  mutate(name = 'CP25', melt_unld = deldrip_veg_int.1 + delunld_int.1) |> 
   inner_join(events) |>
   group_by(name, event_id) |> 
   mutate(melt_unld = cumsum(melt_unld)) |> 
@@ -40,16 +44,59 @@ q_unld_scl <-
   ungroup() |> 
   select(datetime, event_id, name, melt_unld)
 
+
+q_unld_scl <- 
+  readRDS('data/clean-data/treefort_scl_qaqc_crhm_events.rds') |>
+  select(datetime, event_id, name, melt_unld = value)
+
 # ANALYSIS ----
 
 ablation_by_event <- 
-  rbind(crhm_output, q_unld_scl) 
+  rbind(crhm_output, q_unld_scl) |> 
+  filter(!event_id %in% bad_events) |> 
+  left_join(mod_d_drip_smry_frac |> mutate(event_id = event_id |> as.character())) |> 
+  mutate(facet_title = paste(event_type, '-', event_id),
+         name = factor(name, c('CP25', 'sparse', 'mixed', 'closed')))
 
 ggplot(ablation_by_event, aes(datetime, melt_unld, colour = name)) + 
-  geom_point() + 
-  facet_wrap(~event_id, scales = 'free')
+  geom_line() + 
+  facet_wrap(~facet_title, scales = 'free', ncol = 3) + 
+  scale_x_datetime(date_labels = "%H") +
+  labs(y = 'Cumulative Unloading + Drip (mm)',
+       x = element_blank(),
+       colour = 'Data Type'
+       ) +
+  theme(legend.position = 'bottom')
 
-plotly::ggplotly()
+# plotly::ggplotly()
+
+
+ggsave(
+  paste0(base_path, 'obs_mod_unld_plus_drip_', run_tag_updt, '.png'),
+  width = 8.5,
+  height = 9,
+  device = png
+)
+
+## subl and wind events ----
+
+ggplot(ablation_by_event |> filter(!event_type %in% c('melt')), aes(datetime, melt_unld, colour = name)) + 
+  geom_line() + 
+  facet_wrap(~facet_title, scales = 'free', ncol = 3) + 
+  scale_x_datetime(date_labels = "%H") +
+  labs(y = 'Cumulative Unloading + Drip (mm)',
+       x = element_blank(),
+       colour = 'Data Type'
+  ) +
+  theme(legend.position = 'bottom')
+# plotly::ggplotly()
+
+ggsave(
+  paste0(base_path, 'obs_mod_unld_plus_drip_subl_wind_', run_tag_updt, '.png'),
+  width = 8.5,
+  height = 7,
+  device = png
+)
 
 ## just melt events ----
 
@@ -62,7 +109,7 @@ melt_events <- c('2022-04-23',
 
 ggplot(ablation_by_event |> filter(event_id %in% melt_events),
        aes(datetime, melt_unld, colour = name)) + 
-  geom_point() + 
+  geom_line() + 
   facet_wrap(~event_id, scales = 'free')
 
 plotly::ggplotly()

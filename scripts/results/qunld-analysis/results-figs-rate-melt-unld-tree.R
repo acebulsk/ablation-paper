@@ -46,7 +46,6 @@ crhm_output <- CRHMr::readOutputFile(
          delsub_veg_int.1:delunld_subl_int.1) |> 
   mutate(delsub_veg_int.1 = -delsub_veg_int.1)
 
-
 # Combine dfs and aggregate to hourly -----
 
 obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
@@ -153,13 +152,14 @@ obs_mod_fltr_binned <- obs_mod_fltr |>
             unld = sum(est_q_unld_melt),
             unld_melt_ratio = unld/melt,
             unld_melt_ratio_sd = NA,
-            name = 'CRHM') |> 
+            name = 'CP25') |> 
   filter(unld > 0) |> 
   select(tree_labs, event_id, unld_melt_ratio, unld_melt_ratio_sd, name) 
 
 
 tb_unld_melt_ratio <- 
-  readRDS('data/tipping-buckets/tipping_bucket_event_frac_unld_melt.rds')
+  readRDS('data/tipping-buckets/tipping_bucket_event_frac_unld_melt.rds') |> 
+  mutate(event_id = as.character(event_id))
 
 unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio)
 

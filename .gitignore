@@ -6,3 +6,9 @@ todo.txt
 crhm/calibration
 crhm/logs
 crhm/output
+figs/
+tbls/
+*.log
+data/gis/
+paper-updates-to-jp/
+new-changes.txt

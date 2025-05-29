@@ -1,0 +1,68 @@
+---
+title: "Supporting Information"
+format:  
+  pdf:
+    pdf-engine: latexmk
+    pdf-engine-opt: -xelatex
+    colorlinks: false
+    keep-tex: true
+    # latex-clean: false # keeps log file
+    number-sections: true
+    toc: false
+    fig-pos: H # makes figs appear in the location specified. without this they sometimes appear in the middle of a paragraph.
+    linestretch: 1.5 # set inline instead
+    crossref:
+      fig-prefix: "Fig."
+bibliography: ../../papers/bibtex/better-bibtex.bib
+csl: '../../papers/bibtex/csl-styles/apa-disable-disambiguate-add-names.csl'
+editor: source
+---
+
+
+```{r, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.align='center')
+
+source('scripts/results/qunld-analysis/00-results-figs-setup.R')
+source('scripts/get-manuscript-values.R')
+```
+
+# Supporting Information 
+
+```{r tbl-all-mod-summary, echo=FALSE}
+#| label: tbl-q-unld-bins-full
+#| tbl-cap: "Summary of multiple linear regression results evaluating all combinations of predictor variables for canopy snow unloading including: canopy load ($L$), wind speed ($u$), canopy snowmelt rate ($q_{melt}$), canopy snow sublimation rate ($q_{subl}$), and air temperature ($T_a$). Columns L to Ta show the coefficient estimate for each respective term, and the significance of each term is shown in brackets. Significance codes: * = p < 0.05; ns = not significant (p > 0.05). The models are ranked by their corresponding AIC value."
+#| tbl-colwidths: [11, 13, 13, 14, 12, 14, 8, 8]
+
+
+lm_multi_reg_tbl |> 
+  select(`Model Name`,
+         intercept,
+         L,
+         u,
+         q_melt,
+         q_subl,
+         tau,
+         # T_ib_dep,
+         T_a,
+         Adj_R2,
+         AIC) |>
+  knitr::kable(col.names = c(
+  'Model Name',
+  'Intercept',
+  '$L$',
+  '$u$',
+  '$q_{melt}$',
+  '$q_{subl}$',
+  '$\\tau$',
+  # '$T_a - T_{ice}$',
+  '$T_a$',
+  '$R^2$',
+  'AIC'
+))
+```
+
+![Wind speed squared at 4.3 m versus shear stress calculated from the CSAT3 sonic anemometer at 3 m both at the Forest Tower Station.](../../analysis/eddy-cov/figs/estimate_tau_from_wind/mid_cnpy_wind_squared_VS_canopy_low_shear_stress.png)
+
+![Time-series of cumulative unloading and drip observed by the three subcanopy lysimeters (sparse, mixed, dense) and simulated using the revised CP25 canopy snow model for the select ablation events. Note: CRHM was set up using the canopy coverage and leaf-area-index of the respective subcanopy lysimeter and then averaged.](figs/crhm-analysis/ablation-events/obs_mod_unld_plus_drip_19_ffr_cc0.54_closed_cansnobal_store_liq_output.png){#fig-obs-mod-unld}
+
+![The difference in using analytical solution and ODE unloading equations.](figs/examples/numerical_deamons.png)

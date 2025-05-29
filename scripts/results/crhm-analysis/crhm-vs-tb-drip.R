@@ -23,7 +23,7 @@ mod_d_drip <- crhm_output_newsim |>
   left_join(tb_d_drip |> select(datetime, event_id) |> distinct()) |> 
   mutate(crhm_canopy_snowmelt = delmelt_veg_int.1,
          crhm_drip = deldrip_veg_int.1,
-         name = 'CRHM') |> 
+         name = 'CP25') |> 
   select(datetime, event_id, name, dU = crhm_drip) |> 
   group_by(event_id) |> 
   mutate(cml_drip_mean = cumsum(dU),
@@ -40,8 +40,9 @@ obs_mod_cml_drip |>
     aes(ymin = cml_drip_mean - sd, 
         ymax = cml_drip_mean + sd,
         fill = "± 1 SD"),
-    alpha = 0.2,
-    colour = NA
+    alpha = 0.15,
+    colour = NA,
+    fill = 'orange'
   ) +
   facet_wrap(~event_id, nrow = 5, scales = 'free') +
   ylab('Cumulative Drip (mm)') +

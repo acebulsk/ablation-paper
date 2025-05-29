@@ -198,10 +198,10 @@ pseudo_crhm_canopy <- function(forcing) {
   return(forcing)
 }
 
-met_temp_hp <- pseudo_crhm_canopy(met_temp) |> mutate(group = 'HP98') |> 
+met_temp_hp <- pseudo_crhm_canopy(met_temp) |> mutate(group = 'E10') |> 
   select(Ta, q_ablate, group, canopy_load)
 
-met_temp_ra <- roesch_unld(met_temp) |> mutate(group = 'RW01') |> 
+met_temp_ra <- roesch_unld(met_temp) |> mutate(group = 'R01') |> 
   select(Ta, q_ablate, group, canopy_load)
 
 plot_unld_temp <- rbind(met_temp_ra, met_temp_hp)

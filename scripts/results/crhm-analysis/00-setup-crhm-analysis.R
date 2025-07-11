@@ -3,6 +3,7 @@ library(tidyverse)
 
 options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 # options(ggplot2.discrete.fill= palette.colors(palette = "R4")[2:6])
+# "#000000" "#DF536B" "#61D04F" "#2297E6" "#28E2E5" "#CD0BBC" "#F5C710" "#9E9E9E"
 
 bad_events <- c(
   '2022-06-23', # crhm rain to snow paritioning is off here

@@ -41,6 +41,40 @@ event_df_long |>
 
 ggsave('figs/crhm-analysis/met-figs/histogram_met_select_ablation_events.png', width = 6, height = 4, device = png)
 
+# boxplots of met data group by manual event type ----
+
+manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv')
+
+event_df_long |>
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
+  group_by(pretty_name, manual_event_type, event_id) |> 
+  # mutate(mean_value = mean(value, na.rm = TRUE)) |>  # Calculate the mean per group
+  ggplot(aes(x = manual_event_type, y = mean_value)) +
+  geom_boxplot(aes(y = value, group = event_id, fill = manual_event_type)) +
+  # geom_point(aes(y = mean_value)) +
+  facet_wrap(~pretty_name, scales = 'free') +
+  xlab('Event Type') +
+  ylab('Event Mean') +
+  theme(legend.position = 'none')
+
+ggsave('figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
+       width = 9, height = 3, device = png)
+
+# bar graph of process fraction ----
+
+manual_event_types |> 
+  pivot_longer(melt:sublimation) |> 
+  mutate(facet_title = paste(manual_event_type, '-', event_id)) |> 
+  ggplot(aes(x = name, y = value, fill = name)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~facet_title, ncol = 3) +
+  ylab('Fraction of Ablation (-)') +
+  labs(fill = 'Process') +
+  xlab(element_blank()) +
+  theme(legend.position = 'none')
+
+ggsave('figs/crhm-analysis/bar_chart_process_frac_ablation_by_event.png', width = 6, height = 6, device = png)
+
 # table of event met stats ----
 
 event_avgs <- event_met |>
@@ -86,6 +120,8 @@ event_avgs_maxmin <- event_met |>
     TRUE ~ 'mixed'
   )
   )
+
+write.csv(event_avgs_maxmin, 'tbls/select_event_met_stats_maxmin.csv')
 
 # pretty table of event met stats ----
 library(gt)

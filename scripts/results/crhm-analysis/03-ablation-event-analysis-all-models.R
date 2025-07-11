@@ -14,11 +14,15 @@ options(ggplot2.discrete.colour= c("black", "#DF536B", "dodgerblue", "#F2B701", 
 #  "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
 #  "#000000" "#E69F00" "#56B4E9" "#009E73" "#F0E442" "#0072B2" "#D55E00" "#CC79A7" "#999999"
 #  "#000000" "#DF536B" "#61D04F" "#2297E6" "#CD0BBC" "#F5C710" "#9E9E9E"
- 
+
+manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv') |> 
+  mutate(event_id = as.Date(event_id))
+
 p_main <- obs_mod_tree_comp |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
   mutate(name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01')),
-         facet_title = paste(event_type, '-', event_id)) |> 
+         facet_title = paste(manual_event_type, '-', event_id)) |> 
   ggplot(aes(datetime, value, 
              colour = name, 
              linetype = name)) +  
@@ -56,11 +60,13 @@ options(ggplot2.discrete.fill= c("salmon", "#0072B2", "#999999"))
 p_bar <- obs_mod_tree_comp |> 
   distinct(event_id, event_type, melt, sublimation, wind) |>
   pivot_longer(cols = c(melt, sublimation, wind), names_to = "Process", values_to = "Fraction of Total Ablation (-)") |>
-  mutate(facet_title = paste(event_type, '-', event_id)) |>
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
+  mutate(facet_title = paste(manual_event_type, '-', event_id)) |>
   ggplot(aes(x = `Fraction of Total Ablation (-)`, y = Process, fill = Process)) +
   geom_col() +
   facet_wrap(~facet_title, ncol = 3) +
-  ylab(element_blank()) +
+  # ylab(element_blank()) +
+  xlab('Fraction of Ablation (-)') +
   theme(legend.position = 'none')
 
 p_bar
@@ -73,7 +79,7 @@ ggsave(
     '.png'
   ),
   width = 6,
-  height = 8,
+  height = 5,
   device = png
 )
 
@@ -84,26 +90,29 @@ ggsave(
 # hourly analysis
 
 dL_fifteen <- obs_mod_tree_comp |> 
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
+  select(-event_type) |> 
+  rename(event_type = manual_event_type) |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
   group_by(event_id, name, event_type) |> 
   mutate(dL = lag(value) - value) |> 
   select(datetime, event_id, event_type, name, value = dL) 
-
 
 dL_hourly <- dL_fifteen |> 
   mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
   group_by(datetime, event_id, event_type, name) |>
   summarise(value = sum(value)) 
  
-dL_hourly_err_summary_by_event_type <- dL_hourly |> 
+dL_hourly_err_summary_by_event_type_id <- dL_hourly |> 
   pivot_wider() |> 
   pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
   filter(#observed > 0,
          #value > 0
          ) |> 
   mutate(diff = observed - value,
          name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
-  group_by(name, event_type, event_id) |>
+  group_by(name, manual_event_type, event_id) |>
   summarise(
     MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
@@ -113,29 +122,7 @@ dL_hourly_err_summary_by_event_type <- dL_hourly |>
     R = cor(observed, value),
     R2 = R^2)
 
-dL_hourly_err_summary_avg_by_type <- dL_hourly |> 
-  pivot_wider() |> 
-  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
-  # filter(observed > 0) |> 
-  mutate(diff = observed - value) |> 
-  group_by(name, event_type, event_id) |>
-  summarise(
-    MB = mean(diff, na.rm = T),
-    MAE = mean(abs(diff), na.rm = T),
-    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
-    min_b = min(diff, na.rm =T),
-    max_b = max(diff, na.rm =T),
-    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = RMSE / mean(observed, na.rm = T),
-    R = cor(observed, value),
-    R2 = R^2) |> 
-  group_by(name, event_type) |> 
-  summarise(
-    across(MB:R2, mean, digits = 3)) |> 
-  mutate(across(MB:R2, round, digits = 3)) |> 
-  arrange(event_type, MB) 
-
-write.csv(dL_hourly_err_summary_avg_by_type,
+write.csv(dL_hourly_err_summary_by_event_type_id,
           paste0(
             'tbls/',
             'obs_mod_canopy_snow_load_err_hourly_type',
@@ -143,7 +130,7 @@ write.csv(dL_hourly_err_summary_avg_by_type,
             '.csv'
           ))
 
-saveRDS(dL_hourly_err_summary_by_type,
+saveRDS(dL_hourly_err_summary_by_event_type_id,
         paste0(
           'tbls/',
           'obs_mod_canopy_snow_load_err_hourly_type',
@@ -154,13 +141,13 @@ saveRDS(dL_hourly_err_summary_by_type,
 
 options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
-ggplot(dL_hourly_err_summary_by_event_type, aes(name, MB, colour = name)) + 
+ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) + 
   geom_boxplot() +
   geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = MB), 
              shape = 18, size = 3, colour = "black") +  # mean points
   geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = RMSE), 
              shape = 24, size = 3, colour = "black") +  # mean points
-  facet_wrap(~event_type, scale = 'free') +
+  facet_wrap(~manual_event_type, scale = 'free') +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
   theme(legend.position = 'none')
@@ -177,13 +164,14 @@ ggsave(
   device = png
 )
 
+
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 
-dL_hourly_err_summary_by_type |> 
+dL_hourly_err_summary_by_event_type_id |> 
   mutate(name = factor(name, c('CP25', 'E10', 'SA09', 'R01'))) |> 
   ggplot(aes(name, MB, fill = name)) + 
   geom_bar(stat = 'identity') +
-  facet_wrap(~event_type, scales = 'free') +
+  facet_wrap(~manual_event_type, scales = 'free') +
   ylab('Mean Bias (mm)') +
   xlab(element_blank())
 
@@ -285,13 +273,38 @@ saveRDS(obs_mod_tree_err_tbl_avgs,
           '.rds'
         ))
 
+dL_hourly_err_summary_by_event_type <- dL_hourly |> 
+  pivot_wider() |> 
+  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
+  filter(#observed > 0,
+    #value > 0
+  ) |> 
+  mutate(diff = observed - value,
+         name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
+  group_by(name, manual_event_type, event_id) |>
+  summarise(
+    MB = mean(diff, na.rm = T),
+    MAE = mean(abs(diff), na.rm = T),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    NRMSE = RMSE / mean(observed, na.rm = T),
+    R = cor(observed, value),
+    R2 = R^2) |> 
+  group_by(name, manual_event_type) |> 
+  summarise(
+    MB = mean(MB, na.rm = T),
+    MAE = mean(abs(MAE), na.rm = T),
+    RMSE = sqrt(mean(RMSE ^ 2, na.rm = T)))
+
 # add in the mean overall ablation to the by event table 
 
 obs_mod_tree_err_tbl_avgs_mean <- obs_mod_tree_err_tbl_avgs |> 
-  mutate(event_type = 'all', .before = MB) 
+  mutate(manual_event_type = 'all', .before = MB) 
 
-mb_by_event_w_mean_overall <- rbind(dL_hourly_err_summary_by_type,
+mb_by_event_w_mean_overall <- rbind(dL_hourly_err_summary_by_event_type,
                                   obs_mod_tree_err_tbl_avgs_mean)
+
 saveRDS(mb_by_event_w_mean_overall,
         paste0(
           'tbls/',

@@ -11,12 +11,12 @@ xlabs_dict <- data.frame(
            'canopy_snowmelt_labs',
            'ti_dep_labs',
            'subl_labs'),
-  name_pretty = c('Wind Speed (m/s)',
-                  'Shear Stress (N/m^2)',
+  name_pretty = c('Wind Speed (m s⁻¹)',
+                  'Shear Stress (N m⁻²)',
                   'Air Temperature (°C)',
-                  'Snowmelt (mm/hr)',
+                  'Snowmelt (mm hr⁻¹)',
                   'Ice Bulb Temp. Depression (°C)',
-                  'Sublimation (mm/hr)')
+                  'Sublimation (mm hr⁻¹)')
 )
 
 met_unld_w_bins_smry_wind <- summarise_met_data(met_unld_w_bins,
@@ -84,4 +84,4 @@ ggplot(bins_df,
   # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Canopy Load (mm)') + facet_wrap(~name_pretty, scales = 'free_x')
 
-ggsave('figs/results/explore/scl_q_unld_vs_bins.png', width = 6, height = 5)
+ggsave('figs/results/explore/scl_q_unld_vs_bins.png', width = 6.1, height = 5)

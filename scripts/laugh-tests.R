@@ -83,24 +83,101 @@ met_windy_20 <- data.frame(
          roesch_u_unld = roesch_u_unld(U),
          q_unld = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ) # mm/hr
 
-all_dfs <- rbind(met_windy_5, met_windy_10) |>
+all_dfs_windy <- rbind(met_windy_5, met_windy_10) |>
   rbind(met_windy_15) |>
-  rbind(met_windy_20)
+  rbind(met_windy_20) |> 
+  select(`Wind Speed (m/s)` = U, canopy_load, q_unld) |> 
+  mutate(group = 'R01')
 
-ggplot(all_dfs, aes(U, q_unld, colour = canopy_load, group = canopy_load)) + 
+wind_unld <- ggplot(
+  all_dfs_windy,
+  aes(`Wind Speed (m/s)`, q_unld, colour = canopy_load, group = canopy_load)
+) +
   geom_line() +
   scale_color_viridis_c(end = 0.95) +
-  ylab('Wind Induced Unloading Rate (mm/hr)') +
-  xlab(wind_ax_lab) +
-  labs(colour = 'Canopy Load (mm)') + 
-  # theme_bw(base_size = 14) #+
-  theme_bw()
-
+  ylab(expression("Unloading Rate (mm hr"^{-1}*")")) +
+  xlab(expression("Wind Speed (m s"^{-1}*")")) +
+  labs(colour = 'Canopy Load (mm)') +
+  facet_grid(~group) 
+wind_unld
 ggsave(
   'figs/examples/roesch_unloading.png',
   device = png,
   width = int_fig_width,
   height = int_fig_height,
+  units = "in"
+)
+
+## Time induced unloading ----
+
+# constants for interception
+c <- 0.678 # (-) unloading coefficient for ~ weekly application from hp98
+k_unld_cold <- -log(c) / (7*24) # per hour, unloading coefficient for cold snow 
+k_unld_md <- 6 # unload all canopy snow over 6 hours
+
+# constants for unloading 
+
+Ti_drip <- 4 # deg C, from Floyd2012
+Ti_clumps <- 2 # deg C, from Floyd2012
+
+hours <- seq(0, 48, by = 1)
+
+met_load <- data.frame(
+  U = 0,
+  Ta = -10,
+  RH = 0.9,
+  W = seq(0, 20, by = 1),
+  canopy_load = seq(0, 20, by = 1),
+  q_drip = NA,
+  q_unload = NA
+) 
+
+pseudo_crhm_canopy <- function(forcing) {
+  
+  for (i in 1:(nrow(forcing))) {
+      forcing$q_unload[i] <- forcing$W[i] * k_unld_cold # mm/hr
+  }
+  
+  forcing$q_unload <- ifelse(is.na(forcing$q_unload), 0, forcing$q_unload)
+  forcing$q_drip <- ifelse(is.na(forcing$q_drip), 0, forcing$q_drip)
+  forcing$q_ablate <- forcing$q_unload + forcing$q_drip
+  
+  return(forcing)
+}
+
+met_temp_hp_time <- pseudo_crhm_canopy(met_load) |> mutate(group = 'E10') |> 
+  select(canopy_load, q_unld = q_ablate, group)
+
+
+load_unld <- ggplot(met_temp_hp_time, aes(canopy_load, q_unld, colour = canopy_load)) + 
+  geom_line() +
+  ylab(expression("Unloading Rate (mm hr"^{-1}*")")) +
+  xlab('Canopy Load (mm)') +
+  labs(colour = 'Canopy Load (mm)') + 
+  # theme(legend.position = 'none') +
+  scale_color_viridis_c(end = 0.95) +
+  facet_grid(~group)
+  
+load_unld
+ggsave(
+  'figs/examples/unloading_time_hp98.png',
+  device = png,
+  width = int_fig_width,
+  height = int_fig_height,
+  units = "in"
+)
+
+## Plot wind and time together ---- 
+
+cowplot::plot_grid(wind_unld + theme(legend.position = 'none'),
+                   load_unld + ylab(element_blank()), nrow = 1,
+                   rel_widths = c(0.41, 0.59))
+
+ggsave(
+  'figs/examples/unloading_wind_load_r01_hp98.png',
+  device = png,
+  width = 7.5,
+  height = 3,
   units = "in"
 )
 
@@ -208,21 +285,20 @@ plot_unld_temp <- rbind(met_temp_ra, met_temp_hp)
 
 ggplot(plot_unld_temp, aes(Ta, q_ablate, colour = canopy_load, group = canopy_load)) + 
   geom_line() +
-  ylab('Unloading + Drip Rate (mm/hr)') +
+  ylab(expression("Unloading + Drip Rate (mm hr"^{-1}*")")) +
   xlab(temp_ax_lab) +
   labs(colour = 'Canopy Load (mm)') + 
-  theme_bw() +
+  # theme_bw() +
   # theme_bw(base_size = 14) +
   facet_grid(~group) +
   scale_color_viridis_c(end = 0.95) +
-  theme(legend.position = 'bottom')
-
+  theme(legend.position = 'right')
 
 ggsave(
   'figs/examples/unloading_drip_hp98_rw01.png',
   device = png,
-  width = int_fig_width,
-  height = int_fig_height,
+  width = 7.5,
+  height = 3.5,
   units = "in"
 )
 

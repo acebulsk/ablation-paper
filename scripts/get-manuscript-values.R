@@ -67,56 +67,72 @@ obs_mod_stats_avg <- readRDS( paste0(
 ))
 
 new_model_mb_avg <- obs_mod_stats_avg$MB[obs_mod_stats_avg$name == 'CP25' &
-                                           obs_mod_stats_avg$event_type == 'all'] |> round(2)
+                                           obs_mod_stats_avg$manual_event_type == 'all'] |> round(2)
 old_mods_mb_range <- obs_mod_stats_avg$MB[!obs_mod_stats_avg$name == 'CP25' &
-                                            obs_mod_stats_avg$event_type == 'all'] |> range() |> round(2)
+                                            obs_mod_stats_avg$manual_event_type == 'all'] |> range() |> round(2)
 
 melt_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'melt', name == 'CP25') |>
+  filter(manual_event_type == 'warm/humid', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
 melt_a09_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'melt', name == 'SA09') |>
+  filter(manual_event_type == 'warm/humid', name == 'SA09') |>
   pull(MB) |> 
   round(2)
 
 melt_other_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'melt', name %in% c('E10', 'R01')) |>
+  filter(manual_event_type == 'warm/humid', name %in% c('E10', 'R01')) |>
   pull(MB) |> 
   range() |> 
   round(2)
 
+wd_all_mb <- obs_mod_stats_avg |>
+  filter(manual_event_type == 'warm/dry') |>
+  pull(MB) |> 
+  range() |> 
+  round(3)
+
+wd_new_model_mb_avg <- obs_mod_stats_avg |>
+  filter(manual_event_type == 'warm/dry', name == 'CP25') |>
+  pull(MB) |> 
+  round(3)
+
+wd_other_mb_avg <- obs_mod_stats_avg |>
+  filter(manual_event_type == 'warm/dry', name != 'CP25') |>
+  pull(MB) |> 
+  range() |> 
+  round(2)
 
 subl_all_mb <- obs_mod_stats_avg |>
-  filter(event_type == 'sublimation') |>
+  filter(manual_event_type == 'cold/dry') |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 subl_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'sublimation', name == 'CP25') |>
+  filter(manual_event_type == 'cold/dry', name == 'CP25') |>
   pull(MB) |> 
   round(3)
 
 subl_other_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'sublimation', name != 'CP25') |>
+  filter(manual_event_type == 'cold/dry', name != 'CP25') |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 wind_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'wind', name == 'CP25') |>
+  filter(manual_event_type == 'cold/humid', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
 wind_roesch_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'wind', name == 'R01') |>
+  filter(manual_event_type == 'cold/humid', name == 'R01') |>
   pull(MB) |> 
   round(2)
 
 wind_nr_mb_avg <- obs_mod_stats_avg |>
-  filter(event_type == 'wind', !name %in% c('CP25', 'R01')) |>
+  filter(manual_event_type == 'cold/humid', !name %in% c('CP25', 'R01')) |>
   pull(MB) |> 
   min() |> 
   round(2)

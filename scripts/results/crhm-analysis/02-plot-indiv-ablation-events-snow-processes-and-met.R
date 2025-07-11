@@ -70,13 +70,13 @@ obs_mod_temps <- left_join(mod_temps, irtc_temps, by = 'datetime') |>
   rbind(mod_rh_u_p)
 
 event <- unique(select_events_long$event_id)[1]
-event <- '2023-06-15'
+event <- '2023-03-25'
 for (event in unique(select_events_long$event_id)) {
 
   # calculate stats on obs vs mod tree
   obs_mod_tree_err_tbl <- obs_mod_tree |>
     filter(event_id == event) |>
-    mutate(diff = observed - simulated_new) |>
+    mutate(diff = observed - CP25) |>
     # group_by(name) |>
     summarise(
       MB = mean(diff, na.rm = T),
@@ -84,7 +84,7 @@ for (event in unique(select_events_long$event_id)) {
       RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
       # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
       NRMSE = RMSE / mean(observed, na.rm = T),
-      R = cor(observed, simulated_new),
+      R = cor(observed, CP25),
       `r^2` = R^2) |>
     mutate(across(MB:`r^2`, round, digits = 3))
 
@@ -107,7 +107,7 @@ for (event in unique(select_events_long$event_id)) {
     ggplot(aes(datetime, value,
                colour = ifelse(group == 'Simulated Ablation (mm)', name, "canopy_load"),
                linetype = ifelse(group == "Canopy Snow Load (mm)",
-                                 ifelse(name == "simulated_new", "solid", "dashed"),
+                                 ifelse(name == "CP25", "solid", "dashed"),
                                  "solid"))) +
     geom_line() +
     facet_grid(rows = vars(group), scales = 'free') +

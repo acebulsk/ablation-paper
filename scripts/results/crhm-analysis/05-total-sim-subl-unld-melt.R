@@ -1,4 +1,5 @@
 # Script to total canopy snow sublimation vs. unloading + melt + drip for each model
+# Do not need to account for Ellis 2010 canopy snow meltwater evap since there is no liq holding capacity
 options(ggplot2.discrete.fill= c("salmon", "#0072B2", "#999999"))
 
 crhm_output_newsim_subl_tf <- crhm_output_newsim |> 
@@ -33,6 +34,7 @@ subl_tf_smry <- rbind(crhm_output_newsim_subl_tf, crhm_output_baseline_subl_tf) 
   rbind(crhm_output_roesch_subl_tf) |> 
   rbind(crhm_output_andreadis_subl_tf)
 
+# by each event
 subl_tf_smry_by_model_and_event <- subl_tf_smry |> 
   group_by(group, event_id) |> 
   summarise(
@@ -42,8 +44,8 @@ subl_tf_smry_by_model_and_event <- subl_tf_smry |>
     atmosphere = atmosphere/total_ablation,
     ground = ground/total_ablation
   )  |> 
-  left_join(mod_d_drip_smry_frac |> mutate(event_id = event_id |> as.character())) |> 
-  mutate(facet_title = paste(event_type, '-', event_id))
+  inner_join(manual_event_types |> select(event_id, manual_event_type) |> mutate(event_id = as.character(event_id))) |> 
+  mutate(facet_title = paste(manual_event_type, '-', event_id))
 
 ggplot(subl_tf_smry_by_model_and_event |>
          pivot_longer(c(atmosphere, ground)),
@@ -52,12 +54,44 @@ ggplot(subl_tf_smry_by_model_and_event |>
   facet_wrap(~facet_title, ncol = 3) +
   labs(fill = element_blank(),
        x = 'Model',
-       y = 'Fraction of Total Ablation (-)')
+       y = 'Fraction of Ablation (-)')
 
 ggsave('figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event.png',
        width = 8.5,
        height = 9,
        )
+
+# by manual event type
+
+subl_tf_smry_by_model_and_event <- subl_tf_smry |> 
+  inner_join(
+    manual_event_types |> 
+      select(event_id, manual_event_type) |> 
+      mutate(event_id = as.character(event_id))
+  ) |>
+  group_by(group, manual_event_type) |> 
+  summarise(
+    atmosphere = sum(atmosphere),
+    ground = sum(ground),
+    total_ablation = atmosphere + ground,
+    atmosphere = atmosphere/total_ablation,
+    ground = ground/total_ablation
+  ) 
+
+ggplot(subl_tf_smry_by_model_and_event |>
+         pivot_longer(c(atmosphere, ground)),
+       aes(x = group, y = value, fill = name)) +
+  geom_bar(stat = 'identity') +
+  facet_wrap(~manual_event_type, ncol = 4) +
+  labs(fill = element_blank(),
+       x = 'Model',
+       y = 'Fraction of Ablation (-)') +
+  theme(legend.position = 'bottom')
+
+ggsave('figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
+       width = 6,
+       height = 2.5,
+)
 
 
 subl_tf_smry_by_model <- subl_tf_smry |> 

@@ -73,7 +73,7 @@ ggplot(bins_df,
     ymin = sd_low
   ), width = 0)  +
   geom_point(size = 3) +
-  ylab(bin_unl_ax_lab) +
+  ylab(expression("Unloading Rate (mm hr"^"-1"*")")) +
   xlab(element_blank()) +
   theme_bw() +
   # theme_bw(base_size = 14) +

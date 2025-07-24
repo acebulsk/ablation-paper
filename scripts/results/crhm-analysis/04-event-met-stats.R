@@ -49,16 +49,16 @@ event_df_long |>
   inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
   group_by(pretty_name, manual_event_type, event_id) |> 
   # mutate(mean_value = mean(value, na.rm = TRUE)) |>  # Calculate the mean per group
-  ggplot(aes(x = manual_event_type, y = mean_value)) +
+  ggplot(aes(x = manual_event_type)) +
   geom_boxplot(aes(y = value, group = event_id, fill = manual_event_type)) +
   # geom_point(aes(y = mean_value)) +
-  facet_wrap(~pretty_name, scales = 'free') +
+  facet_wrap(~pretty_name, scales = 'free', nrow = 3) +
   xlab('Event Type') +
-  ylab('Event Mean') +
+  ylab(element_blank()) +
   theme(legend.position = 'none')
 
 ggsave('figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
-       width = 9, height = 3, device = png)
+       width = 3.5, height = 6, device = png)
 
 # bar graph of process fraction ----
 

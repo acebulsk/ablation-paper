@@ -90,13 +90,14 @@ melt_other_mb_avg <- obs_mod_stats_avg |>
 wd_all_mb <- obs_mod_stats_avg |>
   filter(manual_event_type == 'warm/dry') |>
   pull(MB) |> 
-  range() |> 
-  round(3)
+  round(2)
+
+stopifnot(all(wd_all_mb == wd_all_mb[1])) # currently text states all of these are equal ...
 
 wd_new_model_mb_avg <- obs_mod_stats_avg |>
   filter(manual_event_type == 'warm/dry', name == 'CP25') |>
   pull(MB) |> 
-  round(3)
+  round(2)
 
 wd_other_mb_avg <- obs_mod_stats_avg |>
   filter(manual_event_type == 'warm/dry', name != 'CP25') |>

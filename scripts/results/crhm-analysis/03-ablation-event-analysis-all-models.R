@@ -138,15 +138,38 @@ saveRDS(dL_hourly_err_summary_by_event_type_id,
           '.rds'
         ))
 
+dL_hourly_err_summary_by_event_type <- dL_hourly |> 
+  pivot_wider() |> 
+  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
+  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
+  filter(#observed > 0,
+    #value > 0
+  ) |> 
+  mutate(diff = observed - value,
+         name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
+  group_by(name, manual_event_type, event_id) |>
+  summarise(
+    MB = mean(diff, na.rm = T),
+    MAE = mean(abs(diff), na.rm = T),
+    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
+    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
+    NRMSE = RMSE / mean(observed, na.rm = T),
+    R = cor(observed, value),
+    R2 = R^2) |> 
+  group_by(name, manual_event_type) |> 
+  summarise(
+    MB = mean(MB, na.rm = T),
+    MAE = mean(abs(MAE), na.rm = T),
+    RMSE = sqrt(mean(RMSE ^ 2, na.rm = T)))
 
 options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
 ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) + 
   geom_boxplot() +
-  geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = MB), 
+  geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = MB),
              shape = 18, size = 3, colour = "black") +  # mean points
-  geom_point(data = dL_hourly_err_summary_avg_by_type, aes(x = name, y = RMSE), 
-             shape = 24, size = 3, colour = "black") +  # mean points
+  # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = RMSE),
+  #            shape = 24, size = 3, colour = "black") +  # mean points
   facet_wrap(~manual_event_type, scale = 'free') +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
@@ -272,30 +295,6 @@ saveRDS(obs_mod_tree_err_tbl_avgs,
           run_tag_updt,
           '.rds'
         ))
-
-dL_hourly_err_summary_by_event_type <- dL_hourly |> 
-  pivot_wider() |> 
-  pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
-  inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
-  filter(#observed > 0,
-    #value > 0
-  ) |> 
-  mutate(diff = observed - value,
-         name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
-  group_by(name, manual_event_type, event_id) |>
-  summarise(
-    MB = mean(diff, na.rm = T),
-    MAE = mean(abs(diff), na.rm = T),
-    RMSE = sqrt(mean(diff ^ 2, na.rm = T)),
-    # NRMSE = RMSE / (max(observed, na.rm = TRUE) - min(observed, na.rm = TRUE)),
-    NRMSE = RMSE / mean(observed, na.rm = T),
-    R = cor(observed, value),
-    R2 = R^2) |> 
-  group_by(name, manual_event_type) |> 
-  summarise(
-    MB = mean(MB, na.rm = T),
-    MAE = mean(abs(MAE), na.rm = T),
-    RMSE = sqrt(mean(RMSE ^ 2, na.rm = T)))
 
 # add in the mean overall ablation to the by event table 
 

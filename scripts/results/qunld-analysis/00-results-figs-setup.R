@@ -71,8 +71,6 @@ int_fig_height <- 4
 
 ## axis labels ----
 temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
-bin_unl_ax_lab <- "Unloading Rate (mm/hr)"
-bin_unl_drip_ax_lab <- "Unloading + Drip Rate (mm/hr)"
 bin_wnd_ax_lab <- "Wind Speed Bins (m/s)"
 
 ## thresholds and filters ----

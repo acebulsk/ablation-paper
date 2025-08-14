@@ -16,7 +16,7 @@ stats_tbl <- obs_tree_events |>
             p_sum = sum(p)) |> 
   select(event_id:Qsi_max, p_sum, weighed_tree_min, weighed_tree_max)
 
-saveRDS(stats_tbl, 'data/ablation_event_met_summary.rds')
+saveRDS(stats_tbl, 'data/results/ablation_event_met_summary.rds')
 
 obs_tree_events_long <- pivot_longer(obs_tree_events, t:weighed_tree)
 

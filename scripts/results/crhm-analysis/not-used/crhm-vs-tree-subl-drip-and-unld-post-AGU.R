@@ -145,7 +145,7 @@ saveRDS(obs_mod_tree_err_tbl_events,
         ))
 
 # compare error with met
-event_met <- readRDS('data/ablation_event_met_summary.rds')
+event_met <- readRDS('data/results/ablation_event_met_summary.rds')
 
 event_error_met <- left_join(obs_mod_tree_err_tbl_events, event_met)
 
@@ -220,7 +220,7 @@ mod_d_drip_smry_frac <- mod_d_drip |>
   mutate(across(c(melt, wind, sublimation), round, 2)) |> 
   select(event_id, melt, wind, sublimation)
 
-saveRDS(mod_d_drip_smry_frac, 'data/ablation_event_fraction_ablation_processes.rds')
+saveRDS(mod_d_drip_smry_frac, 'data/results/ablation_event_fraction_ablation_processes.rds')
 
 melt_events <- mod_d_drip_smry_frac |> 
   filter(melt > 0.8) |> 

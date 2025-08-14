@@ -347,7 +347,7 @@ ggsave(
 )
 
 # compare error with met
-event_met <- readRDS('data/ablation_event_met_summary.rds')
+event_met <- readRDS('data/results/ablation_event_met_summary.rds')
 
 event_error_met <- left_join(dL_hourly_err_summary_by_event, event_met)
 

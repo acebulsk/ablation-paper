@@ -187,4 +187,4 @@ mod_d_drip_smry_frac <- mod_d_drip |>
   mutate(across(c(melt, wind, sublimation), round, 2)) |> 
   select(event_id, melt, wind, sublimation)
 
-saveRDS(mod_d_drip_smry_frac, 'data/ablation_event_fraction_ablation_processes.rds')
+saveRDS(mod_d_drip_smry_frac, 'data/results/ablation_event_fraction_ablation_processes.rds')

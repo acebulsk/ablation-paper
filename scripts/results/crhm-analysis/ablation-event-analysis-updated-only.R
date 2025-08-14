@@ -178,7 +178,7 @@ write.csv(obs_mod_tree_err_tbl_out,
           ), row.names = F)
 
 # compare error with met
-event_met <- readRDS('data/ablation_event_met_summary.rds')
+event_met <- readRDS('data/results/ablation_event_met_summary.rds')
 
 event_error_met <- left_join(obs_mod_tree_err_tbl_events, event_met)
 

@@ -307,4 +307,4 @@ met_binned_cpy_snow <- met_binned_cpy_snow |>
     duration_labs = as.numeric(as.character(time_elapsed_bin_labs))
   ) 
 
-saveRDS(met_binned_cpy_snow, 'data/clean-data/met_binned_for_unloading_analysis.rds')
+#saveRDS(met_binned_cpy_snow, 'data/clean-data/met_binned_for_unloading_analysis.rds')

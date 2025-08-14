@@ -6,7 +6,7 @@ wind_stats <- readRDS('data/modelled_wind_unloading_error_table.rds') |> rename(
 tau_stats <- readRDS('data/modelled_tau_unloading_error_table.rds') |> rename(`Shear Stress` = Value)
 stats_out <- left_join(wind_stats, tau_stats)
 
-saveRDS(stats_out, 'data/modelled_combined_wind_tau_unloading_error_table.rds')
+saveRDS(stats_out, 'data/results/modelled_combined_wind_tau_unloading_error_table.rds')
 
 # combine plots ---- 
 plot_wind_tau_df <- rbind(

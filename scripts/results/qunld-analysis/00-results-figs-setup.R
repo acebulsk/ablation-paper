@@ -361,7 +361,7 @@ saveRDS(obs_tree |> select(datetime, event_id), 'data/clean-data/ablation_events
 
 # LOAD MODEL DATA ----
 
-mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds')
+mod_d_drip_smry_frac <- readRDS('data/results/ablation_event_fraction_ablation_processes.rds')
 
 # Select model run with all unloading events weighed tree snow load assimilated
 

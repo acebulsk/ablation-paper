@@ -171,7 +171,7 @@ ggplot(obs_mod_fltr_binned,
 
 bin_unld_subl_lm <- lm(unld_subl_ratio ~ tree_labs, data = obs_mod_fltr_binned)
 summary(bin_unld_subl_lm)
-saveRDS(bin_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
+saveRDS(bin_unld_subl_lm, 'data/results/lm_q_drip_vs_q_unld_subl.rds')
 # Extract the coefficient (slope) from the model
 slope <- coef(bin_unld_subl_lm)[1]
 r2_adj_lm <- r_squared_no_intercept(bin_unld_subl_lm)
@@ -204,7 +204,7 @@ ggsave(
 # q_unld_subl_lm <- lm(est_q_unld_subl ~ 0 + delsub_veg_int.1, data = obs_mod_fltr)
 # r2_adj_lm <- r_squared_no_intercept(q_unld_subl_lm)
 # obs_mod_fltr$mod_q_unld_subl <- predict(q_unld_subl_lm)
-# saveRDS(q_unld_subl_lm, 'data/lm_q_drip_vs_q_unld_subl.rds')
+# saveRDS(q_unld_subl_lm, 'data/results/lm_q_drip_vs_q_unld_subl.rds')
 # # Extract the coefficient (slope) from the model
 # slope <- coef(q_unld_subl_lm)[1]
 # 
@@ -217,7 +217,7 @@ ggsave(
 # RSS.p <- sum(residuals(q_unld_subl_nls)^2)  # Residual sum of squares
 # TSS <- sum((obs_mod_fltr$est_q_unld_subl - mean(obs_mod_fltr$est_q_unld_subl))^2)  # Total sum of squares
 # r2_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
-# saveRDS(q_unld_subl_nls, 'data/lm_q_drip_vs_q_unld_subl_bin.rds')
+# saveRDS(q_unld_subl_nls, 'data/results/lm_q_drip_vs_q_unld_subl_bin.rds')
 # new_data <- data.frame(
 #   Subl_Cpy.1 = seq(
 #     0,
@@ -273,7 +273,7 @@ ggsave(
 # q_unld_subl_lm_bin <- lm(est_q_unld_subl_bin ~ 0 + Subl_Cpy.1, data = obs_mod_fltr_avg)
 # r2_adj_lm <- r_squared_no_intercept(q_unld_subl_lm_bin)
 # obs_mod_fltr_avg$mod_q_unld_subl_lm <- predict(q_unld_subl_lm_bin)
-# saveRDS(q_unld_subl_lm_bin, 'data/lm_q_drip_vs_q_unld_subl_bin_lm.rds')
+# saveRDS(q_unld_subl_lm_bin, 'data/results/lm_q_drip_vs_q_unld_subl_bin_lm.rds')
 # # Extract the coefficient (slope) from the model
 # slope <- coef(q_unld_subl_lm_bin)[1]
 # 
@@ -286,7 +286,7 @@ ggsave(
 # RSS.p <- sum(residuals(q_unld_subl_nls_bin)^2)  # Residual sum of squares
 # TSS <- sum((obs_mod_fltr_avg$est_q_unld_subl_bin - mean(obs_mod_fltr_avg$est_q_unld_subl_bin))^2)  # Total sum of squares
 # r2_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
-# saveRDS(q_unld_subl_nls_bin, 'data/lm_q_drip_vs_q_unld_subl_bin_nls.rds')
+# saveRDS(q_unld_subl_nls_bin, 'data/results/lm_q_drip_vs_q_unld_subl_bin_nls.rds')
 # new_data <- data.frame(
 #   Subl_Cpy.1 = seq(
 #     0,
@@ -306,7 +306,7 @@ ggsave(
 # # RSS.p <- sum(residuals(q_unld_melt_sig_bin)^2)  # Residual sum of squares
 # # TSS <- sum((obs_mod_fltr_avg$est_q_unld_melt_bin - mean(obs_mod_fltr_avg$est_q_unld_melt_bin))^2)  # Total sum of squares
 # # r2_sig <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
-# # saveRDS(q_unld_melt_sig_bin, 'data/lm_q_drip_vs_q_unld_melt_bin_nls.rds')
+# # saveRDS(q_unld_melt_sig_bin, 'data/results/lm_q_drip_vs_q_unld_melt_bin_nls.rds')
 # # new_data$mod_q_unld_melt_sigmoid <- predict(q_unld_melt_sig_bin, newdata = new_data)
 # 
 # # Create the plot

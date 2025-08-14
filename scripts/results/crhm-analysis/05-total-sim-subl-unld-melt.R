@@ -104,7 +104,7 @@ subl_tf_smry_by_model <- subl_tf_smry |>
     ground = ground/total_ablation
   )
 
-saveRDS(subl_tf_smry_by_model, 'data/atmosphere_ground_partition_by_model.rds')
+saveRDS(subl_tf_smry_by_model, 'data/results/atmosphere_ground_partition_by_model.rds')
 
 ggplot(subl_tf_smry_by_model |>
          pivot_longer(c(atmosphere, ground)),

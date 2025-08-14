@@ -257,7 +257,7 @@ tb_data_zeroed <- tb_data |>
     dU = ifelse(name == 'TB3_mm' & TB3_flag == T, NA, dU),
     dU = ifelse(name == 'TB4_mm' & TB4_flag == T, NA, dU)
   )
-mod_d_drip_smry_frac <- readRDS('data/ablation_event_fraction_ablation_processes.rds') |> 
+mod_d_drip_smry_frac <- readRDS('data/results/ablation_event_fraction_ablation_processes.rds') |> 
   mutate(event_id = as.Date(event_id))   |>
   mutate(event_type = case_when(
     melt >= 0.6 ~ 'melt',

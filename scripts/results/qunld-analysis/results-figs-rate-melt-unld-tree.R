@@ -214,7 +214,8 @@ ggplot(unld_melt_ratio,
   theme(legend.position = 'bottom')
 
 ggsave(
-  'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png',
+  'figs/final/figure6.png',
+  # 'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png',
   width = 5,
   height = 4,
   device = png

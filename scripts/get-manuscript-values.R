@@ -28,7 +28,19 @@ melt_only_r2 <- lm_multi_reg_tbl$Adj_R2[lm_multi_reg_tbl$u == '—' &
                                           lm_multi_reg_tbl$tau == '—' &
                                           lm_multi_reg_tbl$T_ib_dep == '—']
 
-wind_tau_err_tbl <- readRDS('data/results/modelled_combined_wind_tau_unloading_error_table.rds') 
+convert_sci_to_latex <- function(x) {
+  # Match things that look like scientific notation (e±nnn)
+  is_sci <- grepl("e", x, ignore.case = TRUE)
+  
+  x[is_sci] <- sub("e([+-]?[0-9]+)", " \\\\times 10^{\\1}", x[is_sci])
+  x[is_sci] <- paste0("$", x[is_sci], "$")  # wrap in math mode
+  
+  return(x)
+}
+wind_tau_err_tbl <- readRDS('data/results/modelled_combined_wind_tau_unloading_error_table.rds')
+wind_tau_err_tbl$Wind <- convert_sci_to_latex(wind_tau_err_tbl$Wind)
+wind_tau_err_tbl$`Shear Stress` <- convert_sci_to_latex(wind_tau_err_tbl$`Shear Stress`)
+
 mod_coef_wind_a <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient a'] |> as.numeric()
 mod_coef_wind_b <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient b']
 q_unld_wind_r2 <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]

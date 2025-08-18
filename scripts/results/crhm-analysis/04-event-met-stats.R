@@ -57,7 +57,8 @@ event_df_long |>
   ylab(element_blank()) +
   theme(legend.position = 'none')
 
-ggsave('figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
+ggsave(#'figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
+       'figs/final/figure8.png',
        width = 3.5, height = 6, device = png)
 
 # bar graph of process fraction ----

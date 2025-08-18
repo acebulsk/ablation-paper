@@ -174,10 +174,11 @@ cowplot::plot_grid(wind_unld + theme(legend.position = 'none'),
                    rel_widths = c(0.41, 0.59))
 
 ggsave(
-  'figs/examples/unloading_wind_load_r01_hp98.png',
+  'figs/final/figure1.png',
+  # 'figs/examples/unloading_wind_load_r01_hp98.png',
   device = png,
-  width = 7.5,
-  height = 3,
+  width = 8,
+  height = 3.5,
   units = "in"
 )
 
@@ -295,10 +296,11 @@ ggplot(plot_unld_temp, aes(Ta, q_ablate, colour = canopy_load, group = canopy_lo
   theme(legend.position = 'right')
 
 ggsave(
-  'figs/examples/unloading_drip_hp98_rw01.png',
+  'figs/final/figure2.png',
+  # 'figs/examples/unloading_drip_hp98_rw01.png',
   device = png,
   width = 7.5,
-  height = 3.5,
+  height = 3.25,
   units = "in"
 )
 

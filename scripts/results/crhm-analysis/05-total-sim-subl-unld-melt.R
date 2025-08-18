@@ -88,7 +88,8 @@ ggplot(subl_tf_smry_by_model_and_event |>
        y = 'Fraction of Ablation (-)') +
   theme(legend.position = 'bottom')
 
-ggsave('figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
+ggsave(#'figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
+       'figs/final/figure11.png',
        width = 6,
        height = 2.5,
 )

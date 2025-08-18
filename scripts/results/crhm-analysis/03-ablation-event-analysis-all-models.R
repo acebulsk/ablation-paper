@@ -43,12 +43,13 @@ p_main <- obs_mod_tree_comp |>
   ))
 p_main
 ggsave(
-  paste0(
-    base_path,
-    'obs_mod_canopy_snow_load_',
-    run_tag_updt,
-    '.png'
-  ),
+  # paste0(
+  #   base_path,
+  #   'obs_mod_canopy_snow_load_',
+  #   run_tag_updt,
+  #   '.png'
+  # ),
+  'figs/final/figure9.png',
   width = 8.5,
   height = 9,
   device = png
@@ -176,17 +177,17 @@ ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) +
   theme(legend.position = 'none')
 
 ggsave(
-  paste0(
-    base_path,
-    'obs_mod_canopy_snow_load_event_type_mean_bias_boxplot_',
-    run_tag_updt,
-    '.png'
-  ),
+  # paste0(
+  #   base_path,
+  #   'obs_mod_canopy_snow_load_event_type_mean_bias_boxplot_',
+  #   run_tag_updt,
+  #   '.png'
+  # ),
+  'figs/final/figure10.png',
   width = 8,
   height = 4,
   device = png
 )
-
 
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 

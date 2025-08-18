@@ -33,7 +33,8 @@ ggplot(plot_wind_tau_df, aes(x=x_var_value)) +
   facet_wrap(~group, scales = 'free') 
   
 ggsave(
-  'figs/results/modelled_tau_wind_unloading_w_obs.png',
+  # 'figs/results/modelled_tau_wind_unloading_w_obs.png',
+  'figs/final/figure5.png',
   width = 7,
   height = 3,
   device = png

@@ -9,7 +9,9 @@ temp_ax_lab <- 'Air Temperature (°C)'
 int_fig_width <- 6
 int_fig_height <- 4
 
-## Wind Induced Unloading ----
+# Parameterisations ----
+
+## Roesch 2001 ----
 
 min_t_unld <- 270.16 # K, default from Roesch 2001
 rate_t_unld <- 1.87e5 # K s-1, default roesch 2001 unloading rate due to temp
@@ -42,63 +44,123 @@ roesch_unld <- function(forcing) {
   return(forcing)
 }
 
+### Katsushima 2023 (includes melt/dry unloading, drip, and sublimation)
+
+# temp unld
+ka23_t_unld_coef <- 0.039
+ka23_qsw_unld_coef <- 0.097
+ka23_l_unld_coef <- 0.0049
+# Ta Celcius? 
+# Qsw W m-2
+# L mm / kg m-2
+k23_t_unld <- function(Ta, Qsw, L){
+  Qws_mj_m2_hr <- (Qsw*3600)/1e6 # Watts to Mj m-2 h-1
+  temp_unld <- ka23_t_unld_coef*Ta + ka23_qsw_unld_coef*Qws_mj_m2_hr + ka23_l_unld_coef*L
+  temp_unld <- max(c(temp_unld),0)
+  return(temp_unld) # hr-1
+}
+
+k23_t_unld(1, 250, 10)
+
+# wind unld 
+
+k23_u_unld <- function(u){
+  wind_unld <- 0.02 * u
+  return(wind_unld)
+}
+k23_u_unld(2)
+
+k23_unld <- function(forcing) {
+  for (i in 1:(nrow(forcing))) {
+    forcing$q_t_unld[i] <- k23_t_unld(forcing$Ta[i], forcing$Qsw[i], forcing$W[i])
+    forcing$q_u_unld[i] <- k23_u_unld(forcing$U[i])
+    forcing$q_ablate[i] <- forcing$W[i] * (forcing$q_t_unld[i] + forcing$q_u_unld[i])
+  }
+  return(forcing)
+}
+
+## Wind Induced Unloading ----
+
+constant_solar <- 100
+
 winds <- seq(0, 5, by = 0.5)
 met_windy_5 <- data.frame(
   U = winds,
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = rep(-10, length(winds)),
   W = rep(5,  length(winds)),
   canopy_load = 5
 ) |>
   mutate(roesch_t_unld = roesch_t_unld(Ta),
          roesch_u_unld = roesch_u_unld(U),
-         q_unld = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ) # mm/hr
+         R01 = W * (roesch_t_unld + roesch_u_unld) * 60 * 60,
+         k_t_unld = k23_t_unld(Ta, Qsw, W),
+         k_u_unld = k23_u_unld(U),
+         K23 = W * (k_t_unld + k_u_unld) # already per hour 
+        ) # mm/hr
 
 met_windy_10 <- data.frame(
   U = winds,
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = rep(-10, length(winds)),
   W = rep(10,  length(winds)),
   canopy_load = 10
 ) |>
   mutate(roesch_t_unld = roesch_t_unld(Ta),
          roesch_u_unld = roesch_u_unld(U),
-         q_unld = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ) # mm/hr
+         R01 = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ,
+         k_t_unld = k23_t_unld(Ta, Qsw, W),
+         k_u_unld = k23_u_unld(U),
+         K23 = W * (k_t_unld + k_u_unld) # already per hour 
+        ) # mm/hr
 
 met_windy_15 <- data.frame(
   U = winds,
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = rep(-10, length(winds)),
   W = rep(15,  length(winds)),
   canopy_load = 15
 ) |>
   mutate(roesch_t_unld = roesch_t_unld(Ta),
          roesch_u_unld = roesch_u_unld(U),
-         q_unld = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ) # mm/hr
+         R01 = W * (roesch_t_unld + roesch_u_unld) * 60 * 60,
+         k_t_unld = k23_t_unld(Ta, Qsw, W),
+         k_u_unld = k23_u_unld(U),
+         K23 = W * (k_t_unld + k_u_unld) # already per hour 
+         ) # mm/hr
 
 met_windy_20 <- data.frame(
   U = winds,
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = rep(-10, length(winds)),
   W = rep(20,  length(winds)),
   canopy_load = 20
 ) |>
   mutate(roesch_t_unld = roesch_t_unld(Ta),
          roesch_u_unld = roesch_u_unld(U),
-         q_unld = W * (roesch_t_unld + roesch_u_unld) * 60 * 60 ) # mm/hr
+         R01 = W * (roesch_t_unld + roesch_u_unld) * 60 * 60,
+         k_t_unld = k23_t_unld(Ta, Qsw, W),
+         k_u_unld = k23_u_unld(U),
+         K23 = W * (k_t_unld + k_u_unld) # already per hour 
+         ) # mm/hr
 
 all_dfs_windy <- rbind(met_windy_5, met_windy_10) |>
   rbind(met_windy_15) |>
   rbind(met_windy_20) |> 
-  select(`Wind Speed (m/s)` = U, canopy_load, q_unld) |> 
-  mutate(group = 'R01')
+  pivot_longer(c(R01, K23)) |> 
+  filter(name != 'K23') |> 
+  select(`Wind Speed (m/s)` = U, canopy_load, name, value)
 
 wind_unld <- ggplot(
   all_dfs_windy,
-  aes(`Wind Speed (m/s)`, q_unld, colour = canopy_load, group = canopy_load)
+  aes(`Wind Speed (m/s)`, value, colour = canopy_load, group = canopy_load)
 ) +
   geom_line() +
   scale_color_viridis_c(end = 0.95) +
   ylab(expression("Unloading Rate (mm hr"^{-1}*")")) +
   xlab(expression("Wind Speed (m s"^{-1}*")")) +
   labs(colour = 'Canopy Load (mm)') +
-  facet_grid(~group) 
+  facet_grid(~name) 
 wind_unld
 ggsave(
   'figs/examples/roesch_unloading.png',
@@ -174,7 +236,7 @@ cowplot::plot_grid(wind_unld + theme(legend.position = 'none'),
                    rel_widths = c(0.41, 0.59))
 
 ggsave(
-  'figs/final/figure1.png',
+  'figs/final/figureS1.png',
   # 'figs/examples/unloading_wind_load_r01_hp98.png',
   device = png,
   width = 8,
@@ -198,6 +260,7 @@ temps <- seq(-5, 7, by = 1)
 
 met_temp_5 <- data.frame(
   U = rep(0,  length(temps)),
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = temps,
   RH = rep(.9,  length(temps)),
   W = rep(5,  length(temps)),
@@ -210,6 +273,7 @@ met_temp_5 <- data.frame(
   ) 
 met_temp_10 <- data.frame(
   U = rep(0,  length(temps)),
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = temps,
   RH = rep(.9,  length(temps)),
   W = rep(10,  length(temps)),
@@ -222,6 +286,7 @@ met_temp_10 <- data.frame(
   ) 
 met_temp_15 <- data.frame(
   U = rep(0,  length(temps)),
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = temps,
   RH = rep(.9,  length(temps)),
   W = rep(15,  length(temps)),
@@ -234,6 +299,7 @@ met_temp_15 <- data.frame(
   ) 
 met_temp_20 <- data.frame(
   U = rep(0,  length(temps)),
+  Qsw = constant_solar, # Watts / m2 avg over day and night
   Ta = temps,
   RH = rep(.9,  length(temps)),
   W = rep(20,  length(temps)),
@@ -282,7 +348,10 @@ met_temp_hp <- pseudo_crhm_canopy(met_temp) |> mutate(group = 'E10') |>
 met_temp_ra <- roesch_unld(met_temp) |> mutate(group = 'R01') |> 
   select(Ta, q_ablate, group, canopy_load)
 
-plot_unld_temp <- rbind(met_temp_ra, met_temp_hp)
+met_temp_k23 <- k23_unld(met_temp) |> mutate(group = 'K23') |> 
+  select(Ta, q_ablate, group, canopy_load)
+
+plot_unld_temp <- rbind(met_temp_ra, met_temp_hp) #|> rbind(met_temp_k23)
 
 ggplot(plot_unld_temp, aes(Ta, q_ablate, colour = canopy_load, group = canopy_load)) + 
   geom_line() +
@@ -296,7 +365,7 @@ ggplot(plot_unld_temp, aes(Ta, q_ablate, colour = canopy_load, group = canopy_lo
   theme(legend.position = 'right')
 
 ggsave(
-  'figs/final/figure2.png',
+  'figs/final/figureS2.png',
   # 'figs/examples/unloading_drip_hp98_rw01.png',
   device = png,
   width = 7.5,

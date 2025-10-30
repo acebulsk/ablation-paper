@@ -221,6 +221,34 @@ ggsave(
   device = png
 )
 
+# just hybrid /residual modelled ratio for IMC presentation
+ggplot(unld_melt_ratio |> filter(name == 'CP25'),
+       aes(tree_labs, unld_melt_ratio)) +
+  geom_point(aes(colour = name)) +
+  geom_smooth(method = "lm", se = F) +  # Use method="lm" for linear model
+  annotate(
+    'label',
+    x = 4,
+    y = 4.5,
+    label = paste("R² =", round(r2_adj_lm, 2))
+  ) +
+  # geom_errorbar(aes(ymax = unld_melt_ratio_hi, ymin = unld_melt_ratio_lo), width = 1, alpha = 0.5)  +
+  # lims(y = c(0, NA),
+  #      x = c(0, NA)) +
+  labs(
+    x = "Canopy Snow Load (mm)",
+    y = "Unloading to Melt Ratio (-)",
+    colour = 'Melt'
+  ) +
+  theme(legend.position = 'none')
+
+ggsave(
+  # 'figs/final/figure6.png',
+  'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin_noTB.png',
+  width = 5,
+  height = 4,
+  device = png
+)
 # obs_mod_fltr_binned_sm <- obs_mod_fltr |>
 #   group_by(canopy_snowmelt_labs) |>
 #   summarise(melt = sum(delmelt_veg_int.1),

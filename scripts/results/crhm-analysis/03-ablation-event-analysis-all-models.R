@@ -167,11 +167,11 @@ options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"
 
 ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) + 
   geom_boxplot() +
-  geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = MB),
-             shape = 18, size = 3, colour = "black") +  # mean points
+  # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = MB),
+  #            shape = 18, size = 3, colour = "black") +  # mean points
   # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = RMSE),
   #            shape = 24, size = 3, colour = "black") +  # mean points
-  facet_wrap(~manual_event_type, scale = 'free') +
+  facet_wrap(~manual_event_type) +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
   theme(legend.position = 'none')

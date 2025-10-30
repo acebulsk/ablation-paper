@@ -49,12 +49,13 @@ obs_mod_cml_drip |>
   xlab(element_blank())
 
 ggsave(
-  paste0(
-    'figs/results/crhm_vs_tb_drip_events_',
-    run_tag_updt,
-    # format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),
-    '.png'
-  ),
+  # paste0(
+  #   'figs/results/crhm_vs_tb_drip_events_',
+  #   run_tag_updt,
+  #   # format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),
+  #   '.png'
+  # ),
+  'figs/final/figure7.png',
   width = 6,
   height = 8
   )

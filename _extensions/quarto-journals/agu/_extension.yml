@@ -17,7 +17,7 @@ contributes:
       header-includes: |
         \usepackage{url} %this package should fix any errors with URLs in refs.
         \usepackage{lineno}
-        \usepackage[inline]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
+        \usepackage[finalnew]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
         \usepackage{soul}
         \linenumbers
       template-partials:

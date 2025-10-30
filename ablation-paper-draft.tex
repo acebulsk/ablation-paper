@@ -140,7 +140,7 @@
 
 \usepackage{url} %this package should fix any errors with URLs in refs.
 \usepackage{lineno}
-\usepackage[inline]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
+\usepackage[finalnew]{trackchanges} %for better track changes. finalnew option will compile document with changes incorporated.
 \usepackage{soul}
 \linenumbers
 \makeatletter
@@ -258,32 +258,33 @@ resources (Immerzeel et al., 2020; Viviroli et al., 2020) and is
 increasingly threatened by rapid climate and land cover change
 (Aubry-Wake \& Pomeroy, 2023; Fang \& Pomeroy, 2023; López-Moreno et
 al., 2014; Szczypta et al., 2015). Vegetation cover can significantly
-alter the quantity (Essery et al., 2003; Pomeroy \& Gray, 1995;
-Sanmiguel-Vallelado et al., 2020) and timing (Ellis et al., 2010; Safa
-et al., 2021) of snow that reaches the ground. Forest canopies cover
-more than half of the snow-covered area in the Northern Hemisphere (Kim
-et al., 2017), making forest-snow interactions crucial to understand for
-informed ecological, land management, and water resource
-decision-making. Needleleaf canopies are particularly effective at
-intercepting snowfall (Cebulski \& Pomeroy, 2025b; Hedstrom \& Pomeroy,
-1998; Pomeroy \& Schmidt, 1993; Storck et al., 2002), where intercepted
-snow is subject to increased energy inputs relative to the subcanopy
-snowpacks, leading to increased rates of melt, unloading, and/or
-sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et al., 1998b; Roesch
-et al., 2001; Storck et al., 2002). The partitioning of snow to the
-atmosphere via sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et al.,
-1998b) or to the ground through unloading and meltwater drip (Lumbrazo
-et al., 2022; Roesch et al., 2001; Storck et al., 2002) is highly
-sensitive to meteorological conditions and forest structure contributing
-to substantial variability in subcanopy snowpacks across regions and
-snowfall events. Coastal humid environments typically exhibit small
-sublimation losses and a larger influence of unloading and melt (Floyd,
-2012; Storck et al., 2002). Here, enhanced canopy energy inputs combined
-with high humidity increases both solid snow unloading and melt of snow
-intercepted in the canopy (Lumbrazo et al., 2022; Lundquist et al.,
-2021; Roesch et al., 2001). Conversely, the colder and drier winters in
-continental climates typical of the boreal forests can induce
-substantial canopy sublimation losses (e.g., 25---45\% of annual
+alter the quantity (Essery et al., 2003; Mazzotti et al., 2021; Pomeroy
+\& Gray, 1995; Rojas-Heredia et al., 2024; Sanmiguel-Vallelado et al.,
+2020) and timing (Ellis et al., 2010; Safa et al., 2021) of snow that
+reaches the ground. Snow falls in forests over half of the Northern
+Hemisphere (Kim et al., 2017) and over 23\% of the landmass globally
+(Deschamps-Berger et al., 2025), making forest-snow interactions crucial
+to understand for informed ecological, land management, and water
+resource decision-making. Needleleaf canopies are particularly effective
+at intercepting snowfall (Cebulski \& Pomeroy, 2025b; Hedstrom \&
+Pomeroy, 1998; Pomeroy \& Schmidt, 1993; Storck et al., 2002), where
+intercepted snow is subject to increased energy inputs relative to the
+subcanopy snowpacks, leading to increased rates of melt, unloading,
+and/or sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et al., 1998b;
+Roesch et al., 2001; Storck et al., 2002). The partitioning of snow to
+the atmosphere via sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et
+al., 1998b) or to the ground through unloading and meltwater drip
+(Lumbrazo et al., 2022; Roesch et al., 2001; Storck et al., 2002) is
+highly sensitive to meteorological conditions and forest structure
+contributing to substantial variability in subcanopy snowpacks across
+regions and snowfall events. Coastal humid environments typically
+exhibit small sublimation losses and a larger influence of unloading and
+melt (Floyd, 2012; Storck et al., 2002). Here, enhanced canopy energy
+inputs combined with high humidity increases both solid snow unloading
+and melt of snow intercepted in the canopy (Lumbrazo et al., 2022;
+Lundquist et al., 2021; Roesch et al., 2001). Conversely, the colder and
+drier winters in continental climates typical of the boreal forests can
+induce substantial canopy sublimation losses (e.g., 25---45\% of annual
 snowfall in Essery et al., 2003) in addition to unloading (Essery et
 al., 2003; Gelfan et al., 2004; Parviainen \& Pomeroy, 2000; Pomeroy et
 al., 1998b, 2002). As a result, reliable models of snow accumulation and
@@ -335,10 +336,10 @@ al., 2023; Roesch et al., 2001; Schmidt \& Pomeroy, 1990), ice-bulb
 temperature---which more accurately represents the cooling effect of
 sublimation compared to air temperature---(Ellis et al., 2010; Floyd,
 2012), canopy snowmelt rate (Storck et al., 2002), and wind speed as
-shown in Figure~\ref{fig-unl-ex-wind} for (Bartlett \& Verseghy, 2015;
+shown in \textbf{?@fig-unl-ex-wind} for (Bartlett \& Verseghy, 2015;
 Katsushima et al., 2023; Roesch et al.; 2001, 2001). Each of these
 factors were also found to be dependent on canopy snow load and time
-(Figure~\ref{fig-unl-ex-wind}). While Hedstrom \& Pomeroy (1998) did not
+(\textbf{?@fig-unl-ex-wind}). While Hedstrom \& Pomeroy (1998) did not
 make direct observations of canopy snow unloading, they proposed a
 parameterisation based on canopy snow load and time. In addition to the
 empirical observations by the afformentioned studies, physical reasoning
@@ -356,7 +357,7 @@ Melt of snow intercepted in the canopy is typically represented by
 either an energy balance approach (Andreadis et al., 2009; Clark et al.,
 2015; e.g., Parviainen \& Pomeroy, 2000), as a function of air
 temperature (Roesch et al., 2001), or a function of ice-bulb temperature
-(Ellis et al., 2010; Floyd, 2012) (Figure~\ref{fig-unl-ex-temp}).
+(Ellis et al., 2010; Floyd, 2012) (\textbf{?@fig-unl-ex-temp}).
 Sublimation is generally represented using a coupled energy and mass
 balance approach (e.g., Essery et al., 2003; Pomeroy et al., 1998b;
 Verseghy, 2017). The Essery et al. (2003) and Pomeroy et al. (1998b)
@@ -414,44 +415,12 @@ The specific research questions this research aims to address include:
   improvement in performance from these modifications?
 \end{enumerate}
 
-\begin{figure}[htbp]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{figs/final/figure1.png}}
-
-}
-
-\caption{\label{fig-unl-ex-wind}The Roesch et al. (2001) model of
-unloading rate with increasing wind speed and canopy snow load (left,
-R01) and the Hedstrom \& Pomeroy (1998) model of unloading rate with
-increasing snow load (right, E10). Both examples have a constant air
-temperature of -10°C to disable the influence of warming on unloading
-and drip.}
-
-\end{figure}%
-
-\begin{figure}[htbp]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{figs/final/figure2.png}}
-
-}
-
-\caption{\label{fig-unl-ex-temp}The Ellis et al. (2010) and Floyd (2012)
-(E10) model of unloading and drip rate (left) and the Roesch et al.
-(2001) (R01) model of unloading rate (right) with increasing air
-temperature. Wind speed for the R01 parameterisation was set to zero.}
-
-\end{figure}%
-
 \section{Methods}\label{methods}
 
 \subsection{Study Site}\label{study-site}
 
 The observations presented in this study were collected at Fortress
-Mountain Research Basin (FMRB), Alberta, Canada, -115° W, 51° N, a
+Mountain Research Basin (FMRB), Alberta, Canada, 51° N, 115° W, a
 continental headwater basin in the Canadian Rockies. The site is located
 2100 m above sea level on a ridge covered by mature fir and spruce
 forest. Air temperature, humidity, and wind speed were measured at a
@@ -471,8 +440,8 @@ precipitation gauge installed 2.6 m above ground at the adjacent
 Powerline (PWL) Station (Figure~\ref{fig-site-map}). Incoming and
 outgoing solar radiation was measured by a Kipp \& Zonen CNR4
 4-Component Net Radiometer installed 3.27 m above the ground at Fortress
-Ridge Station (FRS) 2.0 km to the northwest of FT station (-115.2° W,
-50.8° N). This windy exposed site was selected to reduce snow
+Ridge Station (FRS) 2.0 km to the northwest of FT station (50.8° N,
+115.2° W). This windy exposed site was selected to reduce snow
 accumulation on the radiometers, in addition to the CNR4's built-in
 heating element. Three subcanopy lysimeters, consisting of plastic
 horse-watering troughs with an opening of 0.9 m\textsuperscript{2} and
@@ -964,7 +933,9 @@ m\textsuperscript{-2}), canopy snowmelt (mm hr\textsuperscript{-1}),
 canopy snow sublimation (mm hr\textsuperscript{-1}), and wind speed (m
 s\textsuperscript{-1}). Note: unloading was measured by the subcanopy
 lysimeters, air temperature and wind speed were measured at FT station,
-canopy snowmelt and sublimation were calculated using CRHM.}
+canopy snowmelt and sublimation were calculated using CRHM. The canopy
+snow load corresponds to the mean of each bin (0--2, 2--6, 6--20 kg
+m\textsuperscript{-2}).}
 
 \end{figure}%
 
@@ -1032,7 +1003,9 @@ the subcanopy lysimeters versus shear stress (left) and wind speed
 unloading rates within bins of shear stress and wind speed for three
 canopy snow load levels; error bars indicate +/- 1 standard deviation.
 The fitted lines show predictions from Equation~\ref{eq-q-unld-tau}
-(left) and Equation~\ref{eq-q-unld-wind} (right).}
+(left) and Equation~\ref{eq-q-unld-wind} (right). The canopy snow load
+corresponds to the mean of each bin (0--2, 2--6, 6--20 kg
+m\textsuperscript{-2}).}
 
 \end{figure}%
 
@@ -1107,12 +1080,12 @@ R = m \cdot L + b
 }\end{equation}
 
 where \(m\) and \(b\) were determined as 0.16 and -0.5, respectively,
-using an ordinary least squares regression.
-Equation~\ref{eq-q-unld-melt} using these fitted parameters resulted in
-a statistically significant relationship (\emph{p} \textless{} 0.05,
-\emph{R\textsuperscript{2}} = 0.73) (Figure~\ref{fig-unld-melt-ratio}).
-Additional observations of canopy snowmelt from the subcanopy rain
-gauges were also used to estimate \(R\)
+using the ordinary least squares regression shown in
+Figure~\ref{fig-unld-melt-ratio}. Equation~\ref{eq-q-unld-melt} using
+these fitted parameters resulted in a statistically significant
+relationship (\emph{p} \textless{} 0.05, \emph{R\textsuperscript{2}} =
+0.73). Additional observations of canopy snowmelt from the subcanopy
+rain gauges were also used to estimate \(R\)
 (Figure~\ref{fig-unld-melt-ratio}). The number of usable observations
 was limited to three events (out of the 5 warm \& humid events) due to
 freeze-thaw events that seized up the tipping bucket mechanisms in the
@@ -1209,11 +1182,11 @@ warm \& humid based on the median event air temperature (above or below
 
 }
 
-\caption{\label{fig-event-met-boxplot}Boxplots showing the distribution
-of meteorological measurements of air temperature, relative humidity,
-and wind speed over each of the seventeen select ablation events. Air
-temperature, relative humidity, and wind speed were measured at FT
-station. Note: the rectangle vertical extent represents the
+\caption{\label{fig-event-met-boxplot}Boxplots of showing the
+distribution of meteorological measurements of air temperature, relative
+humidity, and wind speed over each of the seventeen select ablation
+events. Air temperature, relative humidity, and wind speed were measured
+at FT station. Note: the rectangle vertical extent represents the
 interquartile range (25\textsuperscript{th} to 75\textsuperscript{th}
 percentile), the horizontal line within each box indicates the median,
 and the whiskers extend to 1.5 times the interquartile range. Circular
@@ -1437,34 +1410,34 @@ and linearly with shear stress (Table~\ref{tbl-q-unld-wind}). These
 results differ from earlier research that has represented this process
 as a linear function of wind speed and canopy load (Bartlett \&
 Verseghy, 2015; Katsushima et al., 2023; Roesch et al., 2001), as shown
-in Figure~\ref{fig-unl-ex-wind}. The higher \emph{R\textsuperscript{2}}
+in \textbf{?@fig-unl-ex-wind}. The higher \emph{R\textsuperscript{2}}
 found for shear stress compared to wind speed for predicting
 unloading---when excluding melt events---is likely due to the physical
 relationship between shear stress force and kinetic energy transfer to
 the canopy, wind transport from the canopy, and movement of branches in
 the canopy induced by drag (shear) forces. The differing relationship
-presented here, compared to the R01 model
-(Figure~\ref{fig-unl-ex-wind}), may be attributed to the development of
-that parameterisation using above canopy albedo as a proxy for canopy
-snow unloading (Bartlett \& Verseghy, 2015; Roesch et al., 2001). This
-approach would have included both unloading and sublimation processes,
-in addition to greater measurement uncertainties (Cebulski \& Pomeroy,
-2025a). Conversely, the subcanopy lysimeter measurements employed here
-provided a more direct quantification of canopy snow unloading rates.
-Simulated unloading over events classified as cold \& humid---which had
-the largest contribution of wind-driven unloading---resulted in the
-highest overall mean biases compared to the warm \& dry, warm \& humid,
-and cold \& dry events (Figure~\ref{fig-cpy-load-mb-boxplot}).
-Additional factors that may influence dry snow unloading that are not
-considered in the new parameterisation (Equation~\ref{eq-q-unld-wind})
-include wind erosion, branch movement, structural degradation, bond
-weakening, increased elasticity of branches, snow density, and liquid
-water content. The addition of liquid water content in the canopy snow
-due to phase change can increase cohesion and adhesion of snow clumps
-within the canopy (Pomeroy \& Gray, 1995). However, high liquid water
-contents during rapid melt can lubricate the snow attachment to the
-canopy and weaken cohesive bonds, inducing unloading, much as for wet
-snow avalanches (Baggi \& Schweizer, 2008).
+presented here, compared to the R01 model (\textbf{?@fig-unl-ex-wind}),
+may be attributed to the development of that parameterisation using
+above canopy albedo as a proxy for canopy snow unloading (Bartlett \&
+Verseghy, 2015; Roesch et al., 2001). This approach would have included
+both unloading and sublimation processes, in addition to greater
+measurement uncertainties (Cebulski \& Pomeroy, 2025a). Conversely, the
+subcanopy lysimeter measurements employed here provided a more direct
+quantification of canopy snow unloading rates. Simulated unloading over
+events classified as cold \& humid---which had the largest contribution
+of wind-driven unloading---resulted in the highest overall mean biases
+compared to the warm \& dry, warm \& humid, and cold \& dry events
+(Figure~\ref{fig-cpy-load-mb-boxplot}). Additional factors that may
+influence dry snow unloading that are not considered in the new
+parameterisation (Equation~\ref{eq-q-unld-wind}) include wind erosion,
+branch movement, structural degradation, bond weakening, increased
+elasticity of branches, snow density, and liquid water content. The
+addition of liquid water content in the canopy snow due to phase change
+can increase cohesion and adhesion of snow clumps within the canopy
+(Pomeroy \& Gray, 1995). However, high liquid water contents during
+rapid melt can lubricate the snow attachment to the canopy and weaken
+cohesive bonds, inducing unloading, much as for wet snow avalanches
+(Baggi \& Schweizer, 2008).
 
 The density of snow intercepted in the canopy is expected to influence
 both dry snow and melt-induced unloading processes---and is incorporated
@@ -1735,8 +1708,9 @@ available at https://doi.org/10.5281/zenodo.16898881.
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-Allan1998}
 Allan, R., Pereira, L., Raes, D., \& Smith, M. (1998). \emph{Crop
-evapotranspiration {Guidelines} for computing crop water requirements}.
-{Food and Agriculture Organization of the United Nations}.
+{Evapotranspiration Guidelines} for {Computing Crop Water
+Requirements}}. {Food and Agriculture Organization of the United
+Nations}.
 
 \bibitem[\citeproctext]{ref-Andreadis2009}
 Andreadis, K. M., Storck, P., \& Lettenmaier, D. P. (2009). Modeling
@@ -1764,18 +1738,18 @@ Land Surface Scheme}. \emph{Hydrological Processes}, \emph{29}(14),
 
 \bibitem[\citeproctext]{ref-Berndt1969}
 Berndt, H. W., \& Fowler, W. B. (1969). Rime and hoarfrost in
-upper-slope forests of eastern washington. \emph{Journal of Forestry},
+upper-slope forests of eastern {Washington}. \emph{Journal of Forestry},
 \emph{67}(2), 92--95. \url{https://doi.org/10.1093/jof/67.2.92}
 
 \bibitem[\citeproctext]{ref-Cebulski2025}
-Cebulski, A. C., \& Pomeroy, J. W. (2025a). Theoretical {Underpinnings}
-of {Snow Interception} and {Canopy Snow Ablation Parameterisations}.
+Cebulski, A. C., \& Pomeroy, J. W. (2025a). Theoretical underpinnings of
+snow interception and canopy snow ablation parameterisations.
 \emph{WIREs Water}, \emph{12}, e70010.
 \url{https://doi.org/10.1002/wat2.70010}
 
 \bibitem[\citeproctext]{ref-Cebulski2025a}
-Cebulski, A. C., \& Pomeroy, J. W. (2025b). Snow {Interception
-Relationships With Meteorology} and {Canopy Density}. \emph{Hydrological
+Cebulski, A. C., \& Pomeroy, J. W. (2025b). Snow interception
+relationships with meteorology and canopy density. \emph{Hydrological
 Processes}, \emph{39}(4), e70135.
 \url{https://doi.org/10.1002/hyp.70135}
 
@@ -1793,6 +1767,12 @@ Conway, J. P., Pomeroy, J. W., Helgason, W. D., \& Kinar, N. J. (2018).
 Challenges in modeling turbulent heat fluxes to snowpacks in forest
 clearings. \emph{Journal of Hydrometeorology}, \emph{19}(10),
 1599--1616. \url{https://doi.org/10.1175/JHM-D-18-0050.1}
+
+\bibitem[\citeproctext]{ref-Deschamps-Berger2025}
+Deschamps-Berger, C., López-Moreno, J. I., Gascoin, S., Mazzotti, G., \&
+Boone, A. (2025). Where snow and forest meet: A global atlas.
+\emph{Geophysical Research Letters}, \emph{52}(10), e2024GL113684.
+\url{https://doi.org/10.1029/2024GL113684}
 
 \bibitem[\citeproctext]{ref-Ellis2010}
 Ellis, C. R., Pomeroy, J. W., Brown, T., \& MacDonald, J. (2010).
@@ -1813,10 +1793,10 @@ the {Canadian Rockies}. \emph{Journal of Hydrology}, \emph{620}, 129566.
 \url{https://doi.org/10.1016/j.jhydrol.2023.129566}
 
 \bibitem[\citeproctext]{ref-Floyd2012}
-Floyd, W. C. (2012). \emph{Snowmelt energy flux recovery during
-rain-on-snow in regenerating forests} (p. 180) {[}PhD thesis, University
-of British Columbia{]}.
-https://doi.org/\url{https://dx.doi.org/10.14288/1.0073024}
+Floyd, W. C. (2012). \emph{Snowmelt {Energy Flux Recovery During
+Rain-on-Snow} in {Regenerating Forests}} (p. 180) {[}PhD thesis,
+University of British Columbia{]}.
+\url{https://doi.org/10.14288/1.0073024}
 
 \bibitem[\citeproctext]{ref-Gelfan2004}
 Gelfan, A. N., Pomeroy, J. W., \& Kuchment, L. S. (2004). Modeling
@@ -1831,21 +1811,20 @@ Processes}, \emph{27}(13), 1901--1914.
 \url{https://doi.org/10.1002/hyp.9799}
 
 \bibitem[\citeproctext]{ref-Harding1996}
-Harding, R. J., \& Pomeroy, J. W. (1996). The {Energy Balance} of the
-{Winter Boreal Landscape}. \emph{Journal of Climate}, \emph{9}(11),
+Harding, R. J., \& Pomeroy, J. W. (1996). The energy balance of the
+winter boreal landscape. \emph{Journal of Climate}, \emph{9}(11),
 2778--2787. \url{https://www.jstor.org/stable/26201420}
 
 \bibitem[\citeproctext]{ref-Harvey2025}
 Harvey, N., Burns, S. P., Musselman, K. N., Barnard, H., \& Blanken, P.
-D. (2025). Identifying {Canopy Snow} in {Subalpine Forests}: {A
-Comparative Study} of {Methods}. \emph{Water Resources Research},
-\emph{61}(1), e2023WR036996. \url{https://doi.org/10.1029/2023WR036996}
+D. (2025). Identifying canopy snow in subalpine forests: A comparative
+study of methods. \emph{Water Resources Research}, \emph{61}(1),
+e2023WR036996. \url{https://doi.org/10.1029/2023WR036996}
 
 \bibitem[\citeproctext]{ref-Hedstrom1998}
 Hedstrom, N. R., \& Pomeroy, J. W. (1998). Measurements and modelling of
 snow interception in the boreal forest. \emph{Hydrological Processes},
 \emph{12}(10-11), 1611--1625.
-\url{https://doi.org/10.1002/(SICI)1099-1085(199808/09)12:10/11\%3C1611::AID-HYP684\%3E3.0.CO;2-4}
 
 \bibitem[\citeproctext]{ref-Helgason2012a}
 Helgason, W., \& Pomeroy, J. W. (2012a). Characteristics of the
@@ -1933,9 +1912,15 @@ temperature sensitivities. \emph{Hydrological Processes}, \emph{35}(7),
 1--20. \url{https://doi.org/10.1002/hyp.14274}
 
 \bibitem[\citeproctext]{ref-MacDonald2010}
-MacDonald, J. P. (2010). \emph{Unloading of intercepted snow in conifer
-forests} (p. 93) {[}M.\{\{Sc\}\}. Thesis{]}. Department of Geography,
-University of Saskatchewan.
+MacDonald, J. P. (2010). \emph{Unloading of {Intercepted Snow} in
+{Conifer Forests}} (p. 93) {[}Msc Thesis{]}. University of Saskatchewan.
+
+\bibitem[\citeproctext]{ref-Mazzotti2021}
+Mazzotti, G., Webster, C., Essery, R., \& Jonas, T. (2021). Increasing
+the physical representation of forest-snow processes in
+coarse-resolution models: {Lessons} learned from upscaling
+hyper-resolution simulations. \emph{Water Resources Research},
+\emph{57}(5), 1--21. \url{https://doi.org/10.1029/2020WR029064}
 
 \bibitem[\citeproctext]{ref-Parviainen2000}
 Parviainen, J., \& Pomeroy, J. W. (2000). Multiple-scale modelling of
@@ -1993,6 +1978,13 @@ Snow Conference}, \emph{50}, 231--239.
 Roesch, A., Wild, M., Gilgen, H., \& Ohmura, A. (2001). A new snow cover
 fraction parameterization for the {ECHAM4 GCM}. \emph{Climate Dynamics},
 \emph{17}(12), 933--946. \url{https://doi.org/10.1007/s003820100153}
+
+\bibitem[\citeproctext]{ref-Rojas-Heredia2024}
+Rojas-Heredia, F., Revuelto, J., Deschamps-Berger, C., Alonso-González,
+E., Domínguez-Aguilar, P., García, J., Pérez-Cabello, F., \&
+López-Moreno, J. I. (2024). Snow depth distribution in canopy gaps in
+central pyrenees. \emph{Hydrological Processes}, \emph{38}(11), e15322.
+\url{https://doi.org/10.1002/hyp.15322}
 
 \bibitem[\citeproctext]{ref-Rutter2009}
 Rutter, N., Essery, R., Pomeroy, J. W., Altimir, N., Andreadis, K. M.,
@@ -2075,9 +2067,9 @@ interception loss for two sparse eucalypt and pine forests in central
 \url{https://doi.org/10.1016/S0022-1694(96)03066-1}
 
 \bibitem[\citeproctext]{ref-Verseghy2017}
-Verseghy, D. L. (2017). \emph{Class -- the {Canadian Land Surface
-Scheme} (version 3.6.1) technical documentation.} (January; p. 174).
-{Environment and Climate Change Canada Internal Rep.}
+Verseghy, D. L. (2017). \emph{{CLASS} -- the {Canadian Land Surface
+Scheme} (version 3.6.1) technical documentation.} (p. 174) {[}Internal
+Report{]}. {Environment and Climate Change Canada}.
 
 \bibitem[\citeproctext]{ref-Viviroli2020}
 Viviroli, D., Kummu, M., Meybeck, M., Kallio, M., \& Wada, Y. (2020).

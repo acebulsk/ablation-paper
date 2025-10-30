@@ -17,15 +17,27 @@ library(tmap)
 # Save or plot
 # plot(bg_25cm)
 # writeRaster(bg_25cm, 'data/gis/22_292FT_RGB_resamp_25cm.tif', overwrite=TRUE)
+#
 
 bg_resamp <- rast('data/gis/22_292FT_RGB_resamp_25cm.tif')
-bad_names <- c('EC low',
-               'SR50')
+bad_names <- c('EC low', 'SR50')
 
-scl_name_dict <- data.frame(name = c('SCL 1', 'SCL 2', 'SCL 3', 'TB1', 'TB2', 'TB3', 'TB4'),
-                            new_name = c('SCL Mixed', 'SCL Sparse', 'SCL Dense', 'TB 1', 'TB 2', 'TB 3', 'TB 4'))
+scl_name_dict <- data.frame(
+  name = c('SCL 1', 'SCL 2', 'SCL 3', 'TB1', 'TB2', 'TB3', 'TB4'),
+  new_name = c(
+    'Mixed Lysimeter',
+    'Sparse Lysimeter',
+    'Dense Lysimeter',
+    'Tipping Bucket 1',
+    'Tipping Bucket 2',
+    'Tipping Bucket 3',
+    'Tipping Bucket 4'
+  )
+)
 
-inst_coords <- sf::read_sf('../../analysis/interception/data/lai/instrument_coords.gpkg') |>
+inst_coords <- sf::read_sf(
+  '../../analysis/interception/data/lai/instrument_coords.gpkg'
+) |>
   filter(!name %in% bad_names) |>
   st_transform(st_crs(bg_resamp)) |>
   mutate(name = gsub('Trough', 'SCL', name)) |>
@@ -33,14 +45,15 @@ inst_coords <- sf::read_sf('../../analysis/interception/data/lai/instrument_coor
   select(name = new_name, type, geometry = geom)
 
 stns <- data.frame(
-  name = c('PWL Station', 'FT Station'),
+  name = c('PWL Flux Tower', 'FT Flux Tower'),
   type = 'Flux Tower',
   x = c(626890.966, 627006.643),
-  y = c(5632024.896, 5631995.019)) |>
-  st_as_sf(coords = c("x", "y"), crs = st_crs(bg_resamp)) |> rbind(inst_coords)
+  y = c(5632024.896, 5631995.019)
+) |>
+  st_as_sf(coords = c("x", "y"), crs = st_crs(bg_resamp)) |>
+  rbind(inst_coords)
 
 # st_write(stns, 'data/gis/stn_coords.gpkg')
-
 
 bbox <- st_bbox(stns)
 buffer_dist <- 10
@@ -48,11 +61,31 @@ bbox_buffered <- bbox
 bbox_buffered["xmin"] <- bbox["xmin"] - buffer_dist
 bbox_buffered["xmax"] <- bbox["xmax"] + buffer_dist
 bbox_buffered["ymin"] <- bbox["ymin"] - buffer_dist
-bbox_buffered["ymax"] <- bbox["ymax"] + buffer_dist+50
+bbox_buffered["ymax"] <- bbox["ymax"] + buffer_dist + 50
 # bbox['xmax'] <- bbox['xmax'] + 50
 # bbox['ymax'] <- bbox['ymax'] + 50
+
+# --- prepare colours for 'name' ---
+names_order <- unique(stns$name)
+cols <- cols4all::c4a("carto.safe", n = length(names_order))
+names(cols) <- names_order
+
+type_levels <- unique(stns$type)
+shape_vals <- seq(21, 21 + length(type_levels) - 1)
+names(shape_vals) <- type_levels
+
+# --- prepare distinct legend entries ---
+legend_df <- stns %>%
+  dplyr::distinct(name, type) %>%
+  dplyr::mutate(
+    fill  = cols[name],
+    # optional: map type to numeric shapes if needed
+    shape = shape_vals[type]
+    
+  )
+
 main_map <- tm_shape(bg_resamp, bbox = bbox_buffered) +
-  tm_rgb()  +
+  tm_rgb() +
   tm_graticules(
     ticks = TRUE,
     lines = FALSE,
@@ -65,13 +98,22 @@ main_map <- tm_shape(bg_resamp, bbox = bbox_buffered) +
   # tm_shape(ss_transect_path_rough) +
   # tm_lines(col = 'orange', lty = 'solid', lwd = 2) +
   tm_shape(stns) +
-  tm_symbols(size = 1,
-             # size.scale = tm_scale_continuous(values.scale = 1.25),
-             # size.legend.show = FALSE,  # hide size from legend
-             fill = 'name',
-             shape = 'type',
-             fill.scale = tm_scale_categorical(values = cols4all::c4a('carto.safe'))
-             ) +
+  tm_symbols(
+    size = 1,
+    # size.scale = tm_scale_continuous(values.scale = 1.25),
+    # size.legend.show = FALSE,  # hide size from legend
+    fill = 'name',
+    shape = 'type',
+    fill.scale = tm_scale_categorical(values = cols),
+    shape.scale = tm_scale_categorical(values = shape_vals),
+    fill.legend = tm_legend_hide(),
+    shape.legend = tm_legend_hide()    # hide shape legend
+   ) +
+  tm_add_legend(
+    type = "symbols",
+    labels = legend_df$name,
+    fill = legend_df$fill,
+    shape = legend_df$shape) +
   tm_scalebar(position = c(-0.025, 0)) +
   tm_compass(position = c(0, 0.15)) +
   tm_layout(
@@ -80,11 +122,16 @@ main_map <- tm_shape(bg_resamp, bbox = bbox_buffered) +
     legend.position = c('right', 'top')
     # legend.outside = T
     # outer.margins = 0.05
-  ) 
+  )
 
 main_map
 
-tmap::tmap_save(main_map, 'figs/study-site/site_map.png', height = 6, unit = 'in')
+tmap::tmap_save(
+  main_map,
+  'figs/study-site/site_map.png',
+  height = 6,
+  unit = 'in'
+)
 
 # INSET MAP ----
 
@@ -100,7 +147,7 @@ land_ele <- terra::rast(land)[[4]]
 
 sites <- data.frame(
   site = c('Wolf Creek', 'Russell Creek', 'Fortress Mountain', 'Marmot Creek'),
-  lon = c(-135.1497, -126.3090,-115.1983, -115.155154),
+  lon = c(-135.1497, -126.3090, -115.1983, -115.155154),
   lat = c(60.567, 50.3710, 50.8269, 50.9255877)
 ) |>
   filter(site == 'Fortress Mountain')
@@ -119,7 +166,7 @@ canusa <-
 
 land_crop <- terra::crop(land_ele, canusa)
 
-bb_canusa <- st_bbox(st_buffer(canusa , dist = 100))
+bb_canusa <- st_bbox(st_buffer(canusa, dist = 100))
 
 inset_map <-
   # tm_shape(land_crop, bbox = bb) +
@@ -134,7 +181,12 @@ inset_map <-
   tm_polygons() +
   tm_shape(sites_sf) +
   tm_dots(col = 'red', size = 0.25) +
-  tm_text("site", size = 0.75, options = opt_tm_text(point.label = F, just = 'bottom'), ymod = 0.1) +
+  tm_text(
+    "site",
+    size = 0.75,
+    options = opt_tm_text(point.label = F, just = 'bottom'),
+    ymod = 0.1
+  ) +
   # tm_graticules(n.x = 3, n.y = 4, ) +
   tm_layout(legend.position = c('left', 'bottom'))
 inset_map
@@ -142,7 +194,7 @@ tmap::tmap_save(inset_map, 'figs/study-site/site_map_na_scale.png', width = 3)
 
 # put inset on main plot ----
 
-norm_dim = function(obj){
+norm_dim = function(obj) {
   bbox = st_bbox(obj)
   width = bbox[["xmax"]] - bbox[["xmin"]]
   height = bbox[["ymax"]] - bbox[["ymin"]]
@@ -153,8 +205,12 @@ norm_dim = function(obj){
 
 ins_dim = norm_dim(site_sf_buff)
 
-ins_vp <- viewport(width = ins_dim[1] * 0.4, height = ins_dim[2] * 0.4,
-                  x = unit(1.7, "in"), y = unit(5, "in"))
+ins_vp <- viewport(
+  width = ins_dim[1] * 0.4,
+  height = ins_dim[2] * 0.4,
+  x = unit(1.7, "in"),
+  y = unit(5, "in")
+)
 
 tmap::tmap_save(
   main_map,
@@ -166,4 +222,3 @@ tmap::tmap_save(
   insets_tm = inset_map,
   insets_vp = ins_vp
 )
-

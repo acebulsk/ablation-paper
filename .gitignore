@@ -8,6 +8,7 @@ crhm/logs
 crhm/output
 figs/
 tbls/
+revisions/
 *.log
 data/gis/
 paper-updates-to-jp/

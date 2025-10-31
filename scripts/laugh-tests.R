@@ -147,7 +147,8 @@ met_windy_20 <- data.frame(
 all_dfs_windy <- rbind(met_windy_5, met_windy_10) |>
   rbind(met_windy_15) |>
   rbind(met_windy_20) |> 
-  pivot_longer(c(R01, K23)) |> 
+  rename(`Roesch et al., (2001)` = R01) |> 
+  pivot_longer(c(`Roesch et al., (2001)`, K23)) |> 
   filter(name != 'K23') |> 
   select(`Wind Speed (m/s)` = U, canopy_load, name, value)
 
@@ -207,7 +208,7 @@ pseudo_crhm_canopy <- function(forcing) {
   return(forcing)
 }
 
-met_temp_hp_time <- pseudo_crhm_canopy(met_load) |> mutate(group = 'E10') |> 
+met_temp_hp_time <- pseudo_crhm_canopy(met_load) |> mutate(group = 'Ellis et al., (2010)') |> 
   select(canopy_load, q_unld = q_ablate, group)
 
 
@@ -231,8 +232,10 @@ ggsave(
 
 ## Plot wind and time together ---- 
 
-cowplot::plot_grid(wind_unld + theme(legend.position = 'none'),
-                   load_unld + ylab(element_blank()), nrow = 1,
+cowplot::plot_grid(
+                   load_unld + theme(legend.position = 'none') ,
+                   wind_unld + ylab(element_blank()),
+                   nrow = 1,
                    rel_widths = c(0.41, 0.59))
 
 ggsave(
@@ -342,13 +345,13 @@ pseudo_crhm_canopy <- function(forcing) {
   return(forcing)
 }
 
-met_temp_hp <- pseudo_crhm_canopy(met_temp) |> mutate(group = 'E10') |> 
+met_temp_hp <- pseudo_crhm_canopy(met_temp) |> mutate(group = 'Ellis et al., (2010)') |> 
   select(Ta, q_ablate, group, canopy_load)
 
-met_temp_ra <- roesch_unld(met_temp) |> mutate(group = 'R01') |> 
+met_temp_ra <- roesch_unld(met_temp) |> mutate(group = 'Roesch et al., (2001)') |> 
   select(Ta, q_ablate, group, canopy_load)
 
-met_temp_k23 <- k23_unld(met_temp) |> mutate(group = 'K23') |> 
+met_temp_k23 <- k23_unld(met_temp) |> mutate(group = 'Katsushima et al., (2023)') |> 
   select(Ta, q_ablate, group, canopy_load)
 
 plot_unld_temp <- rbind(met_temp_ra, met_temp_hp) #|> rbind(met_temp_k23)

@@ -191,11 +191,8 @@ generate_lm_model_table <- function(df_raw, predictors_named) {
   )
   
   format_estimate <- function(estimate, pval) {
-    sig <- case_when(
-      pval < 0.05  ~ "*",
-      TRUE ~ "ns"
-    )
-    sprintf("%.2f (%s)", estimate, sig)
+    sig <- ifelse(pval < 0.05, "*", "")
+    sprintf("%.2f%s", estimate, sig)
   }
   
   results <- purrr::map_dfr(combos, function(vars) {

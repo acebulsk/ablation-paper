@@ -2,6 +2,27 @@
 # Do not need to account for Ellis 2010 canopy snow meltwater evap since there is no liq holding capacity
 options(ggplot2.discrete.fill= c("salmon", "#0072B2", "#999999"))
 
+# Lookup table of full names
+model_names <- data.frame(
+  group = c("observed", "CP25", "E10", "SA09", "R01"),
+  full_name = factor(
+    c(
+      "Observed",
+      "This Study",
+      "Ellis et al., (2010)",
+      "Andreadis et al., (2009)",
+      "Roesch et al., (2001)"
+    ),
+    levels = c(
+      "Observed",
+      "This Study",
+      "Ellis et al., (2010)",
+      "Andreadis et al., (2009)",
+      "Roesch et al., (2001)"
+    )
+  )
+)
+
 crhm_output_newsim_subl_tf <- crhm_output_newsim |> 
   inner_join(obs_tree) |>
   mutate(atmosphere = -(delsub_veg_int.1+delevap_veg_int.1),
@@ -32,7 +53,8 @@ crhm_output_andreadis_subl_tf <- crhm_output_andreadis |>
 
 subl_tf_smry <- rbind(crhm_output_newsim_subl_tf, crhm_output_baseline_subl_tf) |> 
   rbind(crhm_output_roesch_subl_tf) |> 
-  rbind(crhm_output_andreadis_subl_tf)
+  rbind(crhm_output_andreadis_subl_tf) |> 
+  left_join(model_names)
 
 # by each event
 subl_tf_smry_by_model_and_event <- subl_tf_smry |> 
@@ -69,7 +91,7 @@ subl_tf_smry_by_model_and_event <- subl_tf_smry |>
       select(event_id, manual_event_type) |> 
       mutate(event_id = as.character(event_id))
   ) |>
-  group_by(group, manual_event_type) |> 
+  group_by(group, full_name, manual_event_type) |> 
   summarise(
     atmosphere = sum(atmosphere),
     ground = sum(ground),
@@ -80,18 +102,18 @@ subl_tf_smry_by_model_and_event <- subl_tf_smry |>
 
 ggplot(subl_tf_smry_by_model_and_event |>
          pivot_longer(c(atmosphere, ground)),
-       aes(x = group, y = value, fill = name)) +
+       aes(x = full_name, y = value, fill = name)) +
   geom_bar(stat = 'identity') +
   facet_wrap(~manual_event_type, ncol = 4) +
   labs(fill = element_blank(),
-       x = 'Model',
+       x = element_blank(),
        y = 'Fraction of Ablation (-)') +
-  theme(legend.position = 'bottom')
+  theme(legend.position = 'bottom', axis.text.x = element_text(angle = 30, hjust = 1))  # rotate x labels)
 
 ggsave(#'figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
        'figs/final/figure11.png',
        width = 6,
-       height = 2.5,
+       height = 3.5,
 )
 
 

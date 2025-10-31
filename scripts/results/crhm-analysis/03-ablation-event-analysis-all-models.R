@@ -18,14 +18,36 @@ options(ggplot2.discrete.colour= c("black", "#DF536B", "dodgerblue", "#F2B701", 
 manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv') |> 
   mutate(event_id = as.Date(event_id))
 
+# Lookup table of full names
+model_names <- data.frame(
+  name = c("observed", "CP25", "E10", "SA09", "R01"),
+  full_name = factor(
+    c(
+      "Observed",
+      "This Study",
+      "Ellis et al., (2010)",
+      "Andreadis et al., (2009)",
+      "Roesch et al., (2001)"
+    ),
+    levels = c(
+      "Observed",
+      "This Study",
+      "Ellis et al., (2010)",
+      "Andreadis et al., (2009)",
+      "Roesch et al., (2001)"
+    )
+  )
+)
+
 p_main <- obs_mod_tree_comp |> 
   pivot_longer(!c(datetime, event_id, event_type, melt, sublimation, wind)) |> 
   inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
   mutate(name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01')),
          facet_title = paste(manual_event_type, '-', event_id)) |> 
+  left_join(model_names) |> 
   ggplot(aes(datetime, value, 
-             colour = name, 
-             linetype = name)) +  
+             colour = full_name, 
+             linetype = full_name)) +  
   geom_line() +
   facet_wrap(~facet_title, scales = 'free', ncol = 3) +
   # facet_wrap(~event_id, scales = 'free') +
@@ -35,11 +57,11 @@ p_main <- obs_mod_tree_comp |>
   theme(legend.position = 'bottom') +
   scale_x_datetime(date_labels = "%H") +
   scale_linetype_manual(values = c(
-    observed = "solid",
-    CP25 = "solid",
-    R01 = "dashed",
-    SA09 = "dashed",
-    E10 = "dashed"
+    Observed = "solid",
+    `This Study` = "solid",
+    `Roesch et al., (2001)` = "dashed",
+    `Andreadis et al., (2009)` = "dashed",
+    `Ellis et al., (2010)` = "dashed"
   ))
 p_main
 ggsave(
@@ -108,12 +130,13 @@ dL_hourly_err_summary_by_event_type_id <- dL_hourly |>
   pivot_wider() |> 
   pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
   inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
-  filter(#observed > 0,
-         #value > 0
-         ) |> 
+  left_join(model_names) |> 
+  # filter(#observed > 0,
+  #        #value > 0
+  #        ) |> 
   mutate(diff = observed - value,
          name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
-  group_by(name, manual_event_type, event_id) |>
+  group_by(name, full_name, manual_event_type, event_id) |>
   summarise(
     MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
@@ -143,12 +166,13 @@ dL_hourly_err_summary_by_event_type <- dL_hourly |>
   pivot_wider() |> 
   pivot_longer(!c(datetime, event_id, event_type, observed)) |> 
   inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
-  filter(#observed > 0,
-    #value > 0
-  ) |> 
+  left_join(model_names) |> 
+  # filter(#observed > 0,
+  #   #value > 0
+  # ) |> 
   mutate(diff = observed - value,
          name = factor(name, c('observed', 'CP25', 'E10', 'SA09', 'R01'))) |> 
-  group_by(name, manual_event_type, event_id) |>
+  group_by(name, full_name, manual_event_type, event_id) |>
   summarise(
     MB = mean(diff, na.rm = T),
     MAE = mean(abs(diff), na.rm = T),
@@ -165,7 +189,7 @@ dL_hourly_err_summary_by_event_type <- dL_hourly |>
 
 options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
-ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) + 
+ggplot(dL_hourly_err_summary_by_event_type_id, aes(full_name, MB, colour = name)) + 
   geom_boxplot() +
   # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = MB),
   #            shape = 18, size = 3, colour = "black") +  # mean points
@@ -174,7 +198,10 @@ ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) +
   facet_wrap(~manual_event_type) +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
-  theme(legend.position = 'none')
+    theme(
+    legend.position = "none",
+    axis.text.x = element_text(angle = 30, hjust = 1)  # rotate x labels
+  )
 
 ggsave(
   # paste0(

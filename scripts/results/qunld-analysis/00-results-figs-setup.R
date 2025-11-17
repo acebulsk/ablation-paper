@@ -1,6 +1,7 @@
 library(tidyverse)
 library(purrr)
 library(broom)
+library(lme4)
 
 # options(ggplot2.discrete.colour= palette.colors(palette = "R4")[2:6])
 # "#DF536B" "#61D04F" "#2297E6" "#28E2E5" "#CD0BBC"
@@ -73,6 +74,23 @@ int_fig_height <- 4
 temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
 bin_wnd_ax_lab <- "Wind Speed Bins (m/s)"
 
+temp_ax_lab <- 'Air Temperature (°C)'
+wind_ax_lab <- 'Wind Speed (m/s)'
+pretty_names_vect <- c(
+  temp_ax_lab,
+  "Relative Humidity (%)",
+  wind_ax_lab,
+  "Unloading Rate (mm/hr)",
+  "Sublimation Rate (mm/hr)",
+  "Snowmelt Rate (mm/hr)"
+)
+
+var_name_dict <-
+  data.frame(
+    name = c('t', 'rh', 'u', 'q_unl', 'q_subl', 'q_melt'),
+    pretty_name = pretty_names_vect
+  )
+
 ## thresholds and filters ----
 min_snow_bin <- 0.1 # gives a max 10% error based on max scale output of 50 kg ... 50 * (0.02/100) = +/- 0.01 kg
 snow_load_th <- 7
@@ -83,6 +101,9 @@ manual_tau_th <- 0.05 # observed increase in trough unloading above this thresho
 scl_names <- c('mixed', 'closed') # removed sparse trough here because was obviously leaking
 
 # LOAD DATA ----
+
+manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv')
+manual_event_types$type_short <- sub("^(\\w+)\\s*&.*$", "\\1", manual_event_types$manual_event_type)
 
 ft_met <- 
   readRDS('../../analysis/met-data-processing/data/ffr_crhm_obs_qaqc_gap_fill.rds') 
@@ -151,6 +172,8 @@ tau_binned <- ft_met |>
   select(datetime, u) |> 
   mutate(tau = u^2 * lm_mid_wnd_sqrd_low_tau$slope) |> 
   select(-u)
+
+ft_met$tau <- ft_met$u^2 * lm_mid_wnd_sqrd_low_tau$slope
 
 min_mid_can_tau <- 0
 max_mid_can_tau <- round(
@@ -396,6 +419,24 @@ crhm_output <- map_dfr(paths, read_crhm_output) |>
   mutate(q_subl_veg = -delsub_veg_int.1*4,
          q_melt_veg = delmelt_veg_int.1*4)
 
+w_tree_path <- list.files(
+  paste0(
+    "crhm/output/",
+    'ffr_closed_canopy_cc0.88_cansnobal'
+  ),
+  pattern = 'store_liquid_new_evap6',
+  full.names = T
+)
+
+crhm_output_w_tree <- CRHMr::readOutputFile(
+    w_tree_path,
+    timezone = 'Etc/GMT+6') |> 
+    mutate(name = 'w_tree') |> 
+  select(datetime, name, hru_t.1, m_s_veg.1, hru_p.1,
+         delsub_veg_int.1:delunld_subl_int.1) |> 
+  mutate(q_subl_veg = -delsub_veg_int.1*4,
+         q_melt_veg = delmelt_veg_int.1*4)
+
 ### bin mod subl  ----
 
 # note zeros are not included in binning, to add set inlcude.lowest = T
@@ -483,3 +524,41 @@ met_unld_no_melt <-
   # mutate(
   #   tree_mm = ifelse(is.na(tree_mm), m_s_veg.1, tree_mm) # fill missing tree data with model
   # )
+
+## BIN TREE DATA ----
+
+# note zeros are not included in binning, to add set inlcude.lowest = T
+min_tree <- round(
+  min(met_unld_no_melt$tree_mm, na.rm = T),3)
+max_tree <- round(
+  max(met_unld_no_melt$tree_mm, na.rm = T),3)
+tree_step <- 5
+
+tree_breaks <- seq(
+  min_tree,
+  max_tree+tree_step,
+  tree_step)
+
+# tree_breaks <- c(0, 5,20)
+tree_breaks <- c(0, 2, 6,  20) # works well for tau but breaks sublimation fn
+
+tree_labs_seq <- label_bin_fn(bins = tree_breaks)
+
+stopifnot(tail(tree_breaks, 1) > max(met_unld_no_melt$tree_mm, na.rm = T))
+stopifnot(length(tree_labs_seq) + 1 == length(tree_breaks))
+
+met_unld_no_melt$tree_binned <- cut(met_unld_no_melt[,'tree_mm', drop = TRUE], tree_breaks, include.lowest = T)
+
+met_unld_no_melt$tree_labs <- cut(met_unld_no_melt[,'tree_mm', drop = TRUE], 
+                                  tree_breaks, include.lowest = T, 
+                                  labels = tree_labs_seq)
+
+met_unld_no_melt$tree_labs <- as.numeric(as.character(met_unld_no_melt$tree_labs))
+
+met_unld_no_melt |> 
+  group_by(tree_labs) |> 
+  summarise(tree_mean = mean(tree_mm))
+
+met_unld_no_melt |> 
+  group_by(tree_labs) |> 
+  tally()

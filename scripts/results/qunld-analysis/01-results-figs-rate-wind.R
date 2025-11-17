@@ -1,46 +1,5 @@
 # script to generate model of wind induced unloading
 
-## BIN TREE DATA ----
-
-# note zeros are not included in binning, to add set inlcude.lowest = T
-min_tree <- round(
-  min(met_unld_no_melt$tree_mm, na.rm = T),3)
-max_tree <- round(
-  max(met_unld_no_melt$tree_mm, na.rm = T),3)
-tree_step <- 5
-
-tree_breaks <- seq(
-  min_tree,
-  max_tree+tree_step,
-  tree_step)
-
-# tree_breaks <- c(0, 5,20)
-tree_breaks <- c(0, 2, 6,  20) # works well for wind but breaks sublimation fn
-
-tree_labs_seq <- label_bin_fn(bins = tree_breaks)
-
-stopifnot(tail(tree_breaks, 1) > max(met_unld_no_melt$tree_mm, na.rm = T))
-stopifnot(length(tree_labs_seq) + 1 == length(tree_breaks))
-
-met_unld_no_melt$tree_binned <- cut(met_unld_no_melt[,'tree_mm', drop = TRUE], tree_breaks, include.lowest = T)
-
-met_unld_no_melt$tree_labs <- cut(met_unld_no_melt[,'tree_mm', drop = TRUE], 
-                                  tree_breaks, include.lowest = T, 
-                                  labels = tree_labs_seq)
-
-met_unld_no_melt$tree_labs <- as.numeric(as.character(met_unld_no_melt$tree_labs))
-
-met_unld_no_melt |> 
-  group_by(tree_labs) |> 
-  summarise(tree_mean = mean(tree_mm),
-            tree_max = max(tree_mm),
-            tree_min = min(tree_mm))
-
-met_unld_no_melt |> 
-  group_by(tree_labs) |> 
-  tally()
-
-
 ## COMPUTE AVERAGES OVER BINS ---- 
 
 met_unld_no_melt_cold <- met_unld_no_melt |> 

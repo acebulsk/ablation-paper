@@ -14,8 +14,8 @@ tree_breaks <- seq(
   max_tree+tree_step,
   tree_step)
 
-tree_breaks <- c(0, 4,20)
-tree_breaks <- c(0, 3, 6,  20) # works well for wind but breaks sublimation fn
+# tree_breaks <- c(0, 4,20)
+tree_breaks <- c(0, 2, 6,  20) 
 
 tree_labs_seq <- label_bin_fn(bins = tree_breaks)
 
@@ -41,10 +41,10 @@ met_unld_no_melt |>
 
 ## COMPUTE AVERAGES OVER BINS ---- 
 
-met_unld_no_melt_cold <- met_unld_no_melt |> 
-  filter(t < -6,
-         u < 2,
-  q_subl_veg > 0)
+met_unld_no_melt_cold <- met_unld_no_melt #|> 
+  # filter(#t < -6,
+  #        #u < 2,
+  # q_subl_veg > 0)
 
 met_unld_no_melt_subl_smry <- met_unld_no_melt_cold |> 
   filter(is.na(tree_mm) == F) |> 
@@ -75,13 +75,13 @@ ggplot(met_unld_no_melt_subl_smry,
   #   
   # ), width = 0.2)  +
   geom_point(size = 3) +
-  ylab(bin_unl_ax_lab) +
+  # ylab(bin_unl_ax_lab) +
   xlab('Sublimation Rate (mm/hr)') +
   theme_bw() +
   # theme_bw(base_size = 14) +
   theme(legend.position = 'bottom') +
   # ylim(NA, 3.1) +
-  xlim(0,NA) +
+  # xlim(0,NA) +
   # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
   labs(color = 'Mean Canopy Load (mm)')# + facet_grid(cols = vars(name))
 
@@ -111,7 +111,7 @@ b_lm <- coefs[2]
 # use starting values from the linear model 
 # per second for model
 # subl labs in here twice sets to 0 when subl is 0, dont need this for other params
-model_nls <- nls(q_unl_avg/(60*60) ~ subl_labs * a * avg_w_tree * exp(b * subl_labs), 
+model_nls <- nls(q_unl_avg/(60*60) ~ subl_labs * a * tree_labs * exp(b * subl_labs), 
                  data = met_unld_no_melt_subl_smry, 
                  start = list(a = a_lm, b = b_lm))
 nls_coefs <- coef(model_nls)
@@ -119,7 +119,7 @@ saveRDS(nls_coefs, 'data/model_coef_subl_unld_per_second.rds')
 
 met_unld_no_melt_subl_smry <- met_unld_no_melt_subl_smry |> 
   mutate(
-    model_nls_pred = subl_labs * nls_coefs[[1]] * avg_w_tree * exp(nls_coefs[[2]]* subl_labs) # Linear model prediction
+    model_nls_pred = subl_labs * nls_coefs[[1]] * tree_labs * exp(nls_coefs[[2]]* subl_labs) # Linear model prediction
   )
 # Create ggplot
 ggplot(met_unld_no_melt_subl_smry, aes(x = subl_labs, y = model_nls_pred)) +
@@ -128,9 +128,11 @@ ggplot(met_unld_no_melt_subl_smry, aes(x = subl_labs, y = model_nls_pred)) +
 # summary(model_nls)
 
 # per hour for plotting
-model_nls <- nls(q_unl_avg ~ subl_labs * a * avg_w_tree * exp(b * subl_labs), 
+model_nls <- nls(q_unl_avg ~ subl_labs * a * tree_labs * exp(b * subl_labs), 
                  data = met_unld_no_melt_subl_smry, 
                  start = list(a = a_lm, b = b_lm))
+
+summary(model_nls)
 
 RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
 TSS <- sum((met_unld_no_melt_subl_smry$q_unl_avg - mean(met_unld_no_melt_subl_smry$q_unl_avg))^2)  # Total sum of squares
@@ -149,7 +151,7 @@ wts <- met_unld_no_melt_subl_smry$q_unl_avg^2
 
 # apply weights iteratively
 # for (i in 1:max_iter) {
-#   model_nlswi <- nls(q_unl_avg ~ a  * avg_w_tree * exp(b * subl_labs),
+#   model_nlswi <- nls(q_unl_avg ~ a  * tree_labs * exp(b * subl_labs),
 #                      data = met_unld_no_melt_subl_smry,
 #                      weights = wts,
 #                      start = c(a = coefs_old[1],
@@ -206,24 +208,25 @@ ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) +
 
 # Look at the different models for the warm events 
 ex_subl_labs <- seq(0,0.5,0.1)
-ex_avg_w_tree <- c(3, 11)
-subl_ex_df <- expand.grid(subl_labs = ex_subl_labs, avg_w_tree = ex_avg_w_tree)
+ex_tree_labs <- c(1, 4, 13)
+subl_ex_df <- expand.grid(subl_labs = ex_subl_labs, tree_labs = ex_tree_labs)
 new_predicted_y <- predict(model_nls, newdata = subl_ex_df)
+
 
 ## PLOT MODEL ----
 
 ggplot(subl_ex_df) +
-  geom_line(aes(subl_labs, new_predicted_y, colour = factor(avg_w_tree))) +
+  geom_line(aes(subl_labs, new_predicted_y, colour = factor(tree_labs))) +
   geom_errorbar(data = met_unld_no_melt_subl_smry,
                 aes(
                   x = subl_labs,
                   ymax = sd_hi,
                   ymin = sd_low,
                   width = 0.01,
-                  colour = as.character(round(avg_w_tree))
+                  colour = as.character(round(tree_labs))
                 )) +
   geom_point(data = met_unld_no_melt_subl_smry,
-             aes(subl_labs, q_unl_avg, colour = as.character(round(avg_w_tree))),
+             aes(subl_labs, q_unl_avg, colour = as.character(round(tree_labs))),
              size = 2) +
   ylab(expression("Unloading Rate (kg" ~ m^-2 ~ hr^-1 * ")")) +
   xlab(expression("Sublimation Rate (kg" ~ m^-2 ~ hr^-1 * ")")) +
@@ -244,7 +247,7 @@ met_unld_no_melt_subl_smry$pred_q_unl <-
   predict(model_nls, met_unld_no_melt_subl_smry)
 
 met_unld_no_melt_subl_smry |> 
-  ggplot(aes(subl_labs, colour = factor(round(avg_w_tree)), group = factor(avg_w_tree))) + 
+  ggplot(aes(subl_labs, colour = factor(round(tree_labs)), group = factor(tree_labs))) + 
   geom_point(aes(y = q_unl_avg)) +
   geom_line(aes(y = pred_q_unl))
 
@@ -253,7 +256,7 @@ met_unld_no_melt_subl_smry |>
 q_unl_temp_model_err_tbl <- met_unld_no_melt_subl_smry |> 
   ungroup() |> 
   mutate(diff = q_unl_avg - pred_q_unl) |> 
-  # group_by(avg_w_tree) |> 
+  # group_by(tree_labs) |> 
   summarise(
     `Mean Bias` = mean(diff, na.rm = T),
     # `Max Error` = diff[which.max(abs(diff))],
@@ -262,7 +265,7 @@ q_unl_temp_model_err_tbl <- met_unld_no_melt_subl_smry |>
   # left_join(coefs_df, by = c('plot_name', 'name')) |> 
   # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
   select(
-    # `Mean Canopy Load (mm)` = avg_w_tree,
+    # `Mean Canopy Load (mm)` = tree_labs,
     `Mean Bias`,
     MAE,
     `RMS Error`
@@ -271,4 +274,4 @@ q_unl_temp_model_err_tbl <- met_unld_no_melt_subl_smry |>
          R2 = rsq_nls)
 
 saveRDS(q_unl_temp_model_err_tbl,
-        'data/modelled_subl_unloading_error_table.rds')
+        'data/results/modelled_subl_unloading_error_table.rds')

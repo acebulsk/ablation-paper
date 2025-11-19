@@ -174,7 +174,7 @@ summary(bin_unld_subl_lm)
 saveRDS(bin_unld_subl_lm, 'data/results/lm_q_drip_vs_q_unld_subl.rds')
 # Extract the coefficient (slope) from the model
 slope <- coef(bin_unld_subl_lm)[1]
-r2_adj_lm <- r_squared_no_intercept(bin_unld_subl_lm)
+r2_adj_lm <- compute_r2(bin_unld_subl_lm)
 r2_adj_lm
 
 ggplot(obs_mod_fltr_binned, aes(tree_labs, unld/subl)) + 
@@ -371,7 +371,7 @@ ggsave(
 #   mutate(across(MB:R2_cd, round, digits = 3))
 # 
 # saveRDS(lm_error_metrics,
-#         'data/modelled_subl_unloading_error_table.rds')
+#         'data/results/modelled_subl_unloading_error_table.rds')
 # 
 # 
 # # Create observed vs predicted plot

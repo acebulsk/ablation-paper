@@ -17,7 +17,7 @@ tree_breaks <- seq(
   tree_step)
 
 # tree_breaks <- c(0, 4,20)
-# tree_breaks <- c(0, 3, 6,  20) # works well for wind but breaks sublimation fn
+# tree_breaks <- c(0, 3, 6,  20) 
 
 tree_labs_seq <- label_bin_fn(bins = tree_breaks)
 
@@ -456,4 +456,4 @@ q_unl_temp_model_err_tbl <- met_unld_all_winds_cold_smry |>
          R2 = rsq_nls)
 
 saveRDS(q_unl_temp_model_err_tbl,
-        'data/modelled_subl_wind_unloading_error_table.rds')
+        'data/results/modelled_subl_wind_unloading_error_table.rds')

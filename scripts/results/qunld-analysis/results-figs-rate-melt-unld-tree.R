@@ -3,7 +3,7 @@
 # Canopy snow unloading is determined as residual ablation after removing
 # q_subl^veg, q_drip, q_unld^wind
 
-options(ggplot2.discrete.colour= c("#000000", "#DF536B"))
+options(ggplot2.discrete.colour= c("#DF536B", "#000000"))
 
 
 library(tidyverse)
@@ -28,7 +28,7 @@ good_events <- mod_d_drip_smry_frac |>
 prj <- "ffr_closed_canopy_cc0.88_cansnobal"
 
 # specify certain model run
-run_tag <- "updt_SW_to_obs_no_melt_unld"
+run_tag <- "updt_SW_to_obs_no_melt_unld" # needs to have melt unld off to propoerly compute residual
 
 path <- list.files(
   paste0(
@@ -46,7 +46,7 @@ crhm_output <- CRHMr::readOutputFile(
          delsub_veg_int.1:delunld_subl_int.1) |> 
   mutate(delsub_veg_int.1 = -delsub_veg_int.1)
 
-# Combine dfs and aggregate to hourly -----
+# Combine dfs -----
 
 obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
   mutate(wtr_year = weatherdash::wtr_yr(datetime)) |> 
@@ -138,6 +138,8 @@ obs_mod_fltr <- obs_mod |>
          # hru_u.1 < 1
   )
 
+ggplot(obs_mod_fltr, aes(canopy_snowmelt_labs, est_q_unld_melt, colour = as.factor(tree_labs))) + 
+  geom_point()
 ggplot(obs_mod_fltr, aes(delmelt_veg_int.1, est_q_unld_melt)) + 
   geom_point()
 ggplot(obs_mod_fltr, aes(tree_mm, est_q_unld_melt)) + 
@@ -193,10 +195,11 @@ saveRDS(bin_unld_melt_lm, 'data/results/lm_q_drip_vs_q_unld_melt.rds')
 # Extract the coefficient (slope) from the model
 r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
 
+unld_melt_ratio$name <- ifelse(unld_melt_ratio$name == 'TB', 'Observed Melt', 'Simulated Melt')
 ggplot(unld_melt_ratio,
        aes(tree_labs, unld_melt_ratio)) +
   geom_point(aes(colour = name)) +
-  geom_smooth(method = "lm", se = F) +  # Use method="lm" for linear model
+  geom_smooth(aes(linetype = "Fit"), method = "lm", se = FALSE, colour = "black") +
   annotate(
       'label',
       x = 4,
@@ -209,7 +212,8 @@ ggplot(unld_melt_ratio,
   labs(
     x = "Canopy Snow Load (mm)",
     y = "Unloading to Melt Ratio (-)",
-    colour = 'Melt'
+    colour = '',
+    linetype = ''
   ) +
   theme(legend.position = 'bottom')
 
@@ -475,7 +479,7 @@ ggsave(
 #   mutate(across(MB:R2_cd, round, digits = 3))
 # 
 # saveRDS(lm_error_metrics,
-#         'data/modelled_melt_unloading_error_table.rds')
+#         'data/results/modelled_melt_unloading_error_table.rds')
 # 
 # 
 # # Create tree_mm vs predicted plot

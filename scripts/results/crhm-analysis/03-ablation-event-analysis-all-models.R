@@ -254,87 +254,116 @@ dL_hourly_for_boot <- dL_hourly_wide %>%
                values_to = "value") |> 
    filter(!is.na(observed) & !is.na(value))
 
-compute_metrics <- function(obs, sim) {
-  diff <- obs - sim
-  MB <- mean(diff, na.rm = TRUE)
-  MAE <- mean(abs(diff), na.rm = TRUE)
-  RMSE <- sqrt(mean(diff^2, na.rm = TRUE))
-  NRMSE <- RMSE / mean(obs, na.rm = TRUE)
-  R <- cor(obs, sim, use = "complete.obs")
-  R2 <- R^2
-  c(MB = MB, MAE = MAE, RMSE = RMSE, NRMSE = NRMSE, R = R, R2 = R2)
+# NSE from Dingman
+nse <- function(obs, sim) {
+  1 - sum((obs - sim)^2, na.rm = TRUE) / sum((obs - mean(obs, na.rm=TRUE))^2, na.rm = TRUE)
 }
 
-library(boot)
+# KGE from Clark 2021
+kge <- function(obs, sim) {
+  r <- cor(obs, sim, use = "complete.obs")
+  alpha <- sd(sim, na.rm = TRUE) / sd(obs, na.rm = TRUE)
+  beta <- mean(sim, na.rm = TRUE) / mean(obs, na.rm = TRUE)
+  1 - sqrt((beta - 1)^2 + (alpha - 1)^2 + (r - 1)^2)
+}
 
-bootstrap_hourly <- function(df, n_boot = 1000) {
-  
+# not a huge diff between event and hourly resampling ... event shows greater range in model perforamnce 
+# bootstrapping uses stochastic resampling and likely better for this application than jackknife 
+bootstrap_event <- function(df, n_boot = 1000) {
+
   df %>%
     filter(!is.na(observed) & !is.na(value)) %>%
-    group_by(name, event_id) %>%
-    group_modify(~{
-      data <- .x
-      n <- nrow(data)
-      
-      if(n < 2) return(tibble(MB = NA, MB_lower = NA, MB_upper = NA,
-                               MAE = NA, MAE_lower = NA, MAE_upper = NA,
-                               RMSE = NA, RMSE_lower = NA, RMSE_upper = NA))
-      
-      boot_fun <- function(d, i) {
-        diff <- d$observed[i] - d$value[i]
-        c(MB = mean(diff), MAE = mean(abs(diff)), RMSE = sqrt(mean(diff^2)))
-      }
-      
-      boot_out <- boot(data, boot_fun, R = n_boot)
-      
-      # ensure t is a matrix
-      tmat <- as.matrix(boot_out$t)
-      if(is.null(colnames(tmat))) colnames(tmat) <- c("MB","MAE","RMSE")
-      
-      tibble(
-        MB = mean(tmat[,1]), MB_lower = quantile(tmat[,1], 0.025), MB_upper = quantile(tmat[,1], 0.975),
-        MAE = mean(tmat[,2]), MAE_lower = quantile(tmat[,2], 0.025), MAE_upper = quantile(tmat[,2], 0.975),
-        RMSE = mean(tmat[,3]), RMSE_lower = quantile(tmat[,3], 0.025), RMSE_upper = quantile(tmat[,3], 0.975)
-      )
-    })
-}
-
-boot_hourly_results <- bootstrap_hourly(dL_hourly_for_boot)
-
-jackknife_hourly <- function(df) {
-  
-  df %>%
-    filter(!is.na(observed) & !is.na(value)) %>%  # remove missing
     group_by(name) %>%
     group_modify(~{
       data <- .x
-      n <- nrow(data)
+      events <- unique(data$event_id)
+      n_events <- length(events)
       
-      if(n < 2) return(tibble(MB = NA, MB_se = NA,
-                               MAE = NA, MAE_se = NA,
-                               RMSE = NA, RMSE_se = NA))
+      if(n_events < 2) return(tibble(MB = NA, MB_lower = NA, MB_upper = NA,
+                                     MAE = NA, MAE_lower = NA, MAE_upper = NA,
+                                     RMSE = NA, RMSE_lower = NA, RMSE_upper = NA))
       
-      # Leave-one-out jackknife
-      jack_stats <- t(sapply(1:n, function(i) {
-        d <- data[-i, ]
-        diff <- d$observed - d$value
-        c(MB = mean(diff), MAE = mean(abs(diff)), RMSE = sqrt(mean(diff^2)))
-      }))
+      boot_fun <- function(event_indices) {
+        sampled_events <- events[event_indices]
+        d_sample <- data %>% filter(event_id %in% sampled_events)
+        obs <- d_sample$observed
+        sim <- d_sample$value
+        diff <- obs - sim
+        c(
+          MB = mean(diff),
+          MAE = mean(abs(diff)),
+          RMSE = sqrt(mean(diff^2)),
+          NSE = nse(obs, sim),
+          KGE = kge(obs, sim)
+        )
+      }
       
-      # Jackknife mean and standard error
-      mean_stats <- colMeans(jack_stats)
-      se_stats <- sqrt((n - 1) * colMeans((jack_stats - matrix(mean_stats, nrow=n, ncol=3, byrow=TRUE))^2))
+      # sample event indices with replacement
+      boot_samples <- replicate(n_boot, boot_fun(sample(1:n_events, n_events, replace = TRUE)))
+      tmat <- t(boot_samples)  # transpose so rows = replicates
+      colnames(tmat) <- c("MB","MAE","RMSE","NSE","KGE")
       
       tibble(
-        MB = mean_stats["MB"], MB_se = se_stats["MB"],
-        MAE = mean_stats["MAE"], MAE_se = se_stats["MAE"],
-        RMSE = mean_stats["RMSE"], RMSE_se = se_stats["RMSE"]
+        MB = mean(tmat[,"MB"]), MB_lower = quantile(tmat[,"MB"], 0.025), MB_upper = quantile(tmat[,"MB"], 0.975),
+        MAE = mean(tmat[,"MAE"]), MAE_lower = quantile(tmat[,"MAE"], 0.025), MAE_upper = quantile(tmat[,"MAE"], 0.975),
+        RMSE = mean(tmat[,"RMSE"]), RMSE_lower = quantile(tmat[,"RMSE"], 0.025), RMSE_upper = quantile(tmat[,"RMSE"], 0.975),
+        NSE = mean(tmat[,"NSE"]), NSE_lower = quantile(tmat[,"NSE"], 0.025), NSE_upper = quantile(tmat[,"NSE"], 0.975),
+        KGE = mean(tmat[,"KGE"]), KGE_lower = quantile(tmat[,"KGE"], 0.025), KGE_upper = quantile(tmat[,"KGE"], 0.975)
       )
     })
 }
 
+boot_event_results <- bootstrap_event(dL_hourly_for_boot)
 
-jack_results <- jackknife_hourly(dL_hourly_for_boot)
+# Example: bootstrap results
+boot_long <- boot_event_results %>%
+  pivot_longer(
+    cols = c(MB, RMSE, NSE, KGE),
+    names_to = "metric",
+    values_to = "estimate"
+  ) %>%
+  # extract lower/upper for error bars
+  pivot_longer(
+    cols = ends_with(c("_lower","_upper")),
+    names_to = c("metric2","bound"),
+    names_pattern = "(.*)_(.*)",
+    values_to = "value"
+  ) %>%
+  filter(metric == metric2) %>%
+  select(-metric2) %>%
+  pivot_wider(names_from = bound, values_from = value) |>   mutate(metric = factor(metric, levels = c("MB","RMSE","NSE","KGE"))) # order facets
+
+metric_labels <- c(
+  MB = "Mean Bias (mm)",
+  RMSE = "Root Mean Squared Error (mm)",
+  NSE = "Nash–Sutcliffe Efficiency",
+  KGE = "Kling–Gupta Efficiency"
+)
+
+ggplot(boot_long, aes(x = name, y = estimate, color = name)) +
+  geom_point(position = position_dodge(width = 0.5), size = 3) +
+  geom_errorbar(aes(ymin = lower, ymax = upper),
+                position = position_dodge(width = 0.5), width = 0.2) +
+  labs(
+    x = "Model",
+    y = NULL,
+    color = "Metric"#,
+    # title = "Bootstrap Event-Level Error Metrics"
+  ) + 
+  facet_wrap(~metric, nrow = 2, scales = "free_y",
+             labeller = labeller(metric = metric_labels), strip.position = 'left') +
+  theme(legend.position = 'none',
+    strip.background = element_blank(),
+    strip.placement = 'outside',
+    strip.text.y.left = element_text(size = 11)  # increase size here
+  )
+
+ggsave(
+  'figs/final/figure10a.png',
+  width = 8,
+  height = 6,
+  device = png
+)
 
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 

@@ -19,22 +19,42 @@ manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv') 
   mutate(event_id = as.Date(event_id))
 
 # Lookup table of full names
+# model_names <- data.frame(
+#   name = c("observed", "CP25", "E10", "SA09", "R01"),
+#   full_name = factor(
+#     c(
+#       "Observed",
+#       "This Study",
+#       "Ellis et al., (2010)",
+#       "Andreadis et al., (2009)",
+#       "Roesch et al., (2001)"
+#     ),
+#     levels = c(
+#       "Observed",
+#       "This Study",
+#       "Ellis et al., (2010)",
+#       "Andreadis et al., (2009)",
+#       "Roesch et al., (2001)"
+#     )
+#   )
+# )
+
 model_names <- data.frame(
   name = c("observed", "CP25", "E10", "SA09", "R01"),
   full_name = factor(
     c(
       "Observed",
-      "This Study",
-      "Ellis et al., (2010)",
-      "Andreadis et al., (2009)",
-      "Roesch et al., (2001)"
+      "CP25 (This Study)",
+      "E10",
+      "SA09",
+      "R01"
     ),
     levels = c(
       "Observed",
-      "This Study",
-      "Ellis et al., (2010)",
-      "Andreadis et al., (2009)",
-      "Roesch et al., (2001)"
+      "CP25 (This Study)",
+      "E10",
+      "SA09",
+      "R01"
     )
   )
 )
@@ -52,17 +72,24 @@ p_main <- obs_mod_tree_comp |>
   facet_wrap(~facet_title, scales = 'free', ncol = 3) +
   # facet_wrap(~event_id, scales = 'free') +
   ylab("Canopy Load (mm)") +
-  xlab(element_blank()) +
+  xlab("Time (hour)") +
   labs(colour = 'Data Type', linetype = 'Data Type') +  # Same label for both
   theme(legend.position = 'bottom') +
   scale_x_datetime(date_labels = "%H") +
   scale_linetype_manual(values = c(
     Observed = "solid",
-    `This Study` = "solid",
-    `Roesch et al., (2001)` = "dashed",
-    `Andreadis et al., (2009)` = "dashed",
-    `Ellis et al., (2010)` = "dashed"
+    `CP25 (This Study)` = "solid",
+     SA09 = "dashed",
+     E10 = "dashed",
+     R01 = "dashed"
   ))
+  # scale_linetype_manual(values = c(
+  #   Observed = "solid",
+  #   `This Study` = "solid",
+  #   `Roesch et al., (2001)` = "dashed",
+  #   `Andreadis et al., (2009)` = "dashed",
+  #   `Ellis et al., (2010)` = "dashed"
+  # ))
 p_main
 ggsave(
   # paste0(
@@ -189,18 +216,18 @@ dL_hourly_err_summary_by_event_type <- dL_hourly |>
 
 options(ggplot2.discrete.colour= c("#DF536B", "dodgerblue", "#F2B701", "#9467BD"))
 
-ggplot(dL_hourly_err_summary_by_event_type_id, aes(full_name, MB, colour = name)) + 
+ggplot(dL_hourly_err_summary_by_event_type_id, aes(name, MB, colour = name)) + 
   geom_boxplot() +
   # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = MB),
   #            shape = 18, size = 3, colour = "black") +  # mean points
   # geom_point(data = dL_hourly_err_summary_by_event_type, aes(x = name, y = RMSE),
   #            shape = 24, size = 3, colour = "black") +  # mean points
-  facet_wrap(~manual_event_type) +
+  facet_wrap(~manual_event_type, scales = 'free_y') +
   ylab('Mean Bias (mm)') +
   xlab(element_blank()) +
     theme(
     legend.position = "none",
-    axis.text.x = element_text(angle = 30, hjust = 1)  # rotate x labels
+    # axis.text.x = element_text(angle = 30, hjust = 1)  # rotate x labels
   )
 
 ggsave(
@@ -215,6 +242,99 @@ ggsave(
   height = 4,
   device = png
 )
+
+# bootstrap / jackknife test
+
+dL_hourly_wide <- dL_hourly %>%
+  pivot_wider(names_from = name, values_from = value)
+
+dL_hourly_for_boot <- dL_hourly_wide %>%
+  pivot_longer(cols = c(CP25, E10, SA09, R01),
+               names_to = "name",
+               values_to = "value") |> 
+   filter(!is.na(observed) & !is.na(value))
+
+compute_metrics <- function(obs, sim) {
+  diff <- obs - sim
+  MB <- mean(diff, na.rm = TRUE)
+  MAE <- mean(abs(diff), na.rm = TRUE)
+  RMSE <- sqrt(mean(diff^2, na.rm = TRUE))
+  NRMSE <- RMSE / mean(obs, na.rm = TRUE)
+  R <- cor(obs, sim, use = "complete.obs")
+  R2 <- R^2
+  c(MB = MB, MAE = MAE, RMSE = RMSE, NRMSE = NRMSE, R = R, R2 = R2)
+}
+
+library(boot)
+
+bootstrap_hourly <- function(df, n_boot = 1000) {
+  
+  df %>%
+    filter(!is.na(observed) & !is.na(value)) %>%
+    group_by(name, event_id) %>%
+    group_modify(~{
+      data <- .x
+      n <- nrow(data)
+      
+      if(n < 2) return(tibble(MB = NA, MB_lower = NA, MB_upper = NA,
+                               MAE = NA, MAE_lower = NA, MAE_upper = NA,
+                               RMSE = NA, RMSE_lower = NA, RMSE_upper = NA))
+      
+      boot_fun <- function(d, i) {
+        diff <- d$observed[i] - d$value[i]
+        c(MB = mean(diff), MAE = mean(abs(diff)), RMSE = sqrt(mean(diff^2)))
+      }
+      
+      boot_out <- boot(data, boot_fun, R = n_boot)
+      
+      # ensure t is a matrix
+      tmat <- as.matrix(boot_out$t)
+      if(is.null(colnames(tmat))) colnames(tmat) <- c("MB","MAE","RMSE")
+      
+      tibble(
+        MB = mean(tmat[,1]), MB_lower = quantile(tmat[,1], 0.025), MB_upper = quantile(tmat[,1], 0.975),
+        MAE = mean(tmat[,2]), MAE_lower = quantile(tmat[,2], 0.025), MAE_upper = quantile(tmat[,2], 0.975),
+        RMSE = mean(tmat[,3]), RMSE_lower = quantile(tmat[,3], 0.025), RMSE_upper = quantile(tmat[,3], 0.975)
+      )
+    })
+}
+
+boot_hourly_results <- bootstrap_hourly(dL_hourly_for_boot)
+
+jackknife_hourly <- function(df) {
+  
+  df %>%
+    filter(!is.na(observed) & !is.na(value)) %>%  # remove missing
+    group_by(name) %>%
+    group_modify(~{
+      data <- .x
+      n <- nrow(data)
+      
+      if(n < 2) return(tibble(MB = NA, MB_se = NA,
+                               MAE = NA, MAE_se = NA,
+                               RMSE = NA, RMSE_se = NA))
+      
+      # Leave-one-out jackknife
+      jack_stats <- t(sapply(1:n, function(i) {
+        d <- data[-i, ]
+        diff <- d$observed - d$value
+        c(MB = mean(diff), MAE = mean(abs(diff)), RMSE = sqrt(mean(diff^2)))
+      }))
+      
+      # Jackknife mean and standard error
+      mean_stats <- colMeans(jack_stats)
+      se_stats <- sqrt((n - 1) * colMeans((jack_stats - matrix(mean_stats, nrow=n, ncol=3, byrow=TRUE))^2))
+      
+      tibble(
+        MB = mean_stats["MB"], MB_se = se_stats["MB"],
+        MAE = mean_stats["MAE"], MAE_se = se_stats["MAE"],
+        RMSE = mean_stats["RMSE"], RMSE_se = se_stats["RMSE"]
+      )
+    })
+}
+
+
+jack_results <- jackknife_hourly(dL_hourly_for_boot)
 
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 

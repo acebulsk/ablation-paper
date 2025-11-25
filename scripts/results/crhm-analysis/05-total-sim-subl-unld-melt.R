@@ -100,22 +100,35 @@ subl_tf_smry_by_model_and_event <- subl_tf_smry |>
     ground = ground/total_ablation
   ) 
 
-ggplot(subl_tf_smry_by_model_and_event |>
-         pivot_longer(c(atmosphere, ground)),
-       aes(x = full_name, y = value, fill = name)) +
-  geom_bar(stat = 'identity') +
+
+
+ggplot(
+  subl_tf_smry_by_model_and_event |>
+    pivot_longer(c(atmosphere, ground)),
+  aes(x = group, y = value, fill = name)
+) +
+  geom_bar(stat = "identity", colour = "black") +
+  scale_fill_grey(
+    start = 0.8,  # light gray
+    end = 0.3,    # darker gray
+    name = NULL,
+    labels = c("Atmosphere", "Ground")
+  ) +
   facet_wrap(~manual_event_type, ncol = 4) +
-  labs(fill = element_blank(),
-       x = element_blank(),
-       y = 'Fraction of Ablation (-)') +
-  theme(legend.position = 'bottom', axis.text.x = element_text(angle = 30, hjust = 1))  # rotate x labels)
+  labs(
+    x = NULL,
+    y = "Fraction of Ablation (-)"
+  ) +
+  theme(
+    legend.position = "bottom",
+    # axis.text.x = element_text(angle = 30, hjust = 1)
+  )
 
 ggsave(#'figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
        'figs/final/figure11.png',
        width = 6,
-       height = 3.5,
+       height = 2.5,
 )
-
 
 subl_tf_smry_by_model <- subl_tf_smry |> 
   group_by(group) |> 

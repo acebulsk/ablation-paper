@@ -3,32 +3,6 @@
 
 # script to met stats over the lysimeter snow interception periods
 
-wind_threshold <- 999 # m/s
-
-temp_ax_lab <- 'Air Temperature (°C)'
-wind_ax_lab <- 'Wind Speed (m/s)'
-pretty_names_vect <- c(
-  temp_ax_lab,
-  "Relative Humidity (%)",
-  wind_ax_lab
-)
-
-var_name_dict <-
-  data.frame(
-    name = c('t', 'rh', 'u'),
-    pretty_name = pretty_names_vect
-  )
-
-event_met <- select_events_long |>
-  left_join(ft_met) |> 
-  left_join(mod_d_drip_smry_frac |> mutate(event_id = as.character(event_id)))
-
-event_df_long <- event_met |>
-  pivot_longer(c(t:u)) |>
-  left_join(var_name_dict, by = 'name') |>
-  mutate(pretty_name = factor(pretty_name, levels = c(pretty_names_vect))) |>
-  group_by(pretty_name)
-
 # histogram of 15-min met data ----
 event_df_long |>
   mutate(mean_value = mean(value, na.rm = TRUE)) |>  # Calculate the mean per group
@@ -43,8 +17,6 @@ ggsave('figs/crhm-analysis/met-figs/histogram_met_select_ablation_events.png', w
 
 # boxplots of met data group by manual event type ----
 
-manual_event_types <- read.csv('tbls/select_event_met_stats_maxmin_manual.csv')
-
 event_df_long |>
   inner_join(manual_event_types |> select(event_id, manual_event_type)) |> 
   group_by(pretty_name, manual_event_type, event_id) |> 
@@ -52,14 +24,16 @@ event_df_long |>
   ggplot(aes(x = manual_event_type)) +
   geom_boxplot(aes(y = value, group = event_id, fill = manual_event_type)) +
   # geom_point(aes(y = mean_value)) +
-  facet_wrap(~pretty_name, scales = 'free', nrow = 3) +
+  facet_wrap(~pretty_name, scales = 'free', nrow = 3, strip.position = 'left') +
   xlab('Event Type') +
   ylab(element_blank()) +
-  theme(legend.position = 'none')
+  theme(legend.position = 'none',
+    strip.background = element_blank(),
+    strip.placement = 'outside')
 
 ggsave(#'figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
        'figs/final/figure8.png',
-       width = 3.5, height = 6, device = png)
+       width = 4, height = 6, device = png)
 
 # bar graph of process fraction ----
 

@@ -15,7 +15,7 @@
 met_unld_no_melt_cold <- met_unld_no_melt |> 
   filter(
     #t < -6, 
-    # q_subl_veg < 0.1
+  # q_subl_veg < 0.3, # most canopy snow starts partitioning into sublimation after this threshold
   )
 
 met_unld_no_melt_tau_smry <- met_unld_no_melt_cold |> 
@@ -32,7 +32,10 @@ met_unld_no_melt_tau_smry <- met_unld_no_melt_cold |>
   filter(n >= 3,
          # tree_labs > 1,
          # tau_labs < 3, # tau transport potential above this threshold
-         sum_snow > 0.1)
+         sum_snow > 0.1) |> 
+  ungroup()
+
+         
 
 ## PLOT BINS ----
 
@@ -71,6 +74,7 @@ ggsave(
 
 # to recreate the interaction its just (coef * tree_labs * tau_labs)
 model_lm <- lm(q_unl_avg ~ tree_labs:tau_labs - 1, data = met_unld_no_melt_tau_smry)
+
 summary(model_lm)
 coefs_df <- broom::tidy(model_lm)  # Using broom to extract coefficients nicely
 coefs_df <- coefs_df |> 
@@ -82,14 +86,120 @@ coefs_df <- coefs_df |>
 
 # check adjusted R square, since we forced through the origin
 
-source('../../../Documents/code/stats/lm-through-the-origin/example-r2-from-lm-through-the-origin.R')
+# source('../../../Documents/code/stats/lm-through-the-origin/example-r2-from-lm-through-the-origin.R')
 
-model_lm_rsq_adj <- r_squared_no_intercept(model_lm)
+model_lm_rsq_adj <- compute_r2(model_lm)
+d_lm <- hydroGOF::dr(fitted(model_lm), met_unld_no_melt_tau_smry$q_unl_avg) |> round(2)
+
+aic <- AIC(model_lm) |> round(2) # cannot use AIC bc different n of binned response
+
 # r_squared_no_intercept_bad(model_lm)
 
 ### fit linear model on persecond unloading for CRHM ----
 model_lm_ps <- lm(q_unl_avg/(60*60) ~ tree_labs:tau_labs - 1, data = met_unld_no_melt_tau_smry)
 coefs_ps <- coef(model_lm_ps) |> as.numeric()
+
+### test assumptions
+tau_lm_checks <- check_lm_assumptions(model_lm)
+car::ncvTest(model_lm)
+coeftest(model_lm, vcov = vcovHC(model_lm, type = "HC1")) # checks model significance considering homoscedasticity is violated
+plot(model_lm, which = 1)
+
+plot(fitted(model_lm), resid(model_lm))
+
+# Handle heteroscadeticity first using weighted OLS .. this is not as good as the GLS
+
+# Step 2: estimate residual variance
+m_var <- lm(abs(resid(model_lm)) ~ fitted(model_lm))
+sigma_hat <- fitted(m_var)           # predicted residual magnitude
+w <- 1 / sigma_hat^2                  # weights = inverse of variance
+
+# Step 3: weighted regression
+model_wls <- lm(q_unl_avg ~ tree_labs:tau_labs - 1,
+                data = met_unld_no_melt_tau_smry,
+                weights = w)
+
+summary(model_wls)
+
+# check hetero
+resid_gls <- resid(model_wls)
+
+# Fitted values
+fitted_gls <- fitted(model_wls)
+
+plot(fitted_gls, resid_gls,
+     xlab = "Fitted values",
+     ylab = "Normalized residuals",
+     main = "GLS: Residuals vs Fitted")
+abline(h = 0, lty = 2)
+
+library(nlme)
+
+# varPower: Var(e) ∝ |fitted|^(2*delta)  (common for mean-dependent variance)
+gls_power <- gls(q_unl_avg ~ tree_labs:tau_labs - 1,
+                 data = met_unld_no_melt_tau_smry,
+                 method = "REML",
+                 weights = varPower(form = ~ fitted(.)))
+
+# varExp: exponential relationship Var(e) ∝ exp(2*delta*fitted)
+gls_exp <- gls(q_unl_avg ~ tree_labs:tau_labs - 1,
+               data = met_unld_no_melt_tau_smry,
+               method = "REML",
+               weights = varExp(form = ~ fitted(.)))
+
+# varIdent: different variances for groups (if variance differs by tau_labs bin)
+gls_ident <- gls(q_unl_avg ~ tree_labs:tau_labs - 1,
+                 data = met_unld_no_melt_tau_smry,
+                 method = "REML",
+                 weights = varIdent(form = ~1 | tree_labs))
+
+# create combined group factor
+met_unld_no_melt_tau_smry$group <- interaction(met_unld_no_melt_tau_smry$tree_labs,
+                                               met_unld_no_melt_tau_smry$tau_labs,
+                                               drop = TRUE)
+gls_group <- gls(q_unl_avg ~ tree_labs:tau_labs - 1,
+                 data = met_unld_no_melt_tau_smry,
+                 weights = varIdent(form = ~1 | group),
+                 method = "REML")
+resid_gls <- resid(gls_group, type = "normalized")
+fitted_gls <- fitted(gls_group)
+
+AIC(model_lm, gls_power, gls_exp, gls_group)     # lower AIC from gls power ... 
+anova(gls_power, gls_exp)                 # compare nested models if appropriate
+
+summary(gls_power)
+intervals(gls_power)   # CIs for coefficients and variance parameters
+
+tau_gls_checks <- check_gls_assumptions(gls_power)
+
+# Normalized residuals (account for variance structure)
+resid_gls <- resid(gls_power)
+
+# Fitted values
+fitted_gls <- fitted(gls_power)
+
+plot(fitted_gls, resid_gls,
+     xlab = "Fitted values",
+     ylab = "Normalized residuals",
+     main = "GLS: Residuals vs Fitted")
+abline(h = 0, lty = 2)
+
+hist(resid_gls, breaks = 15, main = "GLS normalized residuals", xlab = "Residuals")
+qqnorm(resid_gls)
+qqline(resid_gls, col = "red")
+shapiro.test(resid_gls)
+
+coefs <- coef(gls_power)
+
+# Create tibble
+coefs_df_glm <- tibble(
+  `tree_labs:tau_labs_Estimate` = formatC(coefs, format = "e", digits = 2),
+  `tree_labs:tau_labs_p_value` = 'NA for GLS'
+)
+
+model_gls_rsq_adj <- compute_r2(gls_power)
+d_gls <- hydroGOF::dr(fitted(gls_power), met_unld_no_melt_tau_smry$q_unl_avg) |> round(2)
+
 
 ### Fit a non linear least squares model ----
 
@@ -196,7 +306,7 @@ ex_tau_labs <- seq(0,1,0.001) |> round(3)
 ex_tree_labs <- c(1, 4, 13)
 tau_ex_df <- expand.grid(tau_labs = ex_tau_labs, tree_labs = ex_tree_labs)
 # tau_ex_df$new_predicted_y_nls <- predict(model_nls, newdata = tau_ex_df)
-tau_ex_df$new_predicted_y <- predict(model_lm, newdata = tau_ex_df)
+tau_ex_df$new_predicted_y <- predict(gls_power, newdata = tau_ex_df)
 
 stopifnot(all(met_unld_no_melt_tau_smry$tau_labs %in% ex_tau_labs))
 
@@ -226,11 +336,22 @@ ggplot(tau_plot_df, aes(x=x_var_value)) +
   labs(colour = 'Canopy Snow\nLoad (mm)') # avoids large space using regular way
 
 ggsave(
+  'figs/final/figure5.png',
+  width = 6,
+  height = 4,
+  device = png
+)
+
+ggsave(
   'figs/results/modelled_tau_unloading_w_obs.png',
   width = 6,
   height = 4,
   device = png
 )
+
+# OLS with heteroscedasticity -----
+
+## compute model error ----
 
 met_unld_no_melt_tau_smry$pred_q_unl <- 
   predict(model_lm, met_unld_no_melt_tau_smry)
@@ -259,12 +380,22 @@ q_unl_temp_model_err_tbl <- met_unld_no_melt_tau_smry |>
     MAE,
     `RMS Error`
   ) |> 
-  mutate(across(`Mean Bias`:`RMS Error`, round, digits = 3),
-         R2 = model_lm_rsq_adj |> round(2)) 
+  mutate(
+    across(`Mean Bias`:`RMS Error`, round, digits = 3),
+    R2 = model_lm_rsq_adj |> round(2),
+    # AIC = aic,
+    d = d_lm) 
 
 # Performance metrics reshaped to long format (convert values to character)
 perf_tbl <- q_unl_temp_model_err_tbl |> 
-  select(`Mean Bias (mm/hr)` = `Mean Bias`, `Mean Absolute Error (mm/hr)` = MAE, `Root Mean Square Error (mm/hr)` = `RMS Error`, `Coefficient of Determination ($R^2$)` = R2) |> 
+  select(
+    `Mean Bias (mm/hr)` = `Mean Bias`,
+    `Mean Absolute Error (mm/hr)` = MAE,
+    `Root Mean Square Error (mm/hr)` = `RMS Error`,
+    # `Akaike Information Criterion` = AIC,
+    `Coefficient of Determination` = R2,
+    `Coefficient of Agreement` = d
+  ) |> 
   pivot_longer(everything(), names_to = "Metric", values_to = "Value") |> 
   mutate(Value = as.character(Value))
 
@@ -280,7 +411,92 @@ coef_tbl <- tibble(
 )
 
 # Combine into final long format table
-long_tbl <- bind_rows(perf_tbl, coef_tbl)
+man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
+model_type <- tibble(Metric = 'Model', Value = 'OLS')
+eqn <- tibble(
+  Metric = 'Equation',
+  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid}  \\cdot a$"
+)
+long_tbl <- bind_rows(model_type, eqn) |> bind_rows(perf_tbl) |> bind_rows(coef_tbl) |> bind_rows(tau_lm_checks$table) |> rbind(man_corr_test)
 
 saveRDS(long_tbl,
-        'data/modelled_tau_unloading_error_table.rds')
+        'data/results/modelled_tau_unloading_error_table_hetero.rds')
+
+# GLS with variance modelled  -----
+
+## compute model error ----
+
+met_unld_no_melt_tau_smry$pred_q_unl <- 
+  predict(gls_power, met_unld_no_melt_tau_smry)
+
+met_unld_no_melt_tau_smry |> 
+  ggplot(aes(tau_labs, colour = factor(round(tree_labs)), group = factor(tree_labs))) + 
+  geom_point(aes(y = q_unl_avg)) +
+  geom_line(aes(y = pred_q_unl))
+
+## ERROR TABLE ----
+
+q_unl_temp_model_err_tbl <- met_unld_no_melt_tau_smry |> 
+  ungroup() |> 
+  mutate(diff = q_unl_avg - pred_q_unl) |> 
+  # group_by(tree_labs) |> 
+  summarise(
+    `Mean Bias` = mean(diff, na.rm = T),
+    # `Max Error` = diff[which.max(abs(diff))],
+    MAE = mean(abs(diff), na.rm = T),
+    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T))) |> 
+  # left_join(coefs_df, by = c('plot_name', 'name')) |> 
+  # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
+  select(
+    # `Mean Canopy Load (mm)` = tree_labs,
+    `Mean Bias`,
+    MAE,
+    `RMS Error`
+  ) |> 
+  mutate(
+    across(`Mean Bias`:`RMS Error`, round, digits = 3),
+    R2 = model_gls_rsq_adj |> round(2),
+    # AIC = aic,
+    d = d_gls) 
+
+# Performance metrics reshaped to long format (convert values to character)
+perf_tbl <- 
+  q_unl_temp_model_err_tbl |> 
+  select(
+    `Mean Bias (mm/hr)` = `Mean Bias`,
+    `Mean Absolute Error (mm/hr)` = MAE,
+    `Root Mean Square Error (mm/hr)` = `RMS Error`,
+    # `Akaike Information Criterion` = AIC,
+    `Coefficient of Determination` = R2,
+    `Coefficient of Agreement` = d
+  ) |> 
+  pivot_longer(everything(), names_to = "Metric", values_to = "Value") |> 
+  mutate(Value = as.character(Value))
+
+# Coefficient table in long format
+coef_tbl <- tibble(
+  Metric = c("Coefficient a", "Significance of a", "Coefficient b", "Significance of b"),
+  Value = c(
+    coefs_df_glm$`tree_labs:tau_labs_Estimate`,
+    coefs_df_glm$`tree_labs:tau_labs_p_value`,
+    'NA',
+    'NA'
+  )
+)
+
+# Combine into final long format table
+man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
+model_type <- tibble(Metric = 'Model', Value = 'GLS')
+eqn <- tibble(
+  Metric = 'Equation',
+  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid}  \\cdot a$"
+)
+
+long_tbl <- bind_rows(model_type, eqn) |>
+  bind_rows(perf_tbl) |> 
+  bind_rows(coef_tbl) |>
+  bind_rows(tau_gls_checks$table |> filter(Metric != 'Independence')) |>
+  rbind(man_corr_test)
+
+saveRDS(long_tbl,
+        'data/results/modelled_tau_unloading_error_table_gls.rds')

@@ -192,20 +192,112 @@ unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio)
 bin_unld_melt_lm <- lm(unld_melt_ratio ~ tree_labs, data = unld_melt_ratio)
 summary(bin_unld_melt_lm)
 saveRDS(bin_unld_melt_lm, 'data/results/lm_q_drip_vs_q_unld_melt.rds')
-# Extract the coefficient (slope) from the model
+
+# Extract the coef of determination (adjusted)
 r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
 
+# check assumptions 
+
+lm_asmp_check <- check_lm_assumptions(bin_unld_melt_lm)
+
+# Handle heteroscadeticity first using weighted OLS .. this is not as good as the GLS
+
+# Step 2: estimate residual variance
+m_var <- lm(abs(resid(bin_unld_melt_lm)) ~ fitted(bin_unld_melt_lm))
+sigma_hat <- fitted(m_var)           # predicted residual magnitude
+w <- 1 / sigma_hat^2                  # weights = inverse of variance
+
+# Step 3: weighted regression
+model_wls <- lm(unld_melt_ratio ~ tree_labs, data = unld_melt_ratio, weights = w)
+
+summary(model_wls)
+
+# check hetero
+resid_gls <- resid(model_wls)
+
+# Fitted values
+fitted_gls <- fitted(model_wls)
+
+plot(fitted_gls, resid_gls,
+     xlab = "Fitted values",
+     ylab = "Normalized residuals",
+     main = "GLS: Residuals vs Fitted")
+abline(h = 0, lty = 2)
+
+library(nlme)
+
+# varPower: Var(e) ∝ |fitted|^(2*delta)  (common for mean-dependent variance)
+# gls_power <- gls(unld_melt_ratio ~ tree_labs,
+#                  data = unld_melt_ratio,
+#                  method = "REML",
+#                  weights = varPower(form = ~ fitted(.)))
+
+# varExp: exponential relationship Var(e) ∝ exp(2*delta*fitted)
+gls_exp <- gls(unld_melt_ratio ~ tree_labs,
+               data = unld_melt_ratio,
+               method = "REML",
+               weights = varExp(form = ~ fitted(.)))
+
+# varIdent: different variances for groups (if variance differs by tau_labs bin)
+gls_ident <- gls(unld_melt_ratio ~ tree_labs,
+                 data = unld_melt_ratio,
+                 method = "REML",
+                 weights = varIdent(form = ~1 | tree_labs))
+
+# create combined group factor
+
+AIC(model_lm, model_wls, gls_exp, gls_ident)     # lower AIC from gls power ... 
+# anova(gls_power, gls_exp)                 # compare nested models if appropriate
+
+summary(gls_power)
+intervals(gls_power)   # CIs for coefficients and variance parameters
+
+resid_gls <- resid(gls_exp)
+
+# Fitted values
+fitted_gls <- fitted(gls_exp)
+
+plot(fitted_gls, resid_gls,
+     xlab = "Fitted values",
+     ylab = "Normalized residuals",
+     main = "GLS: Residuals vs Fitted")
+abline(h = 0, lty = 2)
+
+gls_checks <- check_gls_assumptions(gls_exp)
+r2_gls <- compute_r2(gls_exp)
+d_gls <- hydroGOF::dr(fitted(gls_exp), unld_melt_ratio$unld_melt_ratio) |> round(2)
+
 unld_melt_ratio$name <- ifelse(unld_melt_ratio$name == 'TB', 'Observed Melt', 'Simulated Melt')
+
+# add GLS model which handles hetero as well 
+
+pred_df <- data.frame(tree_labs = seq(min(unld_melt_ratio$tree_labs),
+                                      max(unld_melt_ratio$tree_labs),
+                                      length.out = 200))
+pred_df$gls_pred <- predict(gls_exp, newdata = pred_df)
+
 ggplot(unld_melt_ratio,
        aes(tree_labs, unld_melt_ratio)) +
   geom_point(aes(colour = name)) +
-  geom_smooth(aes(linetype = "Fit"), method = "lm", se = FALSE, colour = "black") +
-  annotate(
-      'label',
-      x = 4,
-      y = 4.5,
-      label = paste("R² =", round(r2_adj_lm, 2))
-  ) +
+    # First line: LM fit
+  geom_smooth(aes(linetype = "LM Fit"),
+              method = "lm",
+              se = FALSE,
+              colour = "black") +
+
+  # Second line: GLS fit
+  geom_line(data = pred_df,
+            aes(x = tree_labs,
+                y = gls_pred,
+                linetype = "GLS Fit"),
+            colour = "blue",
+            linewidth = 1) +
+  # annotate(
+  #     'label',
+  #     x = 4,
+  #     y = 4.5,
+  #     label = paste("R² =", round(r2_adj_lm, 2))
+  # ) +
   # geom_errorbar(aes(ymax = unld_melt_ratio_hi, ymin = unld_melt_ratio_lo), width = 1, alpha = 0.5)  +
   # lims(y = c(0, NA),
   #      x = c(0, NA)) +
@@ -253,6 +345,104 @@ ggsave(
   height = 4,
   device = png
 )
+
+# error table ----
+
+unld_melt_ratio$pred_unld_melt_ratio <- 
+  predict(gls_exp, unld_melt_ratio)
+
+unld_melt_ratio |> 
+  ggplot(aes(tree_labs)) + 
+  geom_point(aes(y = unld_melt_ratio)) +
+  geom_line(aes(y = pred_unld_melt_ratio))
+
+q_unl_temp_model_err_tbl <- unld_melt_ratio |> 
+  ungroup() |> 
+  mutate(diff = unld_melt_ratio - pred_unld_melt_ratio) |> 
+  # group_by(tree_labs) |> 
+  summarise(
+    `Mean Bias` = mean(diff, na.rm = T),
+    # `Max Error` = diff[which.max(abs(diff))],
+    MAE = mean(abs(diff), na.rm = T),
+    `RMS Error` = sqrt(mean(diff ^ 2, na.rm = T))) |> 
+  # left_join(coefs_df, by = c('plot_name', 'name')) |> 
+  # left_join(df_r2_adj, by = c('plot_name', 'name')) |> 
+  select(
+    # `Mean Canopy Load (mm)` = tree_labs,
+    `Mean Bias`,
+    MAE,
+    `RMS Error`
+  ) |> 
+  mutate(
+    across(`Mean Bias`:`RMS Error`, round, digits = 3),
+    R2 = r2_gls |> round(2),
+    # AIC = aic,
+    d = d_gls) 
+
+# Performance metrics reshaped to long format (convert values to character)
+perf_tbl <- q_unl_temp_model_err_tbl |> 
+  select(
+    `Mean Bias (mm/hr)` = `Mean Bias`,
+    `Mean Absolute Error (mm/hr)` = MAE,
+    `Root Mean Square Error (mm/hr)` = `RMS Error`,
+    # `Akaike Information Criterion` = AIC,
+    `Coefficient of Determination` = R2,
+    `Coefficient of Agreement` = d
+  ) |> 
+  pivot_longer(everything(), names_to = "Metric", values_to = "Value") |> 
+  mutate(Value = as.character(Value))
+
+# Coefficient table in long format
+gls_sum <- summary(gls_exp)$tTable
+gls_tab <- as_tibble(gls_sum, rownames = "term") |>
+  rename(
+    Estimate = Value,
+    StdError = `Std.Error`,
+    t_value = `t-value`,
+    p_value = `p-value`
+  )
+coefs_df_gls <- gls_tab |>
+  mutate(
+    Estimate = formatC(Estimate, format = "e", digits = 2),
+    p_value = ifelse(p_value < 0.05, "p < 0.05", "n.s.")
+  ) |>
+  select(term, Estimate, p_value)
+
+# intercept is insig. but keeping because makes sense to have no unloading at snow loads above 0
+coef_tbl <- tibble(
+  Metric = c(
+    "Coefficient a",
+    "Significance of a",
+    "Coefficient b",
+    "Significance of b"
+  ),
+  Value = c(
+    coefs_df_gls$Estimate[coefs_df_gls$term == "tree_labs"],
+    coefs_df_gls$p_value[coefs_df_gls$term == "tree_labs"],
+    coefs_df_gls$Estimate[coefs_df_gls$term == "(Intercept)"],
+    coefs_df_gls$p_value[coefs_df_gls$term == "(Intercept)"]
+  )
+)
+
+# Combine into final long format table
+man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
+model_type <- tibble(Metric = 'Model', Value = 'OLS')
+eqn <- tibble(
+  Metric = 'Equation',
+  Value  = "$R = a \\cdot L + b$"
+)
+long_tbl <- bind_rows(model_type, eqn) |>
+  bind_rows(perf_tbl) |>
+  bind_rows(coef_tbl) |> 
+  bind_rows(gls_checks$table |> filter(Metric != 'Independence')) |> 
+  rbind(man_corr_test)
+
+saveRDS(long_tbl,
+        'data/results/modelled_unld_melt_ratio_error_table.rds')
+
+write.csv(long_tbl,
+        'data/results/modelled_unld_melt_ratio_error_table.csv')
+
 # obs_mod_fltr_binned_sm <- obs_mod_fltr |>
 #   group_by(canopy_snowmelt_labs) |>
 #   summarise(melt = sum(delmelt_veg_int.1),

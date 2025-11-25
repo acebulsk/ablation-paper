@@ -15,7 +15,7 @@ tree_breaks <- seq(
   tree_step)
 
 # tree_breaks <- c(0, 5,20)
-tree_breaks <- c(0, 2, 6,  20) # works well for wind but breaks sublimation fn
+tree_breaks <- c(0, 2, 6,  20) 
 
 tree_labs_seq <- label_bin_fn(bins = tree_breaks)
 
@@ -75,8 +75,8 @@ ggplot(met_unld_no_melt_temp_smry,
     ymin = sd_low
   ), width = 0.2)  +
   geom_point(size = 3) +
-  ylab(bin_unl_ax_lab) +
-  xlab(bin_wnd_ax_lab) +
+  # ylab(bin_unl_ax_lab) +
+  # xlab(bin_wnd_ax_lab) +
   theme_bw() +
   # theme_bw(base_size = 14) +
   theme(legend.position = 'bottom') +
@@ -278,7 +278,7 @@ q_unl_temp_model_err_tbl <- met_unld_no_melt_wind_smry |>
 
 # Performance metrics reshaped to long format (convert values to character)
 perf_tbl <- q_unl_temp_model_err_tbl |> 
-  select(`Mean Bias (mm/hr)` = `Mean Bias`, `Mean Absolute Error (mm/hr)` = MAE, `Root Mean Square Error (mm/hr)` = `RMS Error`, `Coefficient of Determination ($R^2$)` = R2) |> 
+  select(`Mean Bias (mm/hr)` = `Mean Bias`, `Mean Absolute Error (mm/hr)` = MAE, `Root Mean Square Error (mm/hr)` = `RMS Error`, `Coefficient of Determination` = R2) |> 
   pivot_longer(everything(), names_to = "Metric", values_to = "Value") |> 
   mutate(Value = as.character(Value))
 

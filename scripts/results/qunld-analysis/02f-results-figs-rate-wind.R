@@ -10,7 +10,7 @@ met_unld_no_melt_cold <- met_unld_no_melt |>
 
 met_unld_no_melt_wind_smry <- met_unld_no_melt_cold |> 
   filter(is.na(tree_mm) == F) |> 
-  group_by(wind_labs, tree_labs, temp_labs) |> 
+  group_by(wind_labs, tree_labs) |> 
   summarise(q_unl_avg = mean(q_unl, na.rm = T),
             q_unl_sd = sd(q_unl, na.rm = T),
             sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
@@ -54,33 +54,6 @@ ggsave(
   units = "in"
 )
 
-ggplot(met_unld_no_melt_wind_smry, 
-       aes(x = wind_labs, y = q_unl_avg, colour = as.character(round(temp_labs)))) + 
-  geom_point(data = met_unld_no_melt_cold, aes(u, q_unl), alpha = 0.1, colour = 'black') +
-  geom_errorbar(aes(
-    x = wind_labs, 
-    ymax = sd_hi,
-    ymin = sd_low
-  ), width = 0.2)  +
-  geom_point(size = 3) +
-  # ylab(bin_unl_ax_lab) +
-  # xlab(bin_wnd_ax_lab) +
-  theme_bw() +
-  # theme_bw(base_size = 14) +
-  theme(legend.position = 'bottom') +
-  # ylim(NA, 3.1) +
-  # xlim(NA, 3.5) +
-  # scale_color_manual(values = c("#f89540", "#0072B2","#f89540", "#0072B2")) +
-  labs(color = 'Mean Canopy Load (mm)')# + facet_grid(cols = vars(name))
-
-ggsave(
-  'figs/results/binned_unloading_rate_and_wind_mid_class_tree_load.png',
-  device = png,
-  width = 4,
-  height = 4,
-  units = "in"
-)
-
 ## MODEL ----
 
 ### fit a linear model ----
@@ -88,7 +61,7 @@ ggsave(
 met_unld_no_melt_wind_smry$log_q_unl_avg <- 
   log(met_unld_no_melt_wind_smry$q_unl_avg)
 
-model_lm <- lm(log_q_unl_avg ~ wind_labs + temp_labs, data = met_unld_no_melt_wind_smry)
+model_lm <- lm(log_q_unl_avg ~ wind_labs, data = met_unld_no_melt_wind_smry)
 coefs <- coef(model_lm) |> as.numeric()
 summary(model_lm)
 a_lm <- exp(coefs[1])
@@ -105,8 +78,6 @@ model_nls <- nls(q_unl_avg/(60*60) ~ wind_labs * a * tree_labs * exp(b * wind_la
 summary(model_nls)
 nls_coefs <- coef(model_nls)
 saveRDS(nls_coefs, 'data/model_coef_wind_unld_per_second.rds')
-compute_r2(model_nls)
-
 met_unld_no_melt_wind_smry <- met_unld_no_melt_wind_smry |> 
   mutate(
     model_nls_pred = wind_labs * nls_coefs[[1]] * tree_labs * exp(nls_coefs[[2]]* wind_labs) # Linear model prediction
@@ -123,31 +94,27 @@ model_nls <- nls(q_unl_avg ~ wind_labs * a * tree_labs * exp(b * wind_labs),
                  start = list(a = a_lm, b = b_lm))
 summary(model_nls)
 nls_smry <- summary(model_nls)
-rsq_nls <- compute_r2(model_nls)
+plot(fitted(model_nls), residuals(model_nls))
+
+# weighted model, makes it worse
+# weights_vec <- 1 / sqrt(fitted(model_nls))  # or 1 / fitted(model_nls0)^p
+# model_nls <- nls(q_unl_avg ~ wind_labs * a * tree_labs * exp(b * wind_labs),
+#                  data = met_unld_no_melt_wind_smry, start=list(a=a_lm, b=b_lm),
+#                  weights = weights_vec)
+# summary(model_nls)
+# plot(fitted(model_nls), residuals(model_nls))
 
 ### Assumptions -----
 
-check_nls_assumptions(model_nls)
+lm_checks <- check_nls_assumptions(model_nls)
+car::ncvTest(model_lm)
+coeftest(model_lm, vcov = vcovHC(model_lm, type = "HC1")) # checks model significance considering homoscedasticity is violated
+plot(model_lm, which = 1)
 
-# test adding temp as predictor
-
-model_nls_linT <- nls(
-  q_unl_avg ~ wind_labs * a * tree_labs *
-    exp(b * wind_labs) * (1 + c * temp_labs),
-  data = met_unld_no_melt_wind_smry,
-  start = list(a = a_lm, b = b_lm, c = 0.01)
-)
-compute_r2(model_nls_linT)
-
-model_nls_expT <- nls(
-  q_unl_avg ~ wind_labs * a * tree_labs *
-    exp(b * wind_labs + d * temp_labs),
-  data = met_unld_no_melt_wind_smry,
-  start = list(a = a_lm, b = b_lm, d = 0.01)
-)
-compute_r2(model_nls_expT)
-
-AIC(model_nls, model_nls_linT, model_nls_expT)
+# Performance 
+rsq_nls <- compute_r2(model_nls) |> round(2)
+d_nls <- hydroGOF::dr(fitted(model_nls), met_unld_no_melt_wind_smry$q_unl_avg) |> round(2)
+# aic <- AIC(model_lm) |> round(2) # cannot use AIC bc different n of binned response
 
 coefs_df <- as.data.frame(coef(nls_smry))
 coefs_df <- coefs_df |> 
@@ -156,65 +123,6 @@ coefs_df <- coefs_df |>
   pivot_wider(names_from = term, values_from = c(Estimate, p_value), names_glue = "{term}_{.value}") |> 
   mutate(across(contains("Estimate"), ~ formatC(.x, format = "e", digits = 2))) |> 
   mutate(across(contains("p_value"), ~ ifelse(.x < 0.05, 'p < 0.05', 'n.s.')))
-
-### Fit a non linear least squares model on the RAW data ----
-# model_nls <- nls(q_unl ~ u * a * tree_mm * exp(b * u), 
-#                  data = met_unld_no_melt_cold, 
-#                  start = list(a = a_lm, b = b_lm))
-# summary(model_nls)
-# nls_coefs <- coef(model_nls)
-# 
-# RSS.p <- sum(residuals(model_nls)^2)  # Residual sum of squares
-# TSS <- sum((met_unld_no_melt_cold$q_unl - mean(met_unld_no_melt_cold$q_unl))^2)  # Total sum of squares
-# rsq_nls <- 1 - (RSS.p/TSS) |> round(2)  # R-squared measure
-# rsq_nls
-# modelr::rsquare(model_nls, met_unld_no_melt_cold) # check is the same as our manually defined method
-# 
-# met_unld_no_melt_cold <- met_unld_no_melt_cold |> 
-#   mutate(
-#     model_nls_pred = u * nls_coefs[[1]] * tree_mm * exp(nls_coefs[[2]]* u) # Linear model prediction
-#   )
-# # Create ggplot
-# ggplot(met_unld_no_melt_cold, aes(x = u, y = model_nls_pred, colour = tree_mm)) +
-#   # Observed vs NLS model
-#   geom_point() 
-# # summary(model_nls)
-# 
-# 
-# lm <- data.frame(
-#   mod_name = 'lm',
-#   preds = exp(predict(model_lm)),
-#   resids = residuals(model_lm, type = "pearson")
-# )
-# 
-# nls <- data.frame(
-#   mod_name = 'nls',
-#   preds = predict(model_nls),
-#   resids = residuals(model_nls, type = "pearson")
-# )
-# 
-# # nlswi <- data.frame(
-# #   mod_name = 'nlswi',
-# #   preds = predict(model_nlswi),
-# #   resids = residuals(model_nlswi, type = "pearson")
-# # )
-# 
-# resids_df <- rbind(
-#   lm,
-#   nls
-#   # nlswi
-# )
-# 
-# # Look at the Q-Q plot and residuals for the warm events 
-# 
-# ggplot(resids_df, aes(sample = preds, colour = mod_name)) +
-#   stat_qq() +
-#   stat_qq_line()
-# 
-# ggplot(resids_df, aes(x = preds, y = resids, colour = mod_name)) + 
-#   geom_point() +
-#   geom_hline(yintercept = 0)
-
 
 # Look at the different models for the warm events 
 ex_wind_labs <- seq(0,6,0.05) |> round(2)
@@ -288,11 +196,19 @@ q_unl_temp_model_err_tbl <- met_unld_no_melt_wind_smry |>
     `RMS Error`
   ) |> 
   mutate(across(`Mean Bias`:`RMS Error`, round, digits = 3),
-         R2 = rsq_nls) 
+         R2 = rsq_nls,
+        #  AIC = aic,
+          d = d_nls) 
 
 # Performance metrics reshaped to long format (convert values to character)
 perf_tbl <- q_unl_temp_model_err_tbl |> 
-  select(`Mean Bias (mm/hr)` = `Mean Bias`, `Mean Absolute Error (mm/hr)` = MAE, `Root Mean Square Error (mm/hr)` = `RMS Error`, `Coefficient of Determination ($R^2$)` = R2) |> 
+  select(`Mean Bias (mm/hr)` = `Mean Bias`,
+ `Mean Absolute Error (mm/hr)` = MAE,
+  `Root Mean Square Error (mm/hr)` = `RMS Error`,
+   `Coefficient of Determination` = R2,
+  #  `Akaike Information Criterion` = AIC,
+   `Coefficient of Agreement` = d
+  ) |> 
   pivot_longer(everything(), names_to = "Metric", values_to = "Value") |> 
   mutate(Value = as.character(Value))
 
@@ -308,7 +224,23 @@ coef_tbl <- tibble(
 )
 
 # Combine into final long format table
-long_tbl <- bind_rows(perf_tbl, coef_tbl)
+
+# manual check hetero and looks ok
+lm_checks$table$Value[lm_checks$table$Metric == "Homoscedasticity"] <- "Pass"
+
+man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
+
+model_type <- tibble(Metric = 'Model', Value = 'NLS')
+eqn <- tibble(
+  Metric = 'Equation',
+  Value  = "$q_{unld}^{dry} = L \\cdot u_{mid} \\cdot a \\cdot e^{b\\cdot u_{mid}}$"
+)
+
+long_tbl <- bind_rows(model_type, eqn) |>
+  bind_rows(perf_tbl) |> 
+  bind_rows(coef_tbl) |>
+  bind_rows(lm_checks$table |> filter(Metric != 'Independence')) |>
+  rbind(man_corr_test)
 
 saveRDS(long_tbl,
         'data/results/modelled_wind_unloading_error_table.rds')

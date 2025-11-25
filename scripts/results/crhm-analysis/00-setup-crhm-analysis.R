@@ -1,5 +1,6 @@
 # Load required inputs and data for CRHM analysis
 library(tidyverse)
+library(ggpattern)
 
 options(ggplot2.discrete.colour= palette.colors(palette = "R4"))
 # options(ggplot2.discrete.fill= palette.colors(palette = "R4")[2:6])
@@ -35,6 +36,7 @@ run_tag_updt <- "init_run_cansnobal_v_1_1_unld_ratios_no_origin3"
 run_tag_updt <- "shear_stress_unld_v4" # on commit id 39f9a516c819d258530ad5dbba7a5e053bcd8bb4
 run_tag_updt <- "cansnobal_v_2_0_run8"
 run_tag_updt <- "store_liquid_new_evap6"
+run_tag_updt <- "new_shear_stress_melt_unld_par_no_hetero" # after permission to defense adjustments to shear stress and melt functions to handle heteroscadesticity
 
 to_long_tb <- function(unloading_start_date, end_date, event_id, quality, TB1_flag, TB2_flag, TB3_flag, TB4_flag){
   datetime <- seq(unloading_start_date, end_date, 900)

@@ -31,7 +31,7 @@ netall CRHM 03/22/16
 evap_Resist CRHM 11/21/16
 tsurface#2 CRHM 12/14/16
 CanopyVectorBased#3 CRHM 11/12/24
-CanSnobalCRHM#1 CRHM 02/07/25
+CanopySnowBalanceCRHM#1 CRHM 02/07/25
 XG CRHM 06/09/17
 pbsmSnobal CRHM 01/05/17
 SnobalCRHM#1 CRHM 11/21/16
@@ -128,7 +128,7 @@ CanopyVectorBased B_canopy <0 to 0.2>
 CanopyVectorBased CanopyClearing <0 to 2>
 0 
 CanopyVectorBased CanopyWindSwitchIP <0 to 1>
-1
+2
 CanopyVectorBased Gap_diameter <10 to 1000>
 10 
 CanopyVectorBased Cc <0 to 1>
@@ -143,17 +143,17 @@ CanopyVectorBased Zref <0.01 to 100>
 4.32 
 CanopyVectorBased Zvent <0 to 1>
 0.75 
-CanSnobalCRHM Lmax <0 to 100>
+CanopySnowBalanceCRHM Lmax <0 to 100>
 50
-CanSnobalCRHM max_liq_veg_frac <0 to 50>
+CanopySnowBalanceCRHM max_liq_veg_frac <0 to 50>
 0.01
-CanSnobalCRHM Albedo_vegsnow <0.6 to 0.9>
+CanopySnowBalanceCRHM Albedo_vegsnow <0.6 to 0.9>
 0.8
-CanSnobalCRHM SW_to_LW_fn <0.0001 to 0.5>
+CanopySnowBalanceCRHM SW_to_LW_fn <0.0001 to 0.5>
 0.2
-CanSnobalCRHM CanopyWindSwitchCanSno <0 to 1>
-1
-CanSnobalCRHM MassUnloadingSwitch <0 to 2>
+CanopySnowBalanceCRHM CanopyWindSwitchCanSno <0 to 1>
+2
+CanopySnowBalanceCRHM MassUnloadingSwitch <0 to 2>
 0
 evap_Resist evap_type <0 to 2>
 0 
@@ -485,21 +485,21 @@ CanopyVectorBased intercepted_snow 1
 CanopyVectorBased intercepted_rain 1
 CanopyVectorBased throughfall_snow 1
 CanopyVectorBased throughfall_rain 1
-CanSnobalCRHM T_s_veg 1
-CanSnobalCRHM snow_h2o_veg 1
-CanSnobalCRHM liq_h2o_veg 1
-CanSnobalCRHM m_s_veg 1
-CanSnobalCRHM delsub_veg_int 1
-CanSnobalCRHM delevap_veg_int 1
-CanSnobalCRHM delmelt_veg_int 1
-CanSnobalCRHM deldrip_veg_int 1
-CanSnobalCRHM delunld_int 1 
-CanSnobalCRHM delunld_wind_int 1
-CanSnobalCRHM delunld_melt_int 1 
-CanSnobalCRHM delunld_subl_int 1 
-CanSnobalCRHM net_rain 1 
-CanSnobalCRHM net_snow 1 
-CanSnobalCRHM net_p 1 
+CanopySnowBalanceCRHM T_s_veg 1
+CanopySnowBalanceCRHM snow_h2o_veg 1
+CanopySnowBalanceCRHM liq_h2o_veg 1
+CanopySnowBalanceCRHM m_s_veg 1
+CanopySnowBalanceCRHM delsub_veg_int 1
+CanopySnowBalanceCRHM delevap_veg_int 1
+CanopySnowBalanceCRHM delmelt_veg_int 1
+CanopySnowBalanceCRHM deldrip_veg_int 1
+CanopySnowBalanceCRHM delunld_int 1 
+CanopySnowBalanceCRHM delunld_wind_int 1
+CanopySnowBalanceCRHM delunld_melt_int 1 
+CanopySnowBalanceCRHM delunld_subl_int 1 
+CanopySnowBalanceCRHM net_rain 1 
+CanopySnowBalanceCRHM net_snow 1 
+CanopySnowBalanceCRHM net_p 1 
 SnobalCRHM SWE 1 
 SnobalCRHM snowmelt_int 1
 ######

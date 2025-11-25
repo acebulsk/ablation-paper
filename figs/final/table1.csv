@@ -1,0 +1,5 @@
+﻿Name,Study,$q_{unld}^{dry}$,$q_{unld}^{melt}$
+CP25 ,This study,"$f(\text{snow load},\newline \text{wind shear stress})$, Eq. 12","$f(\text{snow load},\newline \text{canopy snowmelt rate})$, Eq. 14"
+E10 ,"Ellis et al., (2010); Hedstrom & Pomeroy (1998)","$f(\text{snow load})$, Eq. 5 in Hedstrom & Pomeroy (1998)","$f($ice-bulb temp.$)$, see description following Eq. 28 in Cebulski & Pomeroy (2025a)"
+SA09 ,"Storck et al., (2002); Andreadis et al., (2009)",NA,"$f(\text{canopy snowmelt rate})$, Eq. 33 in Andreadis et al., (2009)"
+R01 ,"Roesch et al., (2001)","$f(\text{snow load}, \text{wind speed})$","$f(\text{snow load, air temp.})$"

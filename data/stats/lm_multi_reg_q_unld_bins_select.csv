@@ -1,0 +1,6 @@
+"","Model Name","intercept","L","u","q_melt","q_subl","T_a","tau","Adj_R2","AIC","Homoscedasticity","Normality","Independence","Multicollinearity"
+"1","M1","-0.11","0.02*","0.08*","0.40*","—","—","—",0.79,-12.8,"hetero","non-normal","ok","ok"
+"2","M4","-0.08","0.04*","—","0.39*","—","—","0.75*",0.71,5.5,"ok","ok","correlated","ok"
+"3","M7","0.02","0.02*","—","0.37*","—","-0.00","0.77*",0.53,2.2,"ok","non-normal","ok","ok"
+"4","M10","-0.02","0.03*","—","0.37*","0.06","—","0.97*",0.45,-9.7,"hetero","non-normal","correlated","ok"
+"5","M24","0.45*","0.00","—","—","-0.72","—","—",0.05,33.7,"ok","non-normal","correlated","ok"

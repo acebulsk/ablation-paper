@@ -5,18 +5,18 @@ format:
   #   reference-doc: ../config/word_template_hp.docx
   #   number-sections: true
   #   toc: false
-  pdf:
-    colorlinks: false
-    keep-tex: true
-    number-sections: true
-    toc: false
-    fig-pos: H # makes figs appear in the location specified. without this they sometimes appear in the middle of a paragraph.
-    linestretch: 1.5 # set inline instead
-    header-includes: |
-      \renewcommand{\thefigure}{S.\arabic{figure}}
-      \setcounter{figure}{0}
-      \renewcommand{\thetable}{S.\arabic{table}}
-      \setcounter{table}{0}
+ pdf:
+   colorlinks: false
+   keep-tex: true
+   number-sections: true
+   toc: false
+   fig-pos: H # makes figs appear in the location specified. without this they sometimes appear in the middle of a paragraph.
+   linestretch: 1.5 # set inline instead
+   header-includes: |
+     \renewcommand{\thefigure}{S.\arabic{figure}}
+     \setcounter{figure}{0}
+     \renewcommand{\thetable}{S.\arabic{table}}
+     \setcounter{table}{0}
 editor: source
 bibliography: ../../papers/bibtex/library.bib
 csl: '../../papers/bibtex/csl-styles/apa-disable-disambiguate-add-names.csl'
@@ -28,16 +28,11 @@ Alex C. Cebulski^1^ (ORCID ID - 0000-0001-7910-5056)
 
 John W. Pomeroy^1^ (ORCID ID - 0000-0002-4782-7457)
 
-Bill C. Floyd^2,3^
-
 ^1^Centre for Hydrology, University of Saskatchewan, Canmore, Canada\
-^2^Ministry of Forests, Provincial Government of British Columbia, Nanaimo, British Columbia\
-^3^Coastal Hydrology Research Lab, Vancouver Island University, Nanaimo, British Columbia
 
 **Corresponding Author:** A.C. Cebulski, alex.cebulski@usask.ca
 
 \pagebreak
-
 
 ```{r, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.align='center')
@@ -50,42 +45,84 @@ source('scripts/get-manuscript-values.R')
 
 ## Existing Snow Interception Theories
 
-![The @Roesch2001 model of unloading rate with increasing wind speed and canopy snow load (left, R01) and the @Hedstrom1998 model of unloading rate with increasing snow load (right, E10). Both examples have a constant air temperature of -10°C to disable the influence of warming on unloading and drip.](figs/final/figureS1.png){#fig-unl-ex-wind}
+![The @Roesch2001 model of unloading rate with increasing wind speed and canopy snow load (left, R01) and the @Hedstrom1998a model of unloading rate with increasing snow load (right, E10). Both examples have a constant air temperature of -10°C to disable the influence of warming on unloading and drip.](figs/final/figureS1.png){#fig-unl-ex-wind}
 
-![The @Ellis2010 and @Floyd2012 (E10) model of unloading and drip rate (left) and the @Roesch2001 (R01) model of unloading rate (right) with increasing air temperature. Wind speed for the R01 parameterisation was set to zero.](figs/final/figureS2.png){#fig-unl-ex-temp}
+![The @Ellis2010 and @Floyd2012b (E10) model of unloading and drip rate (left) and the @Roesch2001 (R01) model of unloading rate (right) with increasing air temperature. Wind speed for the R01 parameterisation was set to zero.](figs/final/figureS2.png){#fig-unl-ex-temp}
 
-## Evaluation of Unloading Relationships
+## Unloading Relationships
 
-```{r tbl-all-mod-summary, echo=FALSE}
-#| label: tbl-q-unld-bins-full
-#| tbl-cap: "Summary of multiple linear regression results evaluating all combinations of predictor variables for canopy snow unloading including: canopy load ($L$), wind speed ($u$), canopy snowmelt rate ($q_{melt}$), canopy snow sublimation rate ($q_{subl}$), and air temperature ($T_a$). Columns L to Ta show the coefficient estimate for each respective term, and the significance of each term is shown in brackets. Significance codes: * = p < 0.05; ns = not significant (p > 0.05). The models are ranked by their corresponding AIC value."
-#| tbl-colwidths: [11, 13, 13, 14, 12, 14, 8, 8]
+Canopy snow unloading measured by the subcanopy lysimeters over all observed unloading events shows some of the melt-driven and dry-snow unloading process emergence. Some diverging process emergence is also illustrated by increased unloading during low wind periods driven by increased canopy snowmelt rates, increased unloading resulting from negative sublimation rates due to the association with melt, and increased unloading with sublimation up until 0.3 mm/hr possibly due to the association with wind speed.  
 
+![Scatter plots showing the mean unloading rate (mm hr^-1^) for differing bins of air temperature (°C), ice-bulb temperature depression (°C), shear stress (N m^-2^), canopy snowmelt (mm hr^-1^), canopy snow sublimation (mm hr^-1^), and wind speed (m s^-1^). Note: unloading was measured by the subcanopy lysimeters, air temperature and wind speed were measured at FT station, canopy snowmelt and sublimation were calculated using CRHM. The canopy snow load corresponds to the midpoint of each bin (0–2, 2–6, 6–20 kg m^-2^).](figs/final/figure4.png){#fig-q-unld-all-bins width=100%}
 
-lm_multi_reg_tbl |> 
-  select(`Model Name`,
-         intercept,
-         L,
-         u,
-         q_melt,
-         q_subl,
-         tau,
-         # T_ib_dep,
-         T_a,
-         Adj_R2,
-         AIC) |>
-  knitr::kable(col.names = c(
-  'Model Name',
-  'Intercept',
-  '$L$',
-  '$u$',
-  '$q_{melt}$',
-  '$q_{subl}$',
-  '$\\tau$',
-  # '$T_a - T_{ice}$',
-  '$T_a$',
-  '$R^2$',
-  'AIC'
-))
+Statistics testing whether melt and non-melt periods could be treated as originating from the same population, the distributions of air temperature, wind speed, relative humidity, canopy snow unloading, melt, and sublimation were compared between the two periods.
+
+```{r, echo=FALSE}
+#| label: tbl-melt-non-melt-distributions
+#| tbl-cap: "Summary of Kolmogorov–Smirnov (KS) and Wilcoxon signed-rank tests comparing the distributions of air temperature, wind speed, relative humidity, canopy snow unloading, melt, and sublimation between melt and non-melt periods."
+
+melt_non_melt_var_dist_test |> 
+  select(-cliff_delta) |> 
+  rename(`Median Diff.` = median_diff) |> 
+  knitr::kable()
 ```
 
+## Dry Snow Unloading
+
+The correlation between predictor variables was assessed using the Pearson and Spearman correlation coefficients over the non-canopy snowmelt periods:
+
+![Pearson correlations are shown in the upper triangle; Spearman correlations in the lower triangle over periods without simulated canopy snowmelt. Bold values indicate |r| > 0.7.](figs/final/figureS3.png){#fig-non-melt-cor width=100%}
+
+The full regression statistics and assumption tests over periods without canopy snowmelt are shown below.
+
+::: {.landscape}
+```{r, echo=FALSE}
+#| label: tbl-dry-snow-reg-full
+#| tbl-cap: "Regression statistics for dry snow unloading with various predictor combinations. Coefficients are shown for hourly unloading, derived using ordinary least squares (OLS), non-linear least squares (NLS), and generalised least squares (GLS) regression. Error metrics include mean bias (MB), root-mean-squared error (RMSE), coefficient of determination ($R^2$), and index of agreement ($d$). Row names (a) and (b) indicate coefficients, with p(a) and p(b) as their p-values. P-values are not provided for GLS models due to heteroscedasticity violating t-distribution assumptions. The HS row reports the Breusch-Pagan test for homoscedasticity, while the Norm row reports the Shapiro-Wilk test assessing residual normality. Equation variables include: dry snow unloading ($q_{unld}^{dry}$, mm hr^-1^), canopy snow load ($L$, mm), mid canopy shear stress ($\\tau_{mid}$, N m^-2^), mid canopy wind speed ($u_{mid}$, m s^-1^), canopy snow sublimation rate ($q_{subl}^{veg}$ mm hr^-1^), air temperatue ($T_a$, °C), and ice-bulb temperature ($T_i$, °C)."
+#| tbl-colwidths: [10, 30, 20, 20, 20]
+
+dry_snow_unld_stats |> 
+  filter(!Metric %in% c('Linear/Non-linear Correlation')) |> 
+  kable(
+    col.names = c("", colnames(dry_snow_unld_stats)[-1]),
+    escape = FALSE
+  )
+```
+:::
+
+# Melt Driven Unloading 
+
+![Pearson correlations are shown in the upper triangle; Spearman correlations in the lower triangle over periods with simulated canopy snowmelt. Bold values indicate |r| > 0.7.](figs/final/figureS4.png){#fig-non-melt-cor width=100%}
+
+The full regression statistics and assumption test results for periods with canopy snowmelt are shown below.
+
+::: {.landscape}
+```{r, echo=FALSE}
+#| label: tbl-melt-reg-full
+#| tbl-cap: "Regression statistics for melt-induced unloading with various predictor combinations using ordinary least squares (OLS). Coefficients are shown for hourly unloading. Error metrics include mean bias (MB), root-mean-squared error (RMSE), coefficient of determination ($R^2$), and index of agreement ($d$). Row names (a) and (b) indicate coefficients, with p(a) and p(b) as their p-values. The HS row reports the Breusch-Pagan test for homoscedasticity, while the Norm row reports the Shapiro-Wilk test assessing residual normality."
+#| tbl-colwidths: [10, 30, 20, 20, 20]
+
+
+melt_unld_stats |> 
+  filter(!Metric %in% c('Linear/Non-linear Correlation')) |> 
+   kable(
+    col.names = c("", colnames(melt_unld_stats)[-1]),
+    escape = FALSE
+  )
+```
+:::
+
+The output statistics from the unloading to melt ratio regression test are shown below.
+
+```{r, echo=FALSE}
+#| label: tbl-unld-melt-ratio
+#| tbl-cap: "Regression statistics evaluating the linear relationships between canopy snow unloading to melt ratio and snow load using generalised least squares (GLS). Coefficients are shown for hourly unloading. Error metrics include mean bias (MB), root-mean-squared error (RMSE), coefficient of determination ($R^2$), and index of agreement ($d$). Row names (a) and (b) indicate coefficients, with p(a) and p(b) as their p-values. The HS row reports the Breusch-Pagan test for homoscedasticity, while the Norm row reports the Shapiro-Wilk test assessing residual normality."
+
+unld_melt_ratio_stats |> 
+  filter(!Metric %in% c('Linear/Non-linear Correlation')) |> 
+  knitr::kable()
+```
+
+\pagebreak
+
+# References

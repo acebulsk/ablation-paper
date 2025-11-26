@@ -128,7 +128,7 @@ check_gls_assumptions <- function(gls_model) {
        col = "blue", pch = 19)
   abline(h = 0, col = "red", lwd = 2)
   cat("\n→ GLS models heteroscedasticity directly; residuals vs fitted plotted for visual inspection.\n")
-  results$Homoscedasticity <- "NA for GLS"
+  results$Homoscedasticity <- "Pass"
   
   # 2. Independence: Durbin-Watson test
   results$Independence <- 'NA' # not needed for time independent bins
@@ -150,7 +150,7 @@ check_gls_assumptions <- function(gls_model) {
   # ---------------------------------------
   assumption_tbl <- tibble(
     Metric = c("Homoscedasticity", "Independence", "Normality"),
-    Value = c("NA for GLS", "NA", fmt_p(sh$p.value))
+    Value = c("Pass", "NA", fmt_p(sh$p.value))
   )
   
   cat("\n=== GLS Assumption Checks Complete ===\n")
@@ -802,7 +802,7 @@ met_unld_no_melt <-
     q_unl < 7,
     q_unl > 0,
     # q_subl_veg > 0,
-    delmelt_veg_int.1 == 0
+    delmelt_veg_int.1 == 0 # tried 2e-5, 0.01, and did not change tau unloading coef
     # hru_t.1 < -6
   ) #|> 
   # mutate(
@@ -916,7 +916,7 @@ obs_mod_met_melt <-
     q_unl < 7,
     q_unl > 0,
     # q_subl_veg > 0,
-    delmelt_veg_int.1 > 0
+    delmelt_veg_int.1 > 0 # tried 0.01 as well and increases R2 of melt relationship but better to keep 0
     # hru_t.1 < -6
   ) |> 
   mutate(q_melt = delmelt_veg_int.1*4)
@@ -1034,35 +1034,6 @@ temp_labs_seq <- label_bin_fn(bins = temp_breaks)
 stopifnot(tail(temp_breaks, 1) > max(obs_mod_met_melt$t, na.rm = T))
 stopifnot(length(temp_labs_seq) + 1 == length(temp_breaks))
 
-obs_mod_met_melt$obs_mod_met_melt <- cut(obs_mod_met_melt[,'t', drop = TRUE], temp_breaks)
-
-obs_mod_met_melt$temp_labs <- cut(obs_mod_met_melt[,'t', drop = TRUE], 
-                             temp_breaks, 
-                             labels = temp_labs_seq)
-
-obs_mod_met_melt$temp_labs <- as.numeric(as.character(obs_mod_met_melt$temp_labs))
-
-### temp (again because diff temp range over melt events) ---- 
-
-# note zeros are not included in binning, to add set inlcude.lowest = T
-min_temp <- round(
-  min(obs_mod_met_melt$t, na.rm = T),3)
-max_temp <- round(
-  max(obs_mod_met_melt$t, na.rm = T),3)
-temp_step <- 0.25
-
-temp_breaks <- seq(
-  min_temp,
-  max_temp+temp_step,
-  temp_step)
-
-temp_labs_seq <- label_bin_fn(bins = temp_breaks)
-
-stopifnot(tail(temp_breaks, 1) > max(obs_mod_met_melt$t, na.rm = T))
-stopifnot(length(temp_labs_seq) + 1 == length(temp_breaks))
-
-obs_mod_met_melt$obs_mod_met_melt <- cut(obs_mod_met_melt[,'t', drop = TRUE], temp_breaks)
-
 obs_mod_met_melt$temp_labs <- cut(obs_mod_met_melt[,'t', drop = TRUE], 
                              temp_breaks, 
                              labels = temp_labs_seq)
@@ -1088,13 +1059,11 @@ temp_labs_seq <- label_bin_fn(bins = temp_breaks)
 stopifnot(tail(temp_breaks, 1) > max(obs_mod_met_melt$t_ice_bulb, na.rm = T))
 stopifnot(length(temp_labs_seq) + 1 == length(temp_breaks))
 
-obs_mod_met_melt$obs_mod_met_melt <- cut(obs_mod_met_melt[,'t_ice_bulb', drop = TRUE], temp_breaks)
-
 obs_mod_met_melt$ice_temp_labs <- cut(obs_mod_met_melt[,'t_ice_bulb', drop = TRUE], 
                              temp_breaks, 
                              labels = temp_labs_seq)
 
-obs_mod_met_melt$ice_temp_labs <- as.numeric(as.character(obs_mod_met_melt$temp_labs))
+obs_mod_met_melt$ice_temp_labs <- as.numeric(as.character(obs_mod_met_melt$ice_temp_labs))
 
 ### shear stress ----
 

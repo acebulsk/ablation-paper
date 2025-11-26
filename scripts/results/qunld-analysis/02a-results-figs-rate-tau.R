@@ -325,7 +325,7 @@ ggplot(tau_plot_df, aes(x=x_var_value)) +
                 aes(
                   ymax = sd_hi,
                   ymin = sd_low,
-                  width = 0.05,
+                  width = 0.025,
                   colour = as.character(round(tree_labs))
                 )) +
   geom_point(aes(y = q_unl_avg, colour = as.character(round(tree_labs))),

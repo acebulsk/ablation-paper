@@ -241,12 +241,12 @@ ggplot(subl_plot_df, aes(x=x_var_value)) +
   scale_color_viridis_d(begin = 0, end = 0.8) +
   labs(colour = 'Canopy Snow\nLoad (mm)') # avoids large space using regular way
 
-ggsave(
-  'figs/final/figure5.png',
-  width = 6,
-  height = 4,
-  device = png
-)
+# ggsave(
+#   'figs/final/figure5.png',
+#   width = 6,
+#   height = 4,
+#   device = png
+# )
 
 ggsave(
   'figs/results/modelled_subl_unloading_w_obs.png',

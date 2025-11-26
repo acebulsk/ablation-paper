@@ -39,8 +39,8 @@ if(good_temp == 't'){
   temp_bin_ax_lab <- 'Air Temperature Bins (°C)'
   temp_ax_lab <- 'Air Temperature (°C)'
 }else{
-  temp_bin_ax_lab <- 'Ice Bulb Temperature Bins (°C)'
-  temp_ax_lab <- 'Ice Bulb Temperature (°C)'
+  temp_bin_ax_lab <- 'Ice-Bulb Temperature Bins (°C)'
+  temp_ax_lab <- 'Ice-Bulb Temperature (°C)'
 }
 wind_ax_lab <- 'Average Wind Speed (m/s)'
 if(good_tau == 'tau_high'){

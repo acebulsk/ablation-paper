@@ -4,11 +4,40 @@ scl_met_agg_fltr <- scl_met_agg |>
   mutate(scl_flag = ifelse(scl_rel_perc_error > err_th, T, F),
          q_unl_subl_ratio = q_unl/-q_subl) |> 
   filter(scl_flag == F,
+         !is.na(tree_mm)
          # q_unl < 1, # rm outliers
          # dmelt_veg == 0,
          # dU > 0,
          # q_subl < 0) 
   )
+
+print(paste0(frac_above_err_th*100, ' % of records are above error threshold of ', err_th, '% and were filtered from this analysis.'))
+
+# check normality 
+
+hist(scl_met_agg_fltr$q_unl)
+library(car)
+qqPlot(scl_met_agg_fltr$q_unl) # v skewed.. should use gaussian or log transform
+
+# check collinerarity 
+
+predictors <- scl_met_agg_fltr[, c("t", "u", "tau", "q_melt", "q_subl", "tree_mm")]
+
+library(corrplot)
+cor_mat <- cor(predictors, use = "complete.obs")
+corrplot(cor_mat, method = "color", tl.cex = 0.8, number.cex = 0.7)
+
+library(car)
+lm_col <- lm(q_unl ~ t + u + q_subl, data = scl_met_agg_fltr)
+vif(lm_col)
+lm_col <- lm(q_unl ~ q_melt + tau + q_subl, data = scl_met_agg_fltr)
+vif(lm_col)
+lm_col <- lm(q_unl ~ q_melt + u + q_subl, data = scl_met_agg_fltr)
+vif(lm_col)
+lm_col <- lm(q_unl ~ t + tau + q_subl, data = scl_met_agg_fltr)
+vif(lm_col)
+
+# VIF is ~1 as long as we dont combine correlated predictors (wind/shear and melt/temp)
 
 scl_met_agg_fltr |> 
   ggplot(aes(q_melt, q_unl, colour = u)) + 
@@ -27,12 +56,29 @@ scl_met_agg_fltr |>
   geom_point()
 
 scl_met_agg_fltr |> 
+  ggplot(aes(tau, q_unl)) + 
+  geom_point()
+
+scl_met_agg_fltr |> 
   ggplot(aes(q_subl, q_unl)) + 
   geom_point()
 
 scl_met_agg_fltr |> 
   ggplot(aes(tree_mm, q_unl)) + 
   geom_point()
+scl_met_agg_fltr |> 
+  ggplot(aes(tau, q_subl)) + 
+  geom_point()
+
+library(energy)
+library(minerva)
+
+scl_met_agg_fltr_fltr <- scl_met_agg_fltr |> filter(q_subl > 0, q_subl < 0.2)
+x <- scl_met_agg_fltr$tau
+y <- scl_met_agg_fltr$q_subl
+
+cor(x, y, method = "spearman")
+mine(x, y)$MIC # moderate correlation between q_sub and tau
 
 # linear model ----
 
@@ -43,6 +89,68 @@ summary(lm_model)
 lm_model_interaction <- lm(q_unl ~ (tree_mm + t + u + q_subl + q_melt)^2, data = scl_met_agg_fltr)
 summary(lm_model_interaction)
 
+# Generalized Linear Mixed Effects Model  ----
+
+# transforms predictor variable to account for normality assumption since unloading is highly right skewed
+
+library(glmmTMB)
+library(performance)
+library(DHARMa)
+
+glmm_model <- glmmTMB(
+  q_unl ~ poly(tau) + u + q_melt + t + q_subl + tree_mm + (1 | name), # SCL sensor is random effect
+  data = scl_met_agg_fltr,
+  family = Gamma(link = "log") # response is very skewed so need to transform
+)
+
+summary(glmm_model) 
+
+check_collinearity(glmm_model)
+check_distribution(glmm_model)
+check_model(glmm_model)
+
+# update model based on initial findings 
+
+glmm_model <- update(glmm_model, . ~ . - t) # t is insig so removing
+glmm_model <- update(glmm_model, . ~ . - u) # u and tau are correlated so try one at a time below... 
+
+check_collinearity(glmm_model) # now have low correlation
+summary(glmm_model) 
+
+# check_heteroskedasticity(glmm_model) doesnt work so check manually... 
+
+# Simulate residuals
+sim_res <- simulateResiduals(glmm_model, n = 1000)
+
+# Plot residuals
+plot(sim_res)  # Shows residuals vs predicted values, quantile-quantile plot, dispersion, outliers
+plotResiduals(sim_res, form = scl_met_agg_fltr$name)
+plotResiduals(sim_res, scl_met_agg_fltr$tau)
+plotResiduals(sim_res, scl_met_agg_fltr$q_subl)
+# KS test fails so model may be incomplete... maybe fair assumption since we know we do not have all variables that influence unloading in here.. 
+
+# normality
+testUniformity(sim_res, plot = F)
+
+# dispersion/ heteroscedasticity
+testDispersion(sim_res, plot = F)
+
+# check random effects
+ranef(glmm_model)
+
+# compare different GLMM models 
+model_no_subl <- update(glmm_model, . ~ . - q_subl)
+anova(glmm_model, model_no_subl, test = "LRT")
+
+model_u_instead_of_tau <- update(glmm_model, . ~ . - tau + u)
+anova(glmm_model, model_u_instead_of_tau, test = "LRT")
+
+model_t_instead_of_q_melt <- update(glmm_model, . ~ . - q_melt + t)
+anova(glmm_model, model_t_instead_of_q_melt, test = "LRT")
+
+glmm_model_fixed <- update(glmm_model, . ~ . - (1 | name))
+anova(glmm_model, glmm_model_fixed, test = "LRT")
+
 # GAM model ---- 
 
 # this is supposed to handle non-linear and thresholding relationships better
@@ -51,11 +159,21 @@ summary(lm_model_interaction)
 library(mgcv)
 
 # basic gam, wind speed is bad relationship as we have high unloading at low wind speeds, vise versa with melt
-gam_model <- gam(q_unl ~ tree_mm + s(q_melt) + s(u),
+gam_model <- gam(q_unl ~ tree_mm + s(q_melt) + s(tau) + s(t) + s(q_subl),
+                #  family = Gamma(link="log"),
                  data = scl_met_agg_fltr)
 summary(gam_model)
 vis.gam(gam_model, view = c("tree_mm", "q_melt"), plot.type = "contour")
-vis.gam(gam_model, view = c("tree_mm", "u"), plot.type = "contour")
+
+sim_res_gam <- simulateResiduals(gam_model, n = 1000)
+testUniformity(sim_res_gam)
+
+# compare different GAM models 
+gam_model_no_subl <- update(gam_model, . ~ . - q_subl)
+AIC(gam_model, model_no_subl)
+
+gam_model_no_t <- update(gam_model, . ~ . - t)
+AIC(gam_model, gam_model_no_t)
 
 # add in interactions, start small
 # Using ti() with separate main effects
@@ -85,7 +203,8 @@ gam_model_tree_interact <- gam(
     s(t) + ti(tree_mm, t),
   
   data = scl_met_agg_fltr,
-  method = "REML"
+  family = Gamma(link="log")#,
+  # method = "REML"
 )
 summary(gam_model_u_melt_interact)
 plot(gam_model_u_melt_interact)

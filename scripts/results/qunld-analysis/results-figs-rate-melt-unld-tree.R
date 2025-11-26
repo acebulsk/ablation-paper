@@ -200,8 +200,6 @@ r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
 
 lm_asmp_check <- check_lm_assumptions(bin_unld_melt_lm)
 
-# Handle heteroscadeticity first using weighted OLS .. this is not as good as the GLS
-
 # Step 2: estimate residual variance
 m_var <- lm(abs(resid(bin_unld_melt_lm)) ~ fitted(bin_unld_melt_lm))
 sigma_hat <- fitted(m_var)           # predicted residual magnitude
@@ -246,11 +244,8 @@ gls_ident <- gls(unld_melt_ratio ~ tree_labs,
 
 # create combined group factor
 
-AIC(model_lm, model_wls, gls_exp, gls_ident)     # lower AIC from gls power ... 
+AIC(bin_unld_melt_lm, model_wls, gls_exp, gls_ident)     # lower AIC from gls power ... 
 # anova(gls_power, gls_exp)                 # compare nested models if appropriate
-
-summary(gls_power)
-intervals(gls_power)   # CIs for coefficients and variance parameters
 
 resid_gls <- resid(gls_exp)
 
@@ -280,18 +275,18 @@ ggplot(unld_melt_ratio,
        aes(tree_labs, unld_melt_ratio)) +
   geom_point(aes(colour = name)) +
     # First line: LM fit
-  geom_smooth(aes(linetype = "LM Fit"),
-              method = "lm",
-              se = FALSE,
-              colour = "black") +
+  # geom_smooth(aes(linetype = "LM Fit"),
+  #             method = "lm",
+  #             se = FALSE,
+  #             colour = "black") +
 
   # Second line: GLS fit
   geom_line(data = pred_df,
             aes(x = tree_labs,
                 y = gls_pred,
                 linetype = "GLS Fit"),
-            colour = "blue",
-            linewidth = 1) +
+            colour = "black",
+            linewidth = 0.5) +
   # annotate(
   #     'label',
   #     x = 4,
@@ -382,9 +377,9 @@ q_unl_temp_model_err_tbl <- unld_melt_ratio |>
 # Performance metrics reshaped to long format (convert values to character)
 perf_tbl <- q_unl_temp_model_err_tbl |> 
   select(
-    `Mean Bias (mm/hr)` = `Mean Bias`,
-    `Mean Absolute Error (mm/hr)` = MAE,
-    `Root Mean Square Error (mm/hr)` = `RMS Error`,
+    `Mean Bias (-)` = `Mean Bias`,
+    `Mean Absolute Error (-)` = MAE,
+    `Root Mean Square Error (-)` = `RMS Error`,
     # `Akaike Information Criterion` = AIC,
     `Coefficient of Determination` = R2,
     `Coefficient of Agreement` = d
@@ -426,7 +421,7 @@ coef_tbl <- tibble(
 
 # Combine into final long format table
 man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
-model_type <- tibble(Metric = 'Model', Value = 'OLS')
+model_type <- tibble(Metric = 'Fit', Value = 'GLS')
 eqn <- tibble(
   Metric = 'Equation',
   Value  = "$R = a \\cdot L + b$"

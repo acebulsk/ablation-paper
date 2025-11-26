@@ -1,10 +1,38 @@
 # Bring in values for paper
 library(dplyr)
 library(gt)
+library(knitr)
+library(kableExtra)
 
-pretty_table <- readRDS('tbls/select_event_met_stats_maxmin_pretty_gt_table.rds')
+convert_sci_to_latex <- function(x) {
+  # Ensure x is character
+  x <- as.character(x)
 
-model_run_tag <- 'store_liquid_new_evap6'
+  # Pattern for scientific notation: integer/decimal + e/E + signed exponent
+  sci_pattern <- "^[+-]?[0-9]*\\.?[0-9]+[eE][+-]?[0-9]+$"
+
+  # Identify which elements match
+  is_sci <- grepl(sci_pattern, x)
+
+  # Convert scientific notation to LaTeX
+  x[is_sci] <- sub(
+    "([+-]?[0-9]*\\.?[0-9]+)[eE]([+-]?[0-9]+)",
+    "\\1 \\\\times 10^{\\2}",
+    x[is_sci]
+  )
+
+  # Only wrap in $...$ if not already wrapped
+  x[is_sci] <- ifelse(
+    grepl("^\\$.*\\$$", x[is_sci]),
+    x[is_sci],
+    paste0("$", x[is_sci], "$")
+  )
+
+  x
+}
+
+# model_run_tag <- 'store_liquid_new_evap6'
+model_run_tag <- "new_shear_stress_melt_unld_par_no_hetero" # after permission to defense adjustments to shear stress and melt functions to handle heteroscadesticity
 
 select_models <- c(
   'M1', # best one with L, u and melt
@@ -16,51 +44,89 @@ select_models <- c(
   'M63' # L, wind, subl
 )
 
-lm_multi_reg_tbl <- readRDS('data/stats/lm_multi_reg_q_unld_bins.rds') 
-lm_multi_reg_tbl_slim <- lm_multi_reg_tbl |> 
-  filter(`Model Name` %in% select_models) |> 
-  select(-T_ib_dep)
+# Results 3.1.1/3.1.2 (dry / melt unloading)
 
-# find where only melt term is non 'nan'
-melt_only_r2 <- lm_multi_reg_tbl$Adj_R2[lm_multi_reg_tbl$u == '—' &
-                                          lm_multi_reg_tbl$q_subl == '—' &
-                                          lm_multi_reg_tbl$T_a == '—' &
-                                          lm_multi_reg_tbl$tau == '—' &
-                                          lm_multi_reg_tbl$T_ib_dep == '—']
+## dry snow unloading error tbls 
 
-convert_sci_to_latex <- function(x) {
-  # Match things that look like scientific notation (e±nnn)
-  is_sci <- grepl("e", x, ignore.case = TRUE)
-  
-  x[is_sci] <- sub("e([+-]?[0-9]+)", " \\\\times 10^{\\1}", x[is_sci])
-  x[is_sci] <- paste0("$", x[is_sci], "$")  # wrap in math mode
-  
-  return(x)
-}
-wind_tau_err_tbl <- readRDS('data/results/modelled_combined_wind_tau_unloading_error_table.rds')
-wind_tau_err_tbl$Wind <- convert_sci_to_latex(wind_tau_err_tbl$Wind)
-wind_tau_err_tbl$`Shear Stress` <- convert_sci_to_latex(wind_tau_err_tbl$`Shear Stress`)
+# fltr_models <- c('Shear Stress, Air Temp.') # could leave out as air temp is insig.
 
-mod_coef_wind_a <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient a'] |> as.numeric()
-mod_coef_wind_b <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == 'Coefficient b']
-q_unld_wind_r2 <- wind_tau_err_tbl$Wind[wind_tau_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
+dry_snow_unld_stats <- readRDS('data/results/modelled_combined_wind_tau_others_unloading_error_table.rds') |>
+  # select(-fltr_models) |> 
+  mutate(across(-Metric, ~ convert_sci_to_latex(.))) |> 
+  mutate(
+    Metric = case_when(
+      Metric == "Model"                          ~ "Fit",
+      Metric == "Equation"                       ~ "Eq",
+      Metric == "Mean Bias (mm/hr)"              ~ "MB",
+      Metric == "Root Mean Square Error (mm/hr)" ~ "RMSE",
+      Metric == "Coefficient of Determination"   ~ "$R^2$",
+      Metric == "Coefficient of Agreement"       ~ "$d$",
+      Metric == "Coefficient a"                  ~ "a",
+      Metric == "Significance of a"              ~ "$p$(a)",
+      Metric == "Coefficient b"                  ~ "b",
+      Metric == "Significance of b"              ~ "$p$(b)",
+      Metric == "Homoscedasticity"               ~ "HS",
+      Metric == "Normality"                      ~ "Norm",
+      TRUE ~ Metric
+    )
+  )
 
-mod_coef_tau_a <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == 'Coefficient a'] |> as.numeric()
-mod_coef_tau_b <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == 'Coefficient b']
-q_unld_tau_r2 <- wind_tau_err_tbl$`Shear Stress`[wind_tau_err_tbl$Metric == "Coefficient of Determination ($R^2$)"]
+q_unld_wind_rmse <- dry_snow_unld_stats$Wind[dry_snow_unld_stats$Metric == "RMSE"]
+q_unld_tau_rmse <- dry_snow_unld_stats$`Shear Stress`[dry_snow_unld_stats$Metric == "RMSE"]
+q_unld_load_rmse <- dry_snow_unld_stats$`Snow Load`[dry_snow_unld_stats$Metric == "RMSE"]
 
-q_unld_melt_lm <- readRDS('data/results/lm_q_drip_vs_q_unld_melt.rds')
-q_unld_melt_b <- coef(q_unld_melt_lm)[[1]] |> round(2)
-q_unld_melt_m <- coef(q_unld_melt_lm)[[2]] |> round(2)
-q_unld_melt_r2 <- summary(q_unld_melt_lm)$r.squared |> round(2)
-q_unld_melt_p <- summary(q_unld_melt_lm)$coefficients[2, 4] |> round(7)
+q_unld_wind_r2 <- dry_snow_unld_stats$Wind[dry_snow_unld_stats$Metric == "$R^2$"]
+q_unld_tau_r2 <- dry_snow_unld_stats$`Shear Stress`[dry_snow_unld_stats$Metric == "$R^2$"]
+q_unld_load_r2 <- dry_snow_unld_stats$`Snow Load`[dry_snow_unld_stats$Metric == "$R^2$"]
 
-q_unld_subl_lm <- readRDS('data/results/lm_q_drip_vs_q_unld_subl.rds')
-q_unld_subl_b <- coef(q_unld_subl_lm)[[1]] |> round(2)
-q_unld_subl_m <- coef(q_unld_subl_lm)[[2]] |> round(2)
-q_unld_subl_r2 <- summary(q_unld_subl_lm)$r.squared |> round(2)
-q_unld_subl_p <-  summary(q_unld_subl_lm)$coefficients[2, 4] |> round(7)
+## melt unloading error tbls 
 
+melt_unld_stats <- readRDS('data/results/modelled_melt_unloading_error_table.rds') |>
+  mutate(across(-Metric, ~ convert_sci_to_latex(.))) |> 
+  mutate(
+    Metric = case_when(
+      Metric == "Model"                          ~ "Fit",
+      Metric == "Equation"                       ~ "Eq",
+      Metric == "Mean Bias (mm/hr)"              ~ "MB",
+      Metric == "Root Mean Square Error (mm/hr)" ~ "RMSE",
+      Metric == "Coefficient of Determination"   ~ "$R^2$",
+      Metric == "Coefficient of Agreement"       ~ "$d$",
+      Metric == "Coefficient a"                  ~ "a",
+      Metric == "Significance of a"              ~ "$p$(a)",
+      Metric == "Coefficient b"                  ~ "b",
+      Metric == "Significance of b"              ~ "$p$(b)",
+      Metric == "Homoscedasticity"               ~ "HS",
+      Metric == "Normality"                      ~ "Norm",
+      TRUE ~ Metric
+    )
+  )
+
+q_unld_melt_tau_rmse <- melt_unld_stats$`Dimensionless Snowmelt Rate, Shear Stress`[melt_unld_stats$Metric == "RMSE"]
+q_unld_melt_tau_r2 <- melt_unld_stats$`Dimensionless Snowmelt Rate, Shear Stress`[melt_unld_stats$Metric == "$R^2$"]
+
+q_unld_melt_rmse <- melt_unld_stats$`Dimensionless Snowmelt Rate`[melt_unld_stats$Metric == "RMSE"]
+q_unld_melt_r2 <- melt_unld_stats$`Dimensionless Snowmelt Rate`[melt_unld_stats$Metric == "$R^2$"]
+
+q_unld_ta_rmse <- melt_unld_stats$`Air Temperature`[melt_unld_stats$Metric == "RMSE"]
+q_unld_ta_r2 <- melt_unld_stats$`Air Temperature`[melt_unld_stats$Metric == "$R^2$"]
+
+q_unld_ti_rmse <- melt_unld_stats$`Ice-Bulb Temperature`[melt_unld_stats$Metric == "RMSE"]
+q_unld_ti_r2 <- melt_unld_stats$`Ice-Bulb Temperature`[melt_unld_stats$Metric == "$R^2$"]
+
+## unld to melt ratio tbl
+
+unld_melt_ratio_stats <- readRDS('data/results/modelled_unld_melt_ratio_error_table.rds')
+
+q_unld_melt_ratio_b <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Coefficient b'] |>
+  as.numeric() |> round(2)
+q_unld_melt_ratio_b_pval <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Significance of a']
+
+q_unld_melt_ratio_m <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Coefficient a'] |>
+  as.numeric() |> round(2)
+q_unld_melt_ratio_r2 <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Coefficient of Determination'] |>
+  as.numeric() |> round(2)
+q_unld_melt_ratio_rmse <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Root Mean Square Error (-)'] |>
+  as.numeric() |> round(2)
 
 event_met <- readRDS('data/results/ablation_event_met_summary.rds') |> 
   select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 
@@ -84,72 +150,74 @@ old_mods_mb_range <- obs_mod_stats_avg$MB[!obs_mod_stats_avg$name == 'CP25' &
                                             obs_mod_stats_avg$manual_event_type == 'all'] |> range() |> round(2)
 
 melt_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/humid', name == 'CP25') |>
+  filter(manual_event_type == 'warm & humid', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
 melt_a09_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/humid', name == 'SA09') |>
+  filter(manual_event_type == 'warm & humid', name == 'SA09') |>
   pull(MB) |> 
   round(2)
 
 melt_other_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/humid', name %in% c('E10', 'R01')) |>
+  filter(manual_event_type == 'warm & humid', name %in% c('E10', 'R01')) |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 wd_all_mb <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/dry') |>
+  filter(manual_event_type == 'warm & dry') |>
   pull(MB) |> 
   round(2)
 
 stopifnot(all(wd_all_mb == wd_all_mb[1])) # currently text states all of these are equal ...
 
 wd_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/dry', name == 'CP25') |>
+  filter(manual_event_type == 'warm & dry', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
 wd_other_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'warm/dry', name != 'CP25') |>
+  filter(manual_event_type == 'warm & dry', name != 'CP25') |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 subl_all_mb <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/dry') |>
+  filter(manual_event_type == 'cold & dry') |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 subl_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/dry', name == 'CP25') |>
+  filter(manual_event_type == 'cold & dry', name == 'CP25') |>
   pull(MB) |> 
   round(3)
 
 subl_other_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/dry', name != 'CP25') |>
+  filter(manual_event_type == 'cold & dry', name != 'CP25') |>
   pull(MB) |> 
   range() |> 
   round(2)
 
 wind_new_model_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/humid', name == 'CP25') |>
+  filter(manual_event_type == 'cold & humid', name == 'CP25') |>
   pull(MB) |> 
   round(2)
 
 wind_roesch_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/humid', name == 'R01') |>
+  filter(manual_event_type == 'cold & humid', name == 'R01') |>
   pull(MB) |> 
   round(2)
 
 wind_nr_mb_avg <- obs_mod_stats_avg |>
-  filter(manual_event_type == 'cold/humid', !name %in% c('CP25', 'R01')) |>
+  filter(manual_event_type == 'cold & humid', !name %in% c('CP25', 'R01')) |>
   pull(MB) |> 
   min() |> 
   round(2)
 
-
 atm_ground_part <- readRDS('data/results/atmosphere_ground_partition_by_model.rds')
 
+# Supporting Information ----
+
+melt_non_melt_var_dist_test <- read.csv('data/stats/melt_non_melt_variable_distribution_tests.csv')

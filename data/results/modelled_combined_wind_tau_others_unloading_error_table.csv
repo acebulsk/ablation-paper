@@ -1,4 +1,4 @@
-"Metric","Snow Load","Shear Stress","Wind","Sublimation","Shear Stress, Air Temp.","Shear Stress, Ice bulb dep.","Shear Stress, Subl."
+"Metric","Snow Load","Shear Stress","Wind Speed","Sublimation","Shear Stress, Air Temperature","Shear Stress, Ice-Bulb dep.","Shear Stress, Sublimation"
 "Model","GLS","GLS","NLS","OLS","OLS","GLS","GLS"
 "Equation","$q_{unld}^{dry} = L \cdot a$","$q_{unld}^{dry} = L \cdot \tau_{mid}  \cdot a$","$q_{unld}^{dry} = L \cdot u_{mid} \cdot a \cdot e^{b\cdot u_{mid}}$","$q_{unld}^{dry} = L \cdot q_{subl}^{veg}  \cdot a$","$q_{unld}^{dry} = L \cdot \tau_{mid} \cdot a + T_a \cdot b$","$q_{unld}^{dry} = L \cdot \tau_{mid} \cdot a + (T_a - T_i) \cdot b$","$q_{unld}^{dry} = L \cdot \tau_{mid} \cdot a + q_{subl}^{veg} \cdot b$"
 "Mean Bias (mm/hr)","0.001","0.008","0.048","0.071","0.024","0.006","-0.008"
@@ -9,6 +9,6 @@
 "Significance of a","NA for GLS","NA for GLS","p < 0.05","p < 0.05","p < 0.05","NA for GLS","NA for GLS"
 "Coefficient b","NA","NA","3.93e-01","NA","-3.96e-03","7.26e-02","7.09e-01"
 "Significance of b","NA","NA","p < 0.05","NA","n.s.","NA for GLS","NA for GLS"
-"Homoscedasticity","NA for GLS","NA for GLS","Pass","Pass (n.s.)","Pass (n.s.)","NA for GLS","NA for GLS"
+"Homoscedasticity","Pass","Pass","Pass","Pass (n.s.)","Pass (n.s.)","Pass","Pass"
 "Normality","Fail (p < 0.05)","Pass (n.s.)","Pass (n.s.)","Fail (p < 0.05)","Fail (p < 0.05)","Fail (p < 0.05)","Fail (p < 0.05)"
 "Linear/Non-linear Correlation","NA","NA","NA","NA","Moderate","Moderate","Moderate"

@@ -1,4 +1,4 @@
-"Metric","Dimensionless Snowmelt Rate, Shear Stress","Dimensionless Snowmelt Rate","Air Temperature","Ice Bulb Temperature"
+"Metric","Dimensionless Snowmelt Rate, Shear Stress","Dimensionless Snowmelt Rate","Air Temperature","Ice-Bulb Temperature"
 "Model","OLS","OLS","OLS","OLS"
 "Equation","$q_{unld}^{melt} = L \cdot \frac{q_{melt}}{L} \cdot a + \tau_{mid} \cdot b$","$q_{unld}^{melt} = L \cdot \frac{q_{melt}}{L} \cdot a$","$q_{unld}^{melt} = L \cdot T_a \cdot a$","$q_{unld}^{melt} = L \cdot T_i \cdot a$"
 "Mean Bias (mm/hr)","0.027","0.099","0.128","0.243"

@@ -366,6 +366,15 @@ ggsave(
   device = png
 )
 
+write.csv(boot_long,
+          paste0(
+            'tbls/',
+            'bootstrap_output_',
+            run_tag_updt,
+            '.csv'
+          ),
+          row.names = F)
+
 options(ggplot2.discrete.fill= c("#E69F00", "#56B4E9", "#009E73", "#999999"))
 
 dL_hourly_err_summary_by_event_type_id |> 
@@ -387,7 +396,6 @@ ggsave(
   height = 4,
   device = png
 )
-
 
 # generate error table by event
 

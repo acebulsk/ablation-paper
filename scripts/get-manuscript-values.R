@@ -44,9 +44,9 @@ select_models <- c(
   'M63' # L, wind, subl
 )
 
-# Results 3.1.1/3.1.2 (dry / melt unloading)
+# Results 
 
-## dry snow unloading error tbls 
+## 3.1.1 dry snow unloading error tbls ----
 
 # fltr_models <- c('Shear Stress, Air Temp.') # could leave out as air temp is insig.
 
@@ -71,15 +71,15 @@ dry_snow_unld_stats <- readRDS('data/results/modelled_combined_wind_tau_others_u
     )
   )
 
-q_unld_wind_rmse <- dry_snow_unld_stats$Wind[dry_snow_unld_stats$Metric == "RMSE"]
+q_unld_wind_rmse <- dry_snow_unld_stats$`Wind Speed`[dry_snow_unld_stats$Metric == "RMSE"]
 q_unld_tau_rmse <- dry_snow_unld_stats$`Shear Stress`[dry_snow_unld_stats$Metric == "RMSE"]
 q_unld_load_rmse <- dry_snow_unld_stats$`Snow Load`[dry_snow_unld_stats$Metric == "RMSE"]
 
-q_unld_wind_r2 <- dry_snow_unld_stats$Wind[dry_snow_unld_stats$Metric == "$R^2$"]
+q_unld_wind_r2 <- dry_snow_unld_stats$`Wind Speed`[dry_snow_unld_stats$Metric == "$R^2$"]
 q_unld_tau_r2 <- dry_snow_unld_stats$`Shear Stress`[dry_snow_unld_stats$Metric == "$R^2$"]
 q_unld_load_r2 <- dry_snow_unld_stats$`Snow Load`[dry_snow_unld_stats$Metric == "$R^2$"]
 
-## melt unloading error tbls 
+## 3.1.2 melt unloading error tbls ----
 
 melt_unld_stats <- readRDS('data/results/modelled_melt_unloading_error_table.rds') |>
   mutate(across(-Metric, ~ convert_sci_to_latex(.))) |> 
@@ -113,7 +113,7 @@ q_unld_ta_r2 <- melt_unld_stats$`Air Temperature`[melt_unld_stats$Metric == "$R^
 q_unld_ti_rmse <- melt_unld_stats$`Ice-Bulb Temperature`[melt_unld_stats$Metric == "RMSE"]
 q_unld_ti_r2 <- melt_unld_stats$`Ice-Bulb Temperature`[melt_unld_stats$Metric == "$R^2$"]
 
-## unld to melt ratio tbl
+## unld to melt ratio tbl ----
 
 unld_melt_ratio_stats <- readRDS('data/results/modelled_unld_melt_ratio_error_table.rds')
 
@@ -128,14 +128,7 @@ q_unld_melt_ratio_r2 <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric
 q_unld_melt_ratio_rmse <- unld_melt_ratio_stats$Value[unld_melt_ratio_stats$Metric == 'Root Mean Square Error (-)'] |>
   as.numeric() |> round(2)
 
-event_met <- readRDS('data/results/ablation_event_met_summary.rds') |> 
-  select(event_id, t = t_mean, u = u_mean, rh = rh_mean, Qsi = Qsi_mean) |> 
-  mutate(across(t:Qsi, round, 2))
-
-event_ablation_frac <- readRDS('data/results/ablation_event_fraction_ablation_processes.rds') |> 
-  mutate(event_id = as.Date(event_id))
-
-event_met_abl_frac <- left_join(event_met, event_ablation_frac)
+## Event Model Eval -----
 
 obs_mod_stats_avg <- readRDS( paste0(
   'tbls/',
@@ -217,6 +210,26 @@ wind_nr_mb_avg <- obs_mod_stats_avg |>
   round(2)
 
 atm_ground_part <- readRDS('data/results/atmosphere_ground_partition_by_model.rds')
+
+## Bootstraping ----
+
+boot <- read.csv(
+          paste0(
+          'tbls/',
+          'bootstrap_output_',
+          model_run_tag,
+          '.csv'))
+
+cp25_boot_nse <- boot$estimate[boot$metric == 'NSE' & boot$name == 'CP25'] |> round(2)
+cp25_boot_kge <- boot$estimate[boot$metric == 'KGE' & boot$name == 'CP25'] |> round(2)
+
+other_boot_nse_range <- boot |> 
+  filter(name != 'CP25', metric == 'NSE') |>
+  pull(estimate) |> range() |> round(2)
+
+other_boot_kge_range <- boot |> 
+  filter(name != 'CP25', metric == 'KGE') |>
+  pull(estimate) |> range() |> round(2)
 
 # Supporting Information ----
 

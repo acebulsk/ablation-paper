@@ -254,8 +254,8 @@ snow energy and mass balance. This model demonstrated improved
 performance in simulating canopy snow load relative to previous
 approaches, especially for melt- and wind-dominated ablation events. The
 improved performance in representing canopy snow load compared to
-existing models results from including energy balance-based melt and dry
-snow unloading relationships with snow load and wind shear stress. All
+existing models results from including a comprehensive representation of
+the mass and energy balance of intercepted snow. In constrast, all
 existing canopy snow models were found to omit key processes which
 limited accuracy of simulated snow load and partitioning of intercepted
 snow. The inclusion of updated melt and dry snow unloading calculations
@@ -271,33 +271,31 @@ a wide range of meteorologies.
 \setstretch{1.5}
 \section{Introduction}\label{introduction}
 
-Essery et al. (2025) \ldots{}
-
 The seasonal snowpack is an essential component of global water
 resources (Immerzeel et al., 2020; Viviroli et al., 2020) and is
 increasingly threatened by rapid climate and land cover change
 (Aubry-Wake \& Pomeroy, 2023; Fang \& Pomeroy, 2023; López-Moreno et
 al., 2014; Szczypta et al., 2015). Vegetation cover can significantly
-alter the quantity (Essery et al., 2003; Mazzotti et al., 2021; Pomeroy
-\& Gray, 1995; Rojas-Heredia et al., 2024; Sanmiguel-Vallelado et al.,
-2020) and timing (Ellis et al., 2010; Safa et al., 2021) of snow that
-reaches the ground. Snow falls in forests over half of the Northern
-Hemisphere (Kim et al., 2017) and over 23\% of the landmass globally
-(Deschamps-Berger et al., 2025), making forest-snow interactions crucial
-to understand for informed ecological, land management, and water
-resource decision-making. Needleleaf canopies are particularly effective
-at intercepting snowfall (Cebulski \& Pomeroy, 2025b; Hedstrom \&
-Pomeroy, 1998; Pomeroy \& Schmidt, 1993; Storck et al., 2002), where
-intercepted snow is subject to increased energy inputs relative to the
-subcanopy snowpacks, leading to increased rates of melt, unloading,
-and/or sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et al., 1998b;
-Roesch et al., 2001; Storck et al., 2002). The partitioning of snow to
-the atmosphere via sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et
-al., 1998b) or to the ground through unloading and meltwater drip
-(Lumbrazo et al., 2022; Roesch et al., 2001; Storck et al., 2002) is
-highly sensitive to meteorological conditions and forest structure
-contributing to substantial variability in subcanopy snowpacks across
-regions and snowfall events. Coastal humid environments typically
+alter the quantity, phase, and timing (Ellis et al., 2010; Essery et
+al., 2003; Mazzotti et al., 2021; Pomeroy \& Gray, 1995; Rojas-Heredia
+et al., 2024; Safa et al., 2021; Sanmiguel-Vallelado et al., 2020) of
+snowfall reaching the ground. Snow falls in forests over half of the
+Northern Hemisphere (Kim et al., 2017) and over 23\% of the global
+landmass (Deschamps-Berger et al., 2025), making forest-snow
+interactions crucial to understand for informed ecological, land
+management, and water resource decision-making. Needleleaf canopies are
+particularly effective at intercepting snowfall (Cebulski \& Pomeroy,
+2025b; Hedstrom \& Pomeroy, 1998; Pomeroy \& Schmidt, 1993; Storck et
+al., 2002), where intercepted snow is subject to increased energy inputs
+relative to the subcanopy snowpacks, leading to increased rates of melt,
+unloading, and/or sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et
+al., 1998b; Roesch et al., 2001; Storck et al., 2002). The partitioning
+of snow to the atmosphere via sublimation (Parviainen \& Pomeroy, 2000;
+Pomeroy et al., 1998b) or to the ground through unloading and meltwater
+drip (Lumbrazo et al., 2022; Roesch et al., 2001; Storck et al., 2002)
+is highly sensitive to meteorological conditions and forest structure
+contributing to differing process emergence and substantial variability
+in subcanopy snow accumulation. Coastal humid environments typically
 exhibit small sublimation losses and a larger influence of unloading and
 melt (Floyd, 2012; Storck et al., 2002). Here, enhanced canopy energy
 inputs combined with high humidity increases both solid snow unloading
@@ -317,108 +315,92 @@ processes (Clark et al., 2015; Essery et al., 2003; Pomeroy et al.,
 
 Canopy snow models have demonstrated variable transferability across
 different climates and forest types (Essery et al., 2003; Gelfan et al.,
-2004; Lumbrazo et al., 2022; Lundquist et al., 2021), and uncertainty in
-transferability has been attributed as a key area limiting the
-performance in predicting forest snowpacks in hydrological model
-intercomparisons (Krinner et al., 2018; Rutter et al., 2009). Recent
-studies have emphasized the importance of distinguishing between initial
-snow interception and subsequent ablation processes (Cebulski \&
-Pomeroy, 2025a, 2025b). This separation allows for individual
-parameterisations for distinct processes, improving both process
-representation and the modular design of contemporary models, thereby
-supporting broader applicability across diverse environments and model
-structures (Clark et al., 2015; Pomeroy et al., 2022). In addition,
-Lundquist et al. (2021) and Cebulski \& Pomeroy (2025b) demonstrated
-that canopy snow processes can be more accurately represented without
-the concept of a maximum canopy snow load, which is included in initial
-accumulation parameterisations (Andreadis et al., 2009; Hedstrom \&
-Pomeroy, 1998). Existing ablation routines were integrated in canopy
-snow accumulation parameterisations, likely as a result of some ablation
-included in measurements of interception efficiency (Cebulski \&
-Pomeroy, 2025a). For example, Hedstrom \& Pomeroy (1998) found that
-interception efficiency declined as the canopy is loaded with snow,
-while Storck et al. (2002) found a constant interception efficiency of
-0.6 and is also typically combined with a maximum canopy snow load.
-Consequently, both the Hedstrom \& Pomeroy (1998) and Storck et al.
-(2002) parameterisations have significantly lower interception
-efficiencies---prior to canopy snow ablation---compared to the
-observations by Cebulski \& Pomeroy (2025b). Staines \& Pomeroy (2023)
-and Cebulski \& Pomeroy (2025b) show that interception efficiency is
-best predicted by canopy density alone---consistent with some rainfall
-interception parameterisations (e.g., Valante et al., 1997; Zhong et
-al., 2022)---and that snow load has a small influence on canopy density,
-challenging the Hedstrom \& Pomeroy (1998) and Storck et al. (2002)
-initial snow interception theories. Together these studies (Cebulski \&
-Pomeroy, 2025a, 2025b; Lundquist et al., 2021) emphasize the need to
-revisit canopy snow ablation parameterisations.
+2004; Lumbrazo et al., 2022; Lundquist et al., 2021), which has been
+attributed to limiting the performance in predicting forest snowpacks in
+hydrological model intercomparisons (Krinner et al., 2018; Rutter et
+al., 2009). Recent studies have emphasized the importance of
+distinguishing between initial snow interception and subsequent ablation
+processes (Cebulski \& Pomeroy, 2025a, 2025b). This separation allows
+for individual parameterisations for distinct processes, improving both
+process representation and the modular design of contemporary models,
+thereby supporting broader applicability across diverse environments and
+model structures (Clark et al., 2015; Pomeroy et al., 2022). In
+addition, Lundquist et al. (2021) and Cebulski \& Pomeroy (2025b)
+demonstrated that canopy snow processes can be more accurately
+represented without the concept of a maximum canopy snow load, which is
+included in initial accumulation parameterisations (Andreadis et al.,
+2009; Hedstrom \& Pomeroy, 1998). Moreover, existing canopy snow
+accumulation parameterisations often incorporate ablation routines,
+likely as a result of some ablation included in measurements of
+interception efficiency (Cebulski \& Pomeroy, 2025a; Hedstrom \&
+Pomeroy, 1998; Katsushima et al., 2023; Schmidt \& Gluns, 1991). For
+example, Hedstrom \& Pomeroy (1998) found that interception efficiency
+declined as the canopy is loaded with snow, while Storck et al. (2002)
+found a constant interception efficiency of 0.6 and is also typically
+combined with a maximum canopy snow load. Consequently, both the
+Hedstrom \& Pomeroy (1998) and Storck et al. (2002) parameterisations
+have significantly lower interception efficiencies---prior to canopy
+snow ablation---compared to the observations by Cebulski \& Pomeroy
+(2025b). Staines \& Pomeroy (2023) and Cebulski \& Pomeroy (2025b) show
+that interception efficiency is best predicted by canopy density
+alone---consistent with some rainfall interception parameterisations
+(e.g., Valante et al., 1997; Zhong et al., 2022)---and that snow load
+has a small influence on canopy density, challenging the Hedstrom \&
+Pomeroy (1998) and Storck et al. (2002) initial snow interception
+theories. Together these studies (Cebulski \& Pomeroy, 2025a, 2025b;
+Lundquist et al., 2021) emphasize the need to revisit canopy snow
+ablation parameterisations.
 
-Ablation of intercepted snow due to snow unloading to the ground has
-previously been shown to be associated air temperature (Katsushima et
-al., 2023; Roesch et al., 2001; Schmidt \& Pomeroy, 1990), ice-bulb
-temperature---which more accurately represents the cooling effect of
-sublimation compared to air temperature---(Ellis et al., 2010; Floyd,
-2012), canopy snowmelt rate (Storck et al., 2002), and wind speed (see
-Supporting Information for example relationships). Each of these factors
-were also found to be dependent on canopy snow load and time. While
-Hedstrom \& Pomeroy (1998) did not make direct observations of canopy
-snow unloading, they proposed a parameterisation based on canopy snow
-load and time. In addition to the empirical observations by the
-afformentioned studies, physical reasoning also supports the inclusion
-of these processes. For example, melt promotes unloading through loss of
-structural integrity, particle bond weakening, and lubrication of
-intercepted snow. Wind drag promotes unloading through shear stress
-applied to intercepted snow, wind erosion through direct entrainment in
-the atmosphere of intercepted snow, and branch movement. Branch
-elasticity increases with temperature (Schmidt \& Pomeroy, 1990) which
-can increase the likelihood of unloading due to increasing branch angle
-under a snow load and decreased stiffness to resist swaying in a
-turbulent wind.
-
-Investigation of canopy snow unloading relationships is challenged by
-the number of physical processes possible for removing snow from the
-canopy. Given the correlation of predictor variables when considered
-over all events (dry snow and melt-driven unloading), and differing
-physical drivers of unloding during these events and potential diverging
-relationships with predictor variables the distribution of variables
-over melt and non-melt events were investigated if they are
-statistically from differing distributions to justify investigation and
-relationships for these two event types separately. Moreover, some
-predictor variables such as air temperature may have a positive
-association during canopy snowmelt periods due to increased branch
-flexibility and lubrication and structural degredation of canopy snow
-clumps during melt and versus negative association over dry-snow
-unloading due to the association of cohesion/adhesion with air
-temperature/melt. Condensation during canopy snowmelt events may
-increase structural integrety of canopy snowclumps due to rime ice
-/frost build up but may have an opposing affect during dry snow
-unloading events as sublimation degrades the structure of canopy snow
-clumps. In addition to differing relationships many of the possible
-predictors are correlation for example, melt is correlated with wind
-speed through increase in turbulent energy transfer. Wind speed and
-sublimation are correlated non-linearly although this passes the
-multicolinerty test which tests for linear correlation.
+Unloading of intercepted snow due to the ground has previously been
+shown to be associated air temperature (Katsushima et al., 2023; Roesch
+et al., 2001; Schmidt \& Pomeroy, 1990), ice-bulb temperature---which
+more accurately represents the cooling effect of sublimation compared to
+air temperature---(Ellis et al., 2010; Floyd, 2012), canopy snowmelt
+rate (Storck et al., 2002), and wind speed (see Supporting Information
+for example relationships). Each of these factors were also found to be
+dependent on canopy snow load and time. While Hedstrom \& Pomeroy (1998)
+did not make direct observations of canopy snow unloading, they proposed
+a parameterisation based on canopy snow load and time. In addition to
+the empirical observations by the afformentioned studies, physical
+reasoning also supports the inclusion of these processes. For example,
+melt promotes unloading through loss of structural integrity, particle
+bond weakening, and lubrication of intercepted snow. Wind drag promotes
+unloading through shear stress applied to intercepted snow, wind erosion
+through direct entrainment in the atmosphere of intercepted snow, and
+branch movement. Branch elasticity increases with temperature (Schmidt
+\& Pomeroy, 1990) which can increase the likelihood of unloading due to
+increasing branch angle under a snow load and decreased stiffness to
+resist swaying in a turbulent wind.
 
 Melt of snow intercepted in the canopy is typically represented by
 either an energy balance approach (Andreadis et al., 2009; Clark et al.,
-2015; e.g., Parviainen \& Pomeroy, 2000), as a function of air
-temperature (Roesch et al., 2001), or a function of ice-bulb temperature
-(Ellis et al., 2010; Floyd, 2012). Sublimation is generally represented
-using a coupled energy and mass balance approach (e.g., Essery et al.,
-2003; Pomeroy et al., 1998b; Verseghy, 2017). The Essery et al. (2003)
-and Pomeroy et al. (1998b) approaches differ in that Pomeroy et al.
-(1998b) does not include longwave radiation in the canopy snow energy
-balance. Both the Essery et al. (2003) and Pomeroy et al. (1998b)
-parameterisations decrease the latent heat flux from snow intercepted in
-the canopy as the canopy fills up with snow and its specific surface
-area decreases. However, these parameterisations are based on estimates
-of maximum canopy snow load which may underestimate true maxima
-(Cebulski \& Pomeroy, 2025b; Lundquist et al., 2021; Storck et al.,
-2002) and should be reconsidered using a larger maximum load or an
-approach that avoids prescribing a maximum load. The merits of including
-more physically based energy balance methods compared to more
+2015; Essery et al., 2025; e.g., Parviainen \& Pomeroy, 2000), as a
+function of air temperature (Roesch et al., 2001), or a function of
+ice-bulb temperature (Ellis et al., 2010; Floyd, 2012). Sublimation is
+generally represented using a coupled energy and mass balance approach
+(e.g., Essery et al., 2003; Pomeroy et al., 1998b; Verseghy, 2017). The
+Essery et al. (2003) and Pomeroy et al. (1998b) approaches differ in
+that Pomeroy et al. (1998b) does not include longwave radiation in the
+canopy snow energy balance. Both the Essery et al. (2003) and Pomeroy et
+al. (1998b) parameterisations decrease the latent heat flux from snow
+intercepted in the canopy as the canopy fills up with snow and its
+specific surface area decreases. However, these parameterisations are
+based on estimates of maximum canopy snow load which may underestimate
+true maxima (Cebulski \& Pomeroy, 2025b; Lundquist et al., 2021; Storck
+et al., 2002) and should be reconsidered using a larger maximum load or
+an approach that avoids prescribing a maximum load. The merits of
+including more physically based energy balance methods compared to more
 empirically based functions for calculating snowmelt and sublimation
 have not been directly assessed using an event-based process
-investigation.
+investigation. Some models vertically discretize the canopy into
+multiple layers (e.g., Clark et al., 2015) or into two layers (e.g.,
+Essery et al., 2025) to better capture vertical gradients in the canopy
+energy balance---for instance, enhanced solar radiation and turbulent
+exchanges near the canopy top relative to the lower canopy. However,
+uncertainties in generating forcing data at different canopy heights can
+limit the effectiveness of these multi-layer approaches. In contrast,
+other schemes represent the canopy as a single layer (Pomeroy et al.,
+2022; Verseghy, 2017).
 
 Quantifying individual canopy snow ablation processes including
 unloading, wind redistribution, melt, drip, and sublimation remains
@@ -470,43 +452,43 @@ Mountain Research Basin (FMRB), Alberta, Canada, 51° N, 115° W, a
 continental headwater basin in the Canadian Rockies. The site is located
 2100 m above sea level on a ridge covered by mature fir and spruce
 forest. Air temperature, humidity, and wind speed were measured at a
-height of 4.3 m at Forest Tower (FT) Station
-(Figure~\ref{fig-site-map}). Shear stress was calculated using the
-EddyPro software (LI-COR Biosciences) based on high-frequency wind
-measurements from a CSAT3 three-dimensional sonic anemometer (Campbell
-Scientific) installed at 3.0 m at FT station. The CSAT3 was occasionally
-covered in snow during the analysis period, and thus to provide a
-complete record of shear stress, a linear relationship was established
-between shear stress derived from the CSAT3 and the square of wind speed
-measured at 4.3 m at the FT station (\emph{R\textsuperscript{2}} = 0.71,
+height of 4.3 m at Forest Tower Station (Figure~\ref{fig-site-map}).
+Shear stress was calculated using the EddyPro software (LI-COR
+Biosciences) based on high-frequency wind measurements from a CSAT3
+three-dimensional sonic anemometer (Campbell Scientific) installed at
+3.0 m at Forest Tower station. The CSAT3 was occasionally covered in
+snow during the analysis period, and thus to provide a complete record
+of shear stress, a linear relationship was established between shear
+stress derived from the CSAT3 and the square of wind speed measured at
+4.3 m at the Forest Tower station (\emph{R\textsuperscript{2}} = 0.71,
 \emph{p} \textless{} 0.05). This relationship was then used to gap-fill
 shear stress during periods when the CSAT3 was snow-covered. The
 precipitation rate was measured by an Alter-shielded OTT Pluvio weighing
 precipitation gauge installed 2.6 m above ground at the adjacent
-Powerline (PWL) Station (Figure~\ref{fig-site-map}). Incoming and
-outgoing solar radiation was measured by a Kipp \& Zonen CNR4
-4-Component Net Radiometer installed 3.27 m above the ground at Fortress
-Ridge Station (FRS) 2.0 km to the northwest of FT station (50.8° N,
-115.2° W). This windy exposed site was selected to reduce snow
-accumulation on the radiometers, in addition to the CNR4's built-in
-heating element. Three subcanopy lysimeters, consisting of plastic
-horse-watering troughs with an opening of 0.9 m\textsuperscript{2} and
-depth of 20 cm suspended from a load cell, were installed to measure
-subcanopy snow accumulation. A weighed tree lysimeter (subalpine fir)
-suspended from a load cell (Artech S-Type 20210-100) measured the weight
-of canopy snow load (kg) and was scaled to an areal estimate of snow
-load (mm) using snow surveys as in Pomeroy \& Schmidt (1993). To isolate
-the subcanopy lysimeter measurements of canopy snow unloading from
-throughfall, 15-min intervals were selected that had no atmospheric
-precipitation based on the precipitation gauge at PWL. The weighed tree
-and timelapse imagery also were used to confirm there was no atmospheric
-precipitation and to identify periods where snow was intercepted in the
-canopy and ablation was possible. Four tipping bucket rain gauges---3
-Texas Electronics TR-525M and 1 Hyquest Solutions TB4MM---were installed
-along a 15 m transect adjacent to the dense canopy subcanopy lysimeter
-to quantify sub-canopy drip from melting intercepted snow. Additional
-details on this study site and the meteorological and lysimeter
-measurements have been described in Cebulski \& Pomeroy (2025b).
+Powerline Station (Figure~\ref{fig-site-map}). Incoming and outgoing
+solar radiation was measured by a Kipp \& Zonen CNR4 4-Component Net
+Radiometer installed 3.27 m above the ground at Fortress Ridge Station
+2.0 km to the northwest of Forest Tower station (50.8° N, 115.2° W).
+This windy exposed site was selected to reduce snow accumulation on the
+radiometers, in addition to the CNR4's built-in heating element. Three
+subcanopy lysimeters, consisting of plastic horse-watering troughs with
+an opening of 0.9 m\textsuperscript{2} and depth of 20 cm suspended from
+a load cell, were installed to measure subcanopy snow accumulation. A
+weighed tree lysimeter (subalpine fir) suspended from a load cell
+(Artech S-Type 20210-100) measured the weight of canopy snow load (kg)
+and was scaled to an areal estimate of snow load (mm) using snow surveys
+as in Pomeroy \& Schmidt (1993). To isolate the subcanopy lysimeter
+measurements of canopy snow unloading from throughfall, 15-min intervals
+were selected that had no atmospheric precipitation based on the
+precipitation gauge at Powerline. The weighed tree and timelapse imagery
+also were used to confirm there was no atmospheric precipitation and to
+identify periods where snow was intercepted in the canopy and ablation
+was possible. Four tipping bucket rain gauges---3 Texas Electronics
+TR-525M and 1 Hyquest Solutions TB4MM---were installed along a 15 m
+transect adjacent to the dense canopy subcanopy lysimeter to quantify
+sub-canopy drip from melting intercepted snow. Additional details on
+this study site and the meteorological and lysimeter measurements have
+been described in Cebulski \& Pomeroy (2025b).
 
 \begin{figure}[htbp]
 
@@ -532,11 +514,11 @@ implement calculations of the canopy snow energy and mass budget. A full
 description of the CRHM platform is described in Pomeroy et al. (2022)
 and the source code is available at
 https://github.com/srlabUsask/crhmcode. The climate forcing data used to
-run CRHM was from station-based fifteen-minute interval measurements of
-air temperature, relative humidity, wind speed, precipitation, and
-incoming solar radiation from the FT, PWL, and FRS stations. CRHM
-incorporates a flexible modular design allowing the user to select
-various modules (parameterisations) that represent hydrological
+run CRHM was provided from station-based fifteen-minute interval
+measurements of air temperature, relative humidity, wind speed,
+precipitation, and incoming solar radiation from the station
+measurements. CRHM incorporates a flexible modular design allowing the
+user to select various parameterisations that represent hydrological
 processes. The phase of atmospheric precipitation was determined from
 the energy balance of falling hydrometeors (Harder \& Pomeroy, 2013). A
 new CRHM module was created here to simulate the coupled mass and energy
@@ -544,7 +526,9 @@ balance of snow intercepted in the canopy. The energy balance is
 described in detail in Section~\ref{sec-ebal} and the updates to the
 mass balance through revisions to the canopy snow unloading empirical
 functions are presented in Section~\ref{sec-dry-unld} and
-Section~\ref{sec-melt-unld}.
+Section~\ref{sec-melt-unld}. Due to uncertainties in estimating model
+forcing data and measuring canopy snow ablation at varying canopy
+heights, a single layer canopy snow model was implemented in CRHM.
 
 \subsection{Canopy Snow Mass Balance}\label{sec-mbal}
 
@@ -572,8 +556,8 @@ s\textsuperscript{-1}) resulting from canopy snowmelt (\(q_{melt}\), mm
 s\textsuperscript{-1}), \(q_{wind}^{veg}\) is the wind transport rate in
 or out of the control volume (mm s\textsuperscript{-1}), and
 \(q_{sub}^{veg}\) is the intercepted snow sublimation rate (mm
-s\textsuperscript{-1}) which includes any evaporation of liquid water in
-the canopy. Figure 1 in Cebulski \& Pomeroy (2025a) presents a visual
+s\textsuperscript{-1}) which also includes evaporation of liquid water
+in the canopy. Figure 1 in Cebulski \& Pomeroy (2025a) presents a visual
 representation of this mass balance.
 
 \subsection{Mass Balance
@@ -584,22 +568,23 @@ hereafter referred to as CP25 (described in Section~\ref{sec-dry-unld}
 and Section~\ref{sec-melt-unld}), three other canopy snow models were
 implemented in CRHM following previous studies by Ellis et al. (2010)
 and Floyd (2012) (E10), Roesch et al. (2001) (R01), and Andreadis et al.
-(2009) who built on observations by Storck et al. (2002) (SA09). The E10
-model includes canopy snow sublimation as described in Pomeroy et al.
-(1998b), dry snow unloading as a function of canopy snow load from
-Hedstrom \& Pomeroy (1998) with modifications described in Ellis et al.
-(2010) and Floyd (2012) to handle canopy snow melt and drip processes
-using an ice-bulb temperature threshold. The R01 model represents dry
-snow unloading, melt, and drip using linear functions of wind speed and
-air temperature, while sublimation is simulated using the
-parameterisation from Pomeroy et al. (1998b). The SA09 model unloads
-snow as a ratio of the canopy snowmelt rate, following observations by
-Storck et al. (2002) and does not include dry snow unloading. The
-snowmelt rate from Equation~\ref{eq-eb} was used to calculate the
-unloading rate for the Andreadis et al. (2009) unloading and thus
-differs from the energy balance routine described in their study. Canopy
-snow sublimation in SA09 was represented based on the Essery et al.
-(2003) parameterisation (Equation~\ref{eq-ql}) as implemented in CP25.
+(2009) who built on observations by Storck et al. (2002) (SA09)
+(Table~\ref{tbl-model-desc}). The E10 model includes canopy snow
+sublimation as described in Pomeroy et al. (1998b), dry snow unloading
+as a function of canopy snow load from Hedstrom \& Pomeroy (1998) with
+modifications described in Ellis et al. (2010) and Floyd (2012) to
+handle canopy snow melt and drip processes using an ice-bulb temperature
+threshold. The R01 model represents dry snow unloading, melt, and drip
+using linear functions of wind speed and air temperature, while
+sublimation is simulated using the parameterisation from Pomeroy et al.
+(1998b). The SA09 model unloads snow as a ratio of the canopy snowmelt
+rate, following observations by Storck et al. (2002) and does not
+include dry snow unloading. The snowmelt rate from Equation~\ref{eq-eb}
+was used to calculate the unloading rate for the Andreadis et al. (2009)
+unloading and thus differs from the energy balance routine described in
+their study. Canopy snow sublimation in SA09 was represented based on
+the Essery et al. (2003) parameterisation (Equation~\ref{eq-ql}) as
+implemented in CP25.
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0600}}
@@ -636,8 +621,10 @@ E10 & Ellis et al., (2010); Hedstrom \& Pomeroy (1998) &
 SA09 & Storck et al., (2002); Andreadis et al., (2009) & NA &
 \(f(\text{canopy snowmelt rate})\), Eq. 33 in Andreadis et al.,
 (2009) \\
-R01 & Roesch et al., (2001) & \(f(\text{snow load}, \text{wind speed})\)
-& \(f(\text{snow load, air temp.})\) \\
+R01 & Roesch et al., (2001) &
+\(f(\text{snow load}, \text{wind speed})\), Eq. 15 in Roesch et al.,
+(2001) & \(f(\text{snow load, air temp.})\), Eq. 14 in Roesch et al.,
+(2001) \\
 
 \end{longtable}
 
@@ -857,11 +844,11 @@ autocorrelation---the 15-min interval measurements of unloading were
 aggregated into bins defined by ranges of the predictor variables.
 Independent variable bins that had less than 0.1 mm of accumulated snow
 were removed, resulting in a mean instrument error of +/- 2\% for the
-remaining bins. Air temperature and wind speed were measured at the FT
-station, canopy snow load from the weighed tree lysimeter (scaled to the
-canopy of each respective subcanopy lysimeter), and canopy snowmelt and
-sublimation simulated using CRHM with the CP25 model as described in the
-previous section.
+remaining bins. Air temperature and wind speed were measured at Forest
+Tower station, canopy snow load from the weighed tree lysimeter (scaled
+to the canopy of each respective subcanopy lysimeter), and canopy
+snowmelt and sublimation simulated using CRHM with the CP25 model as
+described in the previous section.
 
 Relationships representing the canopy snow unloading process using
 differing combinations of predictor variables including canopy snow
@@ -980,24 +967,26 @@ instrument error.}
 
 \end{figure}%
 
+\pagebreak
+
 \subsubsection{Dry Snow Unloading}\label{sec-dry-unld}
 
 A linear relationship with shear stress and an exponential relationship
 with wind speed, each combined with snow load, produced the lowest
 errors when predicting unloading during the non-melt periods. The RMSE
-values were 0.155 mm hr\textsuperscript{-1} and mm
+values were 0.155 mm hr\textsuperscript{-1} and 0.11 mm
 hr\textsuperscript{-1} for the shear stress and wind speed
 relationships, respectively, with corresponding
-\emph{R\textsuperscript{2}} values of 0.58 and 0.58
+\emph{R\textsuperscript{2}} values of 0.58 and 0.54
 (Table~\ref{tbl-dry-unld}). In addition to model approximation error,
 uncertainty arose from instrument limitations and from unloading
-processes unrelated to wind. Both the wind speed and shear stress
-relationships violated the homoscedasticity assumption (Breusch-Pagan
-test \emph{p} \textless{} 0.05; see Supporting Information section),
-with residual variance increasing for higher unloading rates. To address
-this issue, generalized least squares regression was applied, which
-accounts for differing residual variances by appropriately weighting
-observations.
+processes unrelated to wind. The shear stress relationship fit using
+ordinary least squares violated the homoscedasticity assumption
+(Breusch-Pagan test \emph{p} \textless{} 0.05; see Supporting
+Information section), with residual variance increasing for higher
+unloading rates. To address this issue, generalized least squares
+regression was applied, which accounts for differing residual variances
+by appropriately weighting observations.
 
 Additional relationships that had differing combinations of canopy snow
 load, shear stress, sublimation, air temperature, or ice-bulb
@@ -1010,17 +999,16 @@ predictor combinations---specifically shear stress with wind speed, air
 temperature with ice-bulb temperature depression, and sublimation rate
 with ice-bulb temperature depression---were strongly correlated (Pearson
 or Spearman correlation coefficients \textgreater{} 0.7) and therefore
-were not used concurrently in any model evaluation. The Supporting
-Information provides full correlation matrices and complete formulations
-of the additional models tested.
+were not used together in any model evaluation. The full correlation
+matrices are provided in the Supporting Information.
 
-Although the wind speed relationship had reduced RMSE, the improved
-accuracy based on higher \emph{R\textsuperscript{2}} and \emph{d}
-statistics and lower mean bias, coupled with the better physical
-representation of kinetic energy, indicate that shear stress is the
-preferred predictor of dry snow unloading (Table~\ref{tbl-dry-unld}).
-Accordingly, the dry unloading rate, \(q_{unld}^{dry}\), was represented
-as a linear function of shear stress:
+Although the wind speed relationship had reduced RMSE, the higher
+\emph{R\textsuperscript{2}} and \emph{d} statistics and lower mean bias,
+coupled with the better physical representation of kinetic energy,
+indicate that shear stress is the preferred predictor of dry snow
+unloading (Table~\ref{tbl-dry-unld}). Accordingly, the dry unloading
+rate, \(q_{unld}^{dry}\), was represented as a linear function of shear
+stress:
 
 \begin{equation}\phantomsection\label{eq-q-unld-tau}{
 q_{unld}^{dry} = L \cdot \tau_{mid} \cdot a
@@ -1043,7 +1031,7 @@ canopy snowmelt. The dots represent mean unloading rates within bins of
 shear stress for three canopy snow load levels; error bars indicate +/-
 1 standard deviation. The fitted lines show predictions from
 Equation~\ref{eq-q-unld-tau}. The canopy snow load corresponds to the
-midpoint of each bin (0--2, 2--6, 6--20 kg m\textsuperscript{-2}).}
+midpoint of each bin (0--2, 2--6, 6--20 mm).}
 
 \end{figure}%
 
@@ -1119,10 +1107,6 @@ b & NA & NA & \(3.93 \times 10^{-01}\) & NA & \(-3.96 \times 10^{-03}\)
 & \(7.26 \times 10^{-02}\) & \(7.09 \times 10^{-01}\) \\
 \(p\)(b) & NA & NA & p \textless{} 0.05 & NA & n.s. & NA for GLS & NA
 for GLS \\
-HS & Pass & Pass & Pass & Pass (n.s.) & Pass (n.s.) & Pass & Pass \\
-Norm & Fail (p \textless{} 0.05) & Pass (n.s.) & Pass (n.s.) & Fail (p
-\textless{} 0.05) & Fail (p \textless{} 0.05) & Fail (p \textless{}
-0.05) & Fail (p \textless{} 0.05) \\
 
 \end{longtable}
 
@@ -1139,24 +1123,24 @@ subcanopy lysimeters (\emph{p} \textless{} 0.05,
 hr\textsuperscript{-1}) (Table~\ref{tbl-melt-unld}). A separate
 relationship including canopy snow load and the dimensionless canopy
 snowmelt rate explained less variability (\emph{p} \textless{} 0.05,
-\emph{R\textsuperscript{2}} = 0.37, RMSE = 0.39 mm
-hr\textsuperscript{-1}) suggesting wind driven unloading is also
-prevalent when intercepted snow is melting. The superior performance of
+\emph{R\textsuperscript{2}} = 0.37) with a slightly higher RMSE of 0.39
+mm hr\textsuperscript{-1}, suggesting wind driven unloading is also
+prevalent when intercepted snow is melting. In contrast, the
+temperature-based predictors exhibited lower performance (\emph{p}
+\textless{} 0.05, \emph{R\textsuperscript{2}} \(\le\) 0.1, RMSE
+\(\approx\) 0.5 mm hr\textsuperscript{-1}). The superior performance of
 the dimensionless snowmelt rate compared with air temperature and
 ice-bulb temperature predictors reflects its stronger physical basis, as
 it represents the total energy available for melt from all components of
-the energy balance. In contrast, the temperature-based predictors
-exhibited lower performance (\emph{p} \textless{} 0.05,
-\emph{R\textsuperscript{2}} \(\le\) 0.1, RMSE \(\approx\) 0.5 mm
-hr\textsuperscript{-1}). Certain predictor pairs---namely shear stress
-with wind speed and air temperature with ice-bulb
-temperature---displayed strong linear and nonlinear associations
-(Pearson or Spearman coefficients \textgreater{} 0.7) and were therefore
-not included together in any model. Canopy snowmelt rate, air
-temperature, and ice-bulb temperature exhibited moderate correlation
-(Pearson or Spearman coefficients \textgreater{} 0.5) but were excluded
-as their known physical interdependence (full correlation statistics are
-provided in the Supporting Information).
+the energy balance. Certain predictor pairs---namely shear stress with
+wind speed and air temperature with ice-bulb temperature---displayed
+strong linear and nonlinear associations (Pearson or Spearman
+coefficients \textgreater{} 0.7) and were therefore not included
+together in any model. Canopy snowmelt rate, air temperature, and
+ice-bulb temperature exhibited moderate correlation (Pearson or Spearman
+coefficients \textgreater{} 0.5) but were excluded as their known
+physical interdependence (full correlation statistics are provided in
+the Supporting Information).
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1000}}
@@ -1173,8 +1157,8 @@ coefficient of determination (\(R^2\)), and index of agreement (\(d\)).
 Row names (a) and (b) indicate coefficients, with p(a) and p(b) as their
 p-values. Equation variables include: melt driven unloading
 (\(q_{unld}^{melt}\), mm hr\textsuperscript{-1}) and canopy snow melt
-rate (\(q_{melt}\)), with the remaining variables defined in
-Table~\ref{tbl-dry-unld}.}
+rate (\(q_{melt}\), mm hr\textsuperscript{-1}), with the remaining
+variables defined in Table~\ref{tbl-dry-unld}.}
 
 \tabularnewline
 
@@ -1209,8 +1193,6 @@ a & \(2.21 \times 10^{-01}\) & \(2.74 \times 10^{-01}\) &
 & p \textless{} 0.05 \\
 b & \(1.54 \times 10^{+01}\) & NA & NA & NA \\
 \(p\)(b) & n.s. & NA & NA & NA \\
-HS & Pass (n.s.) & Pass (n.s.) & Pass (n.s.) & Pass (n.s.) \\
-Norm & Pass (n.s.) & Pass (n.s.) & Pass (n.s.) & Pass (n.s.) \\
 
 \end{longtable}
 
@@ -1252,26 +1234,25 @@ R = m \cdot L + b
 }\end{equation}
 
 where \(m\) and \(b\) were determined as 0.15 and -0.43, respectively,
-using the ordinary least squares regression shown in
-Figure~\ref{fig-unld-melt-ratio}. This resulted in a statistically
-significant relationship (\emph{p} \textless{} 0.05,
-\emph{R\textsuperscript{2}} = 0.73, RMSE = 0.79 (-)). The relationship
-exhibited heteroscedasticity, with residual variance increasing at
-higher unloading-to-melt ratios (Breusch-Pagan test \emph{p} \textless{}
-0.05; see Supporting Information) and was accounted for by using a
-generalised least squares regression. See the Supporting Information
-section for additional statistical details. Additional observations of
-canopy snowmelt from the subcanopy rain gauges were also used to
-estimate \(R\) (Figure~\ref{fig-unld-melt-ratio}). The number of usable
-observations was limited to three events (out of the 5 warm \& humid
-events) due to freeze-thaw events that seized up the tipping bucket
-mechanisms in the rain gauges, however, these measurements are still
-useful in providing some validation of the CRHM canopy snowmelt/drip
-calculations (Figure~\ref{fig-cml-tb}). The CRHM-estimated cumulative
-drip was higher than the subcanopy rain gauges for two out of the three
-melt events. Differences in the timing and magnitude of the observed and
-simulated values were expected due to both instrument uncertainties in
-the rain gauges from freezing of rain gauges and thawing of snow in the
+using the generalised least squares regression shown in
+Figure~\ref{fig-unld-melt-ratio} (\emph{R\textsuperscript{2}} = 0.73,
+RMSE = 0.79 (-)). The ordinarly least squares regression exhibited
+heteroscedasticity, with residual variance increasing at higher
+unloading-to-melt ratios (Breusch-Pagan test \emph{p} \textless{} 0.05;
+see Supporting Information) and was accounted for by using a generalised
+least squares regression. See the Supporting Information section for
+additional statistical details. Additional observations of canopy
+snowmelt from the subcanopy rain gauges were also used to estimate \(R\)
+(Figure~\ref{fig-unld-melt-ratio}). The number of usable observations
+was limited to three events (out of the 5 warm \& humid events) due to
+freeze-thaw events that seized up the tipping bucket mechanisms in the
+rain gauges, however, these measurements are still useful in providing
+some validation of the CRHM canopy snowmelt/drip calculations
+(Figure~\ref{fig-cml-tb}). The CRHM-estimated cumulative drip was higher
+than the subcanopy rain gauges for two out of the three melt events.
+Differences in the timing and magnitude of the observed and simulated
+values were expected due to both instrument uncertainties in the rain
+gauges from freezing of rain gauges and thawing of snow in the
 collection funnels, and in the canopy snow energy balance simulation.
 
 \begin{figure}[htbp]
@@ -1307,6 +1288,8 @@ humid events, with dates labelled as year-month-day.}
 
 \end{figure}%
 
+\pagebreak
+
 \subsection{New Canopy Snow Model}\label{new-canopy-snow-model}
 
 The CP25 model is based on the canopy snow mass balance formulation
@@ -1317,7 +1300,7 @@ as:
 q_{tf} = [(1 - C_p) \alpha] q_{sf}
 \end{equation}
 
-where \(C_p\) is the leaf contact area calculated using Equation 10 in
+and \(C_p\) is the leaf contact area calculated using Equation 10 in
 Cebulski \& Pomeroy (2025b) and \(\alpha\) is an efficiency constant.
 
 Since \(q_{unld}^{melt}\) naturally only occurs while intercepted snow
@@ -1325,9 +1308,9 @@ is melting, and wind-induced unloading was also found to occur over the
 melt periods, total canopy snow unloading, \(q_{unld}\) (mm
 hr\textsuperscript{-1}), was calculated as:
 
-\[
+\begin{equation}\phantomsection\label{eq-unld}{
 q_{unld} = q_{unld}^{melt} + q_{unld}^{dry}
-\]
+}\end{equation}
 
 where melt-driven unloading (\(q_{unld}^{melt}\)) was modelled using
 Equation~\ref{eq-q-unld-melt}, while dry snow unloading
@@ -1347,14 +1330,14 @@ Models}\label{event-based-evaluation-of-canopy-snow-ablation-models}
 The updated canopy snow model (CP25), as well as the existing models
 R01, SA09, and E10 (Table~\ref{tbl-model-desc}) were evaluated using
 weighed tree lysimeter measurements of canopy load during seventeen
-canopy snow ablation events. The seventeen ablation events had air
-temperatures ranging from -30.5°C to +6.9°C and wind speeds from calm to
-5.3 m s\textsuperscript{-1} (Figure~\ref{fig-event-met-boxplot}). This
-range of meteorological conditions is particularly wide and spans
-conditions typical of the cold boreal to temperate maritime needleleaf
-forests. Events were classified as cold \& dry, cold \& humid, warm \&
-dry, and warm \& humid based on the median event air temperature (above
-or below 0°C) and relative humidity (above or below 65\%)
+canopy snow ablation events. These events had air temperatures ranging
+from -30.5°C to +6.9°C and wind speeds from calm to 5.3 m
+s\textsuperscript{-1} (Figure~\ref{fig-event-met-boxplot}). This range
+of meteorological conditions is particularly wide and spans conditions
+typical of the cold boreal to temperate maritime needleleaf forests.
+Events were classified as cold \& dry, cold \& humid, warm \& dry, and
+warm \& humid based on the median event air temperature (above or below
+0°C) and relative humidity (above or below 65\%)
 (Figure~\ref{fig-event-met-boxplot}).
 
 \begin{figure}[htbp]
@@ -1368,12 +1351,11 @@ or below 0°C) and relative humidity (above or below 65\%)
 \caption{\label{fig-event-met-boxplot}Boxplots of showing the
 distribution of meteorological measurements of air temperature, relative
 humidity, and wind speed over each of the seventeen selected ablation
-events. Air temperature, relative humidity, and wind speed were measured
-at FT station. Note: the rectangle vertical extent represents the
-interquartile range (25\textsuperscript{th} to 75\textsuperscript{th}
-percentile), the horizontal line within each box indicates the median,
-and the whiskers extend to 1.5 times the interquartile range. Circular
-points beyond the whiskers represent outliers.}
+events. Note: the rectangle vertical extent represents the interquartile
+range (25\textsuperscript{th} to 75\textsuperscript{th} percentile), the
+horizontal line within each box indicates the median, and the whiskers
+extend to 1.5 times the interquartile range. Circular points beyond the
+whiskers represent outliers.}
 
 \end{figure}%
 
@@ -1400,10 +1382,10 @@ mean biases (Figure~\ref{fig-mb-boxplot}) and larger mean bias of over
 0.42 mm hr\textsuperscript{-1} during the warm \& humid events, compared
 to CP25 and SA09. The rate of ablation was slower for canopy snow loads
 below \textasciitilde1.5 mm and \textasciitilde0.3 mm for CP25 and SA09
-respectively; due to their differing liquid water storage capacities
-(Figure~\ref{fig-obs-mod-w-tree}). For the warm events other than
-2022-04-23, the observed decline in ablation rate occurs around 2 to 3
-mm, exceeding the threshold predicted by all models.
+respectively; due to their differing liquid water storage capacities and
+unloading rates (Figure~\ref{fig-obs-mod-w-tree}). For the warm events
+other than 2022-04-23, the observed decline in ablation rate occurs
+around 2 to 3 mm, exceeding the threshold predicted by all models.
 
 The warm \& dry events had consistent performance with mean biases of
 0.02 mm hr\textsuperscript{-1} for each of the four models
@@ -1497,13 +1479,12 @@ across resampled combinations of canopy snow ablation events, the CP25
 model consistently demonstrated the highest performance across all error
 metrics, including mean bias, RMSE, NSE, and KGE
 (Figure~\ref{fig-mb-boxplot}). In contrast, the E10 and SA09 models
-showed the poorest performance, likely due to the absence of key
-processes such as wind-induced unloading (E10 and SA09) and
-energy-balance-based melt (E10). The R01 model showed the second-highest
-performance, which may reflect the inclusion of both melt and
-wind-induced unloading processes, although its reliance on an
-air-temperature index melt formulation likely explains its reduced
-accuracy relative to CP25.
+showed the poorest performance, due to the absence of key processes such
+as wind-induced unloading (E10 and SA09) and energy-balance-based melt
+(E10 and R01). The R01 model showed the second-highest performance,
+which may reflect the inclusion of both melt and wind-induced unloading
+processes, although its reliance on an air-temperature index melt
+formulation likely explains its reduced accuracy relative to CP25.
 
 \begin{figure}[htbp]
 
@@ -1574,8 +1555,8 @@ intercepted in the canopy. The ratio of unloading to canopy snowmelt was
 found to increase linearly with increasing canopy snow load
 (Figure~\ref{fig-unld-melt-ratio}), which differs from Storck et al.
 (2002) who originally found the ratio of canopy snow unloading to melt
-to be constant at 0.4. The measurement difficulties noted by Storck et
-al. (2002) limited their estimate of this ratio to a single mid-December
+to be constant. The measurement difficulties noted by Storck et al.
+(2002) limited their estimate of this ratio to a single mid-December
 event, preventing any association with canopy snow load. Previous
 studies have identified relationships between melt-induced unloading and
 various meteorological parameters, including empirical functions of air
@@ -1588,89 +1569,82 @@ that temperature-related unloading increases occur primarily near the
 freezing point, eliminating the need for a separate temperature
 parameterisation beyond snowmelt-associated unloading processes.
 Furthermore, the statistical significance of shear stress as a predictor
-of unloading during melt events (Table~\ref{tbl-melt-unld}) supports the
-application of Equation~\ref{eq-q-unld-tau} during canopy snowmelt
-periods. However, further research is required to evaluate the
-efficiency of wind-driven unloading as snow transitions from dry to
-melting.
+of unloading during melt events (Table~\ref{tbl-melt-unld}), supports
+the application of the wind-induced unloading parameterisation during
+canopy snowmelt periods. However, further research is required to
+evaluate the efficiency of wind-driven unloading as snow transitions
+from dry to melting.
 
 Dry snow unloading was found to increase exponentially with wind speed
 and linearly with shear stress (Table~\ref{tbl-dry-unld}). These results
 differ from earlier research that has represented this process as a
 linear function of wind speed and canopy load (Bartlett \& Verseghy,
 2015; Katsushima et al., 2023; Roesch et al., 2001), as shown in the
-Supporting Information. The higher \emph{R\textsuperscript{2}} found for
-shear stress compared to wind speed for predicting unloading---when
-excluding melt events---is likely due to the physical relationship
-between shear stress force and kinetic energy transfer to the canopy,
-wind transport from the canopy, and movement of branches in the canopy
-induced by drag (shear) forces. The differing relationship presented
-here, compared to the R01 model, may be attributed to the development of
-that parameterisation using above canopy albedo as a proxy for canopy
-snow unloading (Bartlett \& Verseghy, 2015; Roesch et al., 2001). This
-approach would have included both unloading and sublimation processes,
-in addition to greater measurement uncertainties (Cebulski \& Pomeroy,
-2025a), and may have contributed to R01 overestimating wind-driven
-unloading (Figure~\ref{fig-obs-mod-w-tree}). Conversely, the subcanopy
-lysimeter measurements employed here provided a more direct
-quantification of canopy snow unloading rates. Additional factors that
-are not considered in the new parameterisations include wind erosion,
-branch movement, structural degradation, bond weakening, increased
-elasticity of branches (associated with species and age), snow density,
-and liquid water content. These factors would all directly have
-implications for the canopy snow ablation routines presented in this
-study. For example, compression of branches would increase the slope
-angle supporting intercepted snow increasing the likelihood of
-unloading. The addition of liquid water content in the canopy snow due
-to phase change can increase (Pomeroy \& Gray, 1995) or decrease
-, Figure~\ref{fig-unld-melt-ratio} cohesion and adhesion of snow clumps
-within the canopy which may also affect the dry-snow unloading rate,
-although this effect was not observed in this study. Sublimation of
-intercepted snow reduces its structural integrity (MacDonald, 2010), and
-equi-temperature metamorphism may increase density and cohesion both
-with differing associations with canopy snow unloading rates and the
-exposure of intercepted snow to turbulent energy exchanges. Although
-these factors did not emerge as dominant processes in this study, the
-parameterisations presented here should be tested in environments where
-these processes are expected.
+Supporting Information. The slightly higher performance of the shear
+stress relationship compared to wind speed---when excluding melt
+events---is likely due to the physical relationship between shear stress
+force and kinetic energy transfer to the canopy, wind transport from the
+canopy, and movement of branches in the canopy induced by drag (shear)
+forces. The differing relationship presented here, compared to the R01
+model, may be attributed to the development of the R01 parameterisation
+using above canopy albedo as a proxy for canopy snow unloading (Bartlett
+\& Verseghy, 2015; Roesch et al., 2001). This approach would have
+included both unloading and sublimation processes, in addition to
+greater measurement uncertainties (Cebulski \& Pomeroy, 2025a), and may
+have contributed to R01 overestimating wind-driven unloading
+(Figure~\ref{fig-mb-boxplot}). Conversely, the subcanopy lysimeter
+measurements employed here provided a more direct quantification of
+canopy snow unloading rates. Additional factors that are not considered
+in the new parameterisations include wind erosion, branch movement,
+structural degradation, bond weakening, increased elasticity of branches
+(associated with species and age), snow density, and liquid water
+content. These factors would all directly have implications for the
+canopy snow ablation routines presented in this study. For instance,
+variation in branch flexibility amongst tree species and age classes can
+alter how snow load affects branch angle, thereby changing the
+likelihood of unloading. The addition of liquid water content in the
+canopy snow due to phase change can increase (Pomeroy \& Gray, 1995) or
+decrease , Figure~\ref{fig-unld-melt-ratio} cohesion and adhesion of
+snow clumps within the canopy which may also affect the dry-snow
+unloading rate as meltwater refreezes, although this effect was not
+observed in this study. Sublimation of intercepted snow reduces its
+structural integrity (MacDonald, 2010), and equi-temperature
+metamorphism may increase density and cohesion both with differing
+associations with canopy snow unloading rates and the exposure of
+intercepted snow to turbulent energy exchanges, although these factors
+did not emerge as dominant processes in this study.
 
 \subsection{Performance Comparison of Ablation
 Models}\label{performance-comparison-of-ablation-models}
 
 The improved performance of the new CP25 model across a wide range of
-meteorological conditions demonstrates the advantages of incorporating
-comprehensive snow unloading processes coupled with physically based
-representations of the energy balance to simulate ablation
-(Figure~\ref{fig-bootstrap}). In contrast, existing models were limited
-by missing processes such as wind-driven unloading (SA09 and E10) or
-relied on temperature-dependent parameterisations of melt and drip
-processes which had limited transferability across differing events (R01
-and E10). Although the SA09 model---originally developed in a relatively
-warm maritime climate with limited wind influence (Storck et al.,
-2002)---performed similarly well to CP25 during most of the
-melt-dominated events, its exclusion of wind-induced unloading led to
-poor performance for the cold \& dry and cold \& humid events. This
-process omission caused SA09 to overestimate sublimation when averaged
-over all events (Figure~\ref{fig-partitioning}). Moreover, the constant
+meteorological conditions demonstrates the advantage of incorporating
+both dry snow and melt driven unloading processes and physically-based
+energy balance to simulate ablation (Figure~\ref{fig-bootstrap}). In
+contrast, existing models were limited by missing processes such as
+wind-driven unloading (SA09 and E10) or relied on temperature-dependent
+parameterisations of melt and drip processes which had limited
+transferability across differing events (R01 and E10). The constant
 canopy snow unloading to melt ratio of 0.4 in the SA09 model led to
 reduced performance for one melt event with canopy snow loads up to 30
-mm, whereas the CP25 model more accurately predicted ablation over this
-event. The low liquid water retention capacity and increased solid snow
-unloading for snow loads in SA09 also contributed to an underestimation
-of canopy loads during the end of most melt events
-(Figure~\ref{fig-obs-mod-w-tree}).
+mm and for all melt events for snow loads less than 1 mm, whereas the
+CP25 model more accurately predicted ablation a range of snow loads
+during the melt events (Figure~\ref{fig-obs-mod-w-tree}). The low liquid
+water retention capacity and increased solid snow unloading for lower
+snow loads also contributed to an underestimation of canopy loads during
+the end of most melt events for SA09 (Figure~\ref{fig-obs-mod-w-tree}).
 
 Models utilising temperature-based canopy snowmelt parameterisations
 (E10 and R01) exhibited inconsistent performance, particularly during
 warm \& humid events where they underestimated ablation
 (Figure~\ref{fig-mb-boxplot}). This was due to their reliance on air
 temperature or ice-bulb temperature as proxies for energy input into the
-canopy, which failed to represent the energy availability over these
-events. In contrast, all four models performed similarly during warm \&
-dry events, where air temperatures were closer to 0°C, and lower
-humidities increased the impact of cooling from canopy snow sublimation.
-The superior performance of the energy balance-based canopy snowmelt
-models (CP25 and SA09) during warm \& humid events likely reflects their
+canopy, which failed to represent available energy over these events. In
+contrast, all four models performed similarly during warm \& dry events,
+where air temperatures were closer to 0°C, and lower humidities
+increased the impact of cooling from canopy snow sublimation. The
+superior performance of the energy balance-based canopy snowmelt models
+(CP25 and SA09) during warm \& humid events likely reflects their
 ability to represent the differing energy balance over these events. The
 maximum canopy snow load threshold implemented in the E10 model was
 lower than observations from the weighed tree. This limitation offset
@@ -1683,15 +1657,13 @@ though---when combined with a comprehensive canopy snow ablation
 routine.
 
 CP25 provided a better representation of wind-driven unloading compared
-to R01 aside from one event with high wind speeds (\textgreater5 m
-s\textsuperscript{-1})---that cause wind redistribution/entrainment of
-snow into the atmosphere. Wind unloading parameters also may be
-influenced by tree species, forest structure, and snow characteristics
-(Lumbrazo et al., 2022), necessitating further field-based research on
-canopy snow unloading in diverse environments to assess their broader
-applicability. The infrequent occurrence of wind-transport from the
-canopy in our observations may account for underestimation of ablation
-during one strongly wind-dominated events by CP25 (2023-02-24,
+to R01 (Figure~\ref{fig-mb-boxplot}), substantial errors persisted
+across all models during these events. Wind unloading parameters also
+may be influenced by tree species, forest structure, and snow
+characteristics (Lumbrazo et al., 2022), necessitating further
+field-based research on canopy snow unloading in diverse environments to
+assess their broader applicability. All models underestimated ablation
+for the strongest wind-dominated event (2023-02-24,
 Figure~\ref{fig-obs-mod-w-tree}). Wind transport of canopy snow to the
 nearby Powerline snowfall gauge occurred during this event, but was a
 small fraction of canopy snow ablation, 1.3 mm of a total of 20 mm of
@@ -1713,47 +1685,39 @@ sublimated and/or evaporated as liquid meltwater versus unloading and
 drip depending on the canopy snow ablation model selected
 (Figure~\ref{fig-partitioning}). For example, the exclusion of
 wind-driven unloading processes in the SA09 model resulted in 100\% of
-intercepted snow reaching the atmosphere for both the cold \& dry and
-cold \& humid events. This differed considerably from the CP25 model
-which returned 70\% and 24\% of snow back to the atmosphere for the cold
-\& dry and cold \& humid events, respectively. Although E10 and CP25
-include differing process representations, they predicted comparable
-fractions of snow reaching the ground versus returning to the
-atmosphere. The agreement between CP25 and E10 is notable, since the E10
-has been tested and found to perform well in predicting subcanopy
-snowpacks around the world (Ellis et al., 2010; Gelfan et al., 2004;
-Pomeroy et al., 2022; Sanmiguel-Vallelado et al., 2022). However, the
-results shown here reveal that E10's individual process representations
-can be in error, particularly under warm and windy conditions,
-potentially explaining the difficulties when applying E10 at locations
-where parameterisation errors fail to offset one another (Lumbrazo et
-al., 2022; Lundquist et al., 2021). For example, at locations which
-intercept a larger amount of snow, the E10 maximum canopy snow load
-would overestimate the amount of unloading, and a greater deviation
-between the E10 and CP25 model is expected.
+intercepted snow reaching the atmosphere via canopy snow sublimation for
+both the cold \& dry and cold \& humid events. This differed
+considerably from the CP25 model which returned 70\% and 24\% of snow
+back to the atmosphere for the cold \& dry and cold \& humid events,
+respectively. Although E10 and CP25 include differing process
+representations, they predicted comparable fractions of snow reaching
+the ground versus returning to the atmosphere
+(Figure~\ref{fig-partitioning}). The agreement between CP25 and E10 is
+notable, since the E10 has been tested and found to perform well in
+predicting subcanopy snowpacks around the world (Ellis et al., 2010;
+Gelfan et al., 2004; Pomeroy et al., 2022; Sanmiguel-Vallelado et al.,
+2022). However, the results shown here reveal that E10's individual
+process representations can be in error, particularly under warm and
+windy conditions, potentially explaining the difficulties when applying
+E10 at locations where parameterisation errors fail to offset one
+another (Lumbrazo et al., 2022; Lundquist et al., 2021). For example, at
+locations which intercept a larger amount of snow, the E10 maximum
+canopy snow load would overestimate the amount of unloading, and a
+greater deviation between the E10 and CP25 model is expected.
 
 \subsection{Future Directions}\label{future-directions}
 
 Physically based approaches such as CP25 are particularly relevant for
-predictions of snow hydrology under a changing climate, where warming
-may reduce the reliability of empirically derived canopy snowmelt models
-like E10 and R01. The improved representation of melt events by CP25 and
-SA09 demonstrates the reliability of more physically based methods
-across a range of meteorological conditions, compared to
-temperature-based canopy snowmelt routines (E10 and R01) which had
-reduced performance over these events. Moreover, a comprehensive
-representation of both dry-snow and melt-induced unloading was shown to
-be crucial in correctly representing snowfall partitioning at this study
-site. This is expected to also be important in other regions which are
+predictions of snowfall regimes in forested basins under a changing
+climate, where warming may reduce the reliability of empirically derived
+canopy snowmelt models like E10 and R01. Other regions that are
 transitioning from cold dry snow unloading and canopy snow sublimation
 dominated regimes to increased drip and melt-driven unloading processes
-with climate warming. Amongst all canopy snow ablation processes, dry
-snow unloading introduced the most uncertainty. Although the revised
-model performed best for this dataset, further validation is required
-across a wider range of climates and forest structures. Since unloading,
-melt, and sublimation are competitive ablation processes, they strongly
-influence whether snow is returned to the atmosphere or reaches the
-ground.
+with climate warming (e.g., Fang \& Pomeroy, 2020) are expected to also
+benefit from this comprehensive representation of canopy snow ablation
+processes. Although the revised model performed best for this dataset,
+further validation is required across a wider range of climates and
+forest compositions.
 
 The density of snow intercepted in the canopy is expected to influence
 both dry snow and melt-induced unloading processes---and is incorporated
@@ -1763,57 +1727,70 @@ represented in any of the ablation calculations included in this study.
 Fresh, low-density snow typically exhibits lower cohesion and adhesion
 compared to older snow, which may have undergone freeze-thaw cycles or
 equi-temperature metamorphism, processes that increase snow density and
-bond strength hence, increasing the mechanical resistance to unloading.
-While vapour deposition and rime-ice accumulation are simulated in some
-models {[}e.g., Clark et al. (2015); Ellis et al. (2010); this study{]}
-via the latent heat flux parameterisation, it is usually treated as
-additions to the canopy snow reservoir where the unloading rate is
-typically overestimated (Lumbrazo et al., 2022). Due to the cold
-continental location of this study, canopy rime and/or frost deposition
-was not observed, and thus the unloading rates presented here would also
-likely overestimate unloading rates for ice. Thus, the transferability
-of these results may be limited in maritime climates where deposition of
-rime and frost is more likely due to the higher humidity and warmer
-temperatures. The addition of a canopy ice reservoir could help better
-represent this processes, however further research is needed to
-investigate how ablation rates differ in these environments.
+bond strength hence, increasing the mechanical resistance to unloading
+(Pomeroy \& Gray, 1995). While vapour deposition and rime-ice
+accumulation are simulated in some models {[}e.g., Clark et al. (2015);
+Ellis et al. (2010); this study{]} via the latent heat flux
+parameterisation, it is usually treated as additions to the canopy snow
+reservoir where the unloading rate is typically overestimated (Lumbrazo
+et al., 2022). Due to the cold continental location of this study,
+canopy rime and/or frost deposition was not observed, and thus the
+unloading rates presented here would also likely overestimate unloading
+rates for ice. Thus, the transferability of these results may be limited
+in maritime climates where deposition of rime and frost is more likely
+due to the higher humidity and warmer temperatures. The addition of a
+canopy ice reservoir could help better represent this processes, however
+further research is needed to investigate how ablation rates differ in
+these environments.
+
+This study implemented a single layer snow model for snow intercepted in
+the canopy. The unloading relationships developed here, along with the
+parameterisation for initial interception presented in Cebulski \&
+Pomeroy (2025b), are expected to be applicable in multi-layer canopy
+snow models (e.g., Clark et al., 2015; Essery et al., 2025) with
+modifications to the energy balance calculations presented in
+Section~\ref{sec-ebal}. However, uncertainties in generating forcing
+data and collecting canopy snow ablation measurements at different
+canopy heights will likely influence the performance of these
+relationships when applied vertically within the canopy.
 
 Key limitations remain in measuring canopy snow sublimation using eddy
 correlation systems (Conway et al., 2018; Harding \& Pomeroy, 1996;
 Harvey et al., 2025; Helgason \& Pomeroy, 2012b; Parviainen \& Pomeroy,
 2000) and separating snow unloading from meltwater drip (Floyd, 2012;
 Storck et al., 2002), which limit the development and testing of canopy
-snow ablation parameterisations. Whilst separating initial interception
-and ablation processes (Cebulski \& Pomeroy, 2025a, 2025b), will improve
-process representations, these routines still need to be evaluated
-together against additional field observations. Incorporating the
-updated unloading schemes developed here could improve the
-representation of canopy snow ablation and, by extension, the
-partitioning of precipitation and canopy albedo in hydrological and land
-surface models. Nonetheless, further testing is needed across different
-sites, climates, forest types, and spatial scales to assess model
-transferability and performance.
+snow ablation parameterisations. Since unloading, melt, and sublimation
+are competitive ablation processes, correctly representing each of them
+is essential for determining the fraction and phase of snow reaching the
+ground, and the duration that the canopy is snow covered, an important
+factor for land-surface albedo calculations (Cai et al., 2025; Henderson
+et al., 2018; Thackeray et al., 2014). Whilst separating initial
+interception and ablation processes (Cebulski \& Pomeroy, 2025a, 2025b),
+will improve process representations, these routines still need to be
+evaluated together against additional field observations across
+different sites, climates, forest types, and spatial scales to assess
+model transferability and performance.
 
 \section{Conclusions}\label{conclusions}
 
-Canopy snow ablation processes govern the timing and partitioning of
-snowfall to the ground versus the atmosphere in forested environments,
-yet their representation in modelling frameworks remains uncertain due
-to insufficient process-level validation. This study represents the
-first development and validation of an unloading model addressing both
-energy balance-based melt and dry snow unloading processes together.
-Novel parameterisations for dry snow and melt-induced unloading were
-introduced, with key differences from previously established approaches.
-Canopy snow load and shear stress were found to be the best predictors
-of dry snow unloading (\emph{R\textsuperscript{2}} = 0.58). The canopy
-melt rate exerted the strongest control on snow unloading during melt
-events, consistent with one existing model, and show improved
-performance compared to temperature index melt routines. A new finding
-was that the ratio of unloading to canopy snowmelt increased with canopy
-snow load (\emph{R\textsuperscript{2}} = 0.73). In addition to this
-empirical evidence, physical processes such as structural degradation,
-snow particle bond weakening, lubrication of wet canopy snow during
-melt, and the shear force exerted on canopy snow by wind further support
+Canopy snow ablation processes govern the partitioning of intercepted
+snowfall, yet their representation in modelling frameworks remains
+uncertain due to insufficient process-level validation. This study
+represents the first development and validation of an unloading model
+addressing both energy balance-based melt and dry snow unloading
+processes together. Novel parameterisations for dry snow and
+melt-induced unloading were introduced, with key differences from
+previously established approaches. Canopy snow load and shear stress
+were found to be the best predictors of dry snow unloading
+(\emph{R\textsuperscript{2}} = 0.58). The canopy melt rate exerted the
+strongest control on snow unloading during melt events
+(\emph{R\textsuperscript{2}} = 0.73), consistent with one existing
+model, and show improved performance compared to temperature index melt
+routines. A new finding was that the ratio of unloading to canopy
+snowmelt increased with canopy snow load. In addition to this empirical
+evidence, physical processes such as structural degradation, snow
+particle bond weakening, lubrication of wet canopy snow during melt, and
+the shear force exerted on canopy snow by wind further support
 representing these processes. Moreover, an existing approach which used
 the concept of a maximum intercepted snow load greatly underestimated
 the canopy snow storage capacity when compared to observed snow loads
@@ -1824,10 +1801,11 @@ were relatively rare in this wind-exposed subalpine forest, but resulted
 in a considerable underestimation of the amount of snow returned to the
 atmosphere or surrounding sites during one event.
 
-A new canopy snow ablation model that integrates an updated canopy snow
-mass and energy balance demonstrated improved accuracy across varied
-meteorological conditions compared to existing approaches. Existing
-models failed to maintain accuracy across events with a wide range of
+A new canopy snow ablation model that incorporates an updated canopy
+snow mass and energy balance demonstrated improved accuracy (NSE = 0.49;
+KGE = 0.62) compared to existing approaches (NSE = -0.05--0.32; KGE =
+0.06--0.43) across varied meteorological conditions. Existing models
+failed to maintain accuracy across events with a wide range of
 meteorology due to neglect of key processes such as wind-driven
 unloading and/or empirical representations of melt processes. The
 greatest inter-model discrepancies in canopy snow load occurred during
@@ -1836,23 +1814,24 @@ parameterisations showed substantially higher mean biases relative to
 energy balance-based models.
 
 Amongst the models tested, the largest errors were found during cold,
-dry unloading events, though performance was improved when incorporating
-a site-specific shear stress-based parameterisation. Partitioning of
-intercepted snow disposition between the ground and atmosphere varied
-most amongst cold events, where neglecting the dry snow unloading
-process resulted in considerable overestimates of canopy snow
-sublimation losses. Observations were collected over a wide range of
-meteorological conditions typical of cold boreal to temperate maritime
-climates, with air temperatures from -30.5°C to +6.7°C and wind speeds
-from calm to 5.3 m s\textsuperscript{-1}. Some processes, such as
+humid wind-driven unloading events, though performance was improved when
+incorporating a site-specific shear stress-based parameterisation.
+Partitioning of intercepted snow disposition between the ground and
+atmosphere varied most amongst cold events, where neglecting the dry
+snow unloading process resulted in considerable overestimates of canopy
+snow sublimation losses. Observations were collected over a wide range
+of meteorological conditions typical of cold boreal to temperate
+maritime climates, with air temperatures from -30.5°C to +6.7°C and wind
+speeds from calm to 5.3 m s\textsuperscript{-1}. Some processes, such as
 rime-ice and frost deposition, were not observed. The study was
 conducted in a subalpine forest of mature fir and spruce, so unloading
 rates and process emergence may differ in forests with other species and
 ages due to differences in branch flexibility, structure, and impacts on
-the energy balance. Although improved performance was found for the
-updated canopy snow ablation model compared to existing methods, across
-a wide range of meteorological conditions, additional testing across
-various climate and forest compositions is required to assess model
+the energy balance. Incorporating the updated unloading schemes
+developed here could improve the representation of canopy snow ablation
+and, by extension, the partitioning of precipitation and canopy albedo
+in hydrological and land surface models. Nonetheless, further testing is
+needed across various climate and forest compositions to assess model
 transferability.
 
 \section{Acknowledgements}\label{acknowledgements}
@@ -1915,6 +1894,12 @@ intercepted snow improves the simulated forest albedo in the {Canadian
 Land Surface Scheme}. \emph{Hydrological Processes}, \emph{29}(14),
 3208--3226. \url{https://doi.org/10.1002/HYP.10431}
 
+\bibitem[\citeproctext]{ref-Cai2025}
+Cai, L., Ma, J., Zhang, Y., Shi, W., \& Yang, R. (2025). Boreal forest
+cover change since 2000 contributes to cold winters in {Eurasia}.
+\emph{Npj Climate and Atmospheric Science}, \emph{8}(1), 337.
+\url{https://doi.org/10.1038/s41612-025-01219-1}
+
 \bibitem[\citeproctext]{ref-Cebulski2025}
 Cebulski, A. C., \& Pomeroy, J. W. (2025a). Theoretical underpinnings of
 snow interception and canopy snow ablation parameterisations.
@@ -1972,6 +1957,12 @@ Essery, R., Pomeroy, J. W., Parviainen, J., \& Storck, P. (2003).
 Sublimation of snow from coniferous forests in a climate model.
 \emph{Journal of Climate}, \emph{16}(11), 1855--1864.
 \url{https://doi.org/10.1175/1520-0442(2003)016\%3C1855:SOSFCF\%3E2.0.CO;2}
+
+\bibitem[\citeproctext]{ref-Fang2020b}
+Fang, X., \& Pomeroy, J. W. (2020). Diagnosis of future changes in
+hydrology for a {Canadian Rocky Mountain} headwater basin.
+\emph{Hydrology and Earth System Sciences Discussions}, 1--40.
+\url{https://doi.org/10.5194/hess-2019-640}
 
 \bibitem[\citeproctext]{ref-Fang2023}
 Fang, X., \& Pomeroy, J. W. (2023). Simulation of the impact of future
@@ -2031,6 +2022,12 @@ Helgason, W., \& Pomeroy, J. W. (2012b). Problems closing the energy
 balance over a homogeneous snow cover during midwinter. \emph{Journal of
 Hydrometeorology}, \emph{13}(2), 557--572.
 \url{https://doi.org/10.1175/JHM-D-11-0135.1}
+
+\bibitem[\citeproctext]{ref-Henderson2018}
+Henderson, G. R., Peings, Y., Furtado, J. C., \& Kushner, P. J. (2018).
+Snow--atmosphere coupling in the northern hemisphere. \emph{Nature
+Climate Change}, \emph{8}(11), 954--963.
+\url{https://doi.org/10.1038/s41558-018-0295-6}
 
 \bibitem[\citeproctext]{ref-Hoover1967}
 Hoover, M. D., \& Leaf, C. F. (1967). Processs and {Significance} of
@@ -2252,6 +2249,12 @@ Vigneau, C., \& Fanise, P. (2015). Impact of climate and land cover
 changes on snow cover in a small {Pyrenean} catchment. \emph{Journal of
 Hydrology}, \emph{521}, 84--99.
 \url{https://doi.org/10.1016/j.jhydrol.2014.11.060}
+
+\bibitem[\citeproctext]{ref-Thackeray2014}
+Thackeray, C. W., Fletcher, C. G., \& Derksen, C. (2014). The influence
+of canopy snow parameterizations on snow albedo feedback in boreal
+forest regions. \emph{Journal of Geophysical Research: Atmospheres},
+\emph{119}(16), 9810--9821. \url{https://doi.org/10.1002/2014JD021858}
 
 \bibitem[\citeproctext]{ref-Troendle1983}
 Troendle, C. A. (1983). The potential for water yield augmentation from

@@ -108,7 +108,7 @@ ggplot(met_unld_no_melt_tau_smry,
 ### fit a linear model ----
 
 # to recreate the interaction its just (coef * tree_labs * tau_labs)
-model_lm <- lm(q_unl_avg ~ tree_labs:tau_labs + temp_labs - 1, data = met_unld_no_melt_tau_smry)
+model_lm <- lm(q_unl_avg ~ tree_labs:tau_labs:temp_labs - 1, data = met_unld_no_melt_tau_smry)
 summary(model_lm)
 coefs_df <- broom::tidy(model_lm)  # Using broom to extract coefficients nicely
 coefs_df <- coefs_df |> 
@@ -232,10 +232,10 @@ perf_tbl <- q_unl_temp_model_err_tbl |>
 coef_tbl <- tibble(
   Metric = c("Coefficient a", "Significance of a", "Coefficient b", "Significance of b"),
   Value = c(
-    coefs_df$`tree_labs:tau_labs_Estimate`,
-    coefs_df$`tree_labs:tau_labs_p_value`,
-    coefs_df$`temp_labs_Estimate`,
-    coefs_df$`temp_labs_p_value`
+    coefs_df$`tree_labs:tau_labs:temp_labs_Estimate`,
+    coefs_df$`tree_labs:tau_labs:temp_labs_p_value`,
+    NA,
+    NA
   )
 )
 
@@ -245,7 +245,7 @@ man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "Moder
 model_type <- tibble(Metric = 'Model', Value = 'OLS')
 eqn <- tibble(
   Metric = 'Equation',
-  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid} \\cdot a + T_a \\cdot b$"
+  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid} \\cdot T_a \\cdot a$"
 )
 
 long_tbl <- bind_rows(model_type, eqn) |>

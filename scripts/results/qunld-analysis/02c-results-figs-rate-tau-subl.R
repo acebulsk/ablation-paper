@@ -110,7 +110,7 @@ met_unld_no_melt_tau_smry <- met_unld_no_melt_cold |>
 ### fit a linear model ----
 
 # to recreate the interaction its just (coef * tree_labs * tau_labs)
-model_lm <- lm(q_unl_avg ~ tree_labs:tau_labs + subl_labs - 1, data = met_unld_no_melt_tau_smry)
+model_lm <- lm(q_unl_avg ~ tree_labs:tau_labs:subl_labs - 1, data = met_unld_no_melt_tau_smry)
 summary(model_lm)
 coefs_df <- broom::tidy(model_lm)  # Using broom to extract coefficients nicely
 coefs_df <- coefs_df |> 
@@ -166,7 +166,7 @@ abline(h = 0, lty = 2)
 library(nlme)
 
 # varPower: Var(e) ∝ |fitted|^(2*delta)  (common for mean-dependent variance)
-gls_power <- gls(q_unl_avg ~ tree_labs:tau_labs + subl_labs - 1,
+gls_power <- gls(q_unl_avg ~ tree_labs:tau_labs:subl_labs - 1,
                  data = met_unld_no_melt_tau_smry,
                  method = "REML",
                  weights = varPower(form = ~ fitted(.)))
@@ -178,7 +178,7 @@ gls_power <- gls(q_unl_avg ~ tree_labs:tau_labs + subl_labs - 1,
 #                weights = varExp(form = ~ fitted(.)))
 
 # varIdent: different variances for groups (if variance differs by tau_labs bin)
-gls_ident <- gls(q_unl_avg ~ tree_labs:tau_labs + subl_labs - 1,
+gls_ident <- gls(q_unl_avg ~ tree_labs:tau_labs:subl_labs - 1,
                  data = met_unld_no_melt_tau_smry,
                  method = "REML",
                  weights = varIdent(form = ~1 | tree_labs))
@@ -305,10 +305,10 @@ perf_tbl <- q_unl_temp_model_err_tbl |>
 coef_tbl <- tibble(
   Metric = c("Coefficient a", "Significance of a", "Coefficient b", "Significance of b"),
   Value = c(
-    formatC(coefs[2], format = "e", digits = 2),
-    "NA for GLS",
     formatC(coefs[1], format = "e", digits = 2),
-    "NA for GLS"
+    "NA for GLS",
+    "NA",
+    "NA"
   )
 )
 
@@ -318,7 +318,7 @@ man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "Moder
 model_type <- tibble(Metric = 'Model', Value = 'GLS')
 eqn <- tibble(
   Metric = 'Equation',
-  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid} \\cdot a + q_{subl}^{veg} \\cdot b$"
+  Value  = "$q_{unld}^{dry} = L \\cdot \\tau_{mid} \\cdot q_{subl}^{veg} \\cdot a$"
 )
 
 long_tbl <- bind_rows(model_type, eqn) |>

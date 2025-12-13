@@ -25,9 +25,9 @@ bad_names <- c('EC low', 'SR50')
 scl_name_dict <- data.frame(
   name = c('SCL 1', 'SCL 2', 'SCL 3', 'TB1', 'TB2', 'TB3', 'TB4'),
   new_name = c(
-    'Mixed Lysimeter',
-    'Sparse Lysimeter',
-    'Dense Lysimeter',
+    'Mixed Snow Bucket',
+    'Sparse Snow Bucket',
+    'Dense Snow Bucket',
     'Tipping Bucket 1',
     'Tipping Bucket 2',
     'Tipping Bucket 3',

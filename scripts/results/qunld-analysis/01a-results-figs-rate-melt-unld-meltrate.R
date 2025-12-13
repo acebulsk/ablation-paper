@@ -6,8 +6,9 @@ options(ggplot2.discrete.colour= c("#DF536B", "#000000"))
 
 unld_met_smry <- obs_mod_met_melt |> 
   filter(is.na(tree_mm) == F) |> 
-  group_by(tree_labs, canopy_snowmelt_dml_labs) |> 
-  summarise(q_unl_avg = mean(q_unl, na.rm = T),
+  group_by(tree_labs, canopy_snowmelt_labs) |> 
+  mutate(q_unl_no_melt = q_unl) |> 
+  summarise(q_unl_avg = mean(q_unl_no_melt, na.rm = T),
             q_unl_sd = sd(q_unl, na.rm = T),
             sd_low = ifelse((q_unl_avg - q_unl_sd)<0,0, q_unl_avg - q_unl_sd),
             sd_hi = q_unl_avg + q_unl_sd,
@@ -18,11 +19,11 @@ unld_met_smry <- obs_mod_met_melt |>
   filter(#n >= 3,
          # tree_labs > 1,
          # tau_labs < 3, # tau transport potential above this threshold
-         canopy_snowmelt_dml_labs < 5,
+        #  canopy_snowmelt_labs < 5,
          sum_snow > 0.1)
 
 ggplot(unld_met_smry, 
-       aes(x = canopy_snowmelt_dml_labs, y = q_unl_avg, colour = as.character(round(tree_labs)))) + 
+       aes(x = canopy_snowmelt_labs, y = q_unl_avg, colour = as.character(round(tree_labs)))) + 
   # geom_point(data = met_unld_no_melt_cold, aes(u, q_unl), alpha = 0.1, colour = 'black') +
   # geom_errorbar(aes(
   #   x = tau_labs, 
@@ -45,7 +46,7 @@ ggplot(unld_met_smry,
 ### fit a linear model ----
 
 # to recreate the interaction its just (coef * tree_labs * tau_labs)
-model_lm <- lm(q_unl_avg ~ tree_labs:canopy_snowmelt_dml_labs - 1, data = unld_met_smry)
+model_lm <- lm(q_unl_avg ~ tree_labs:canopy_snowmelt_labs - 1, data = unld_met_smry)
 summary(model_lm)
 coefs_df <- broom::tidy(model_lm)  # Using broom to extract coefficients nicely
 coefs_df <- coefs_df |> 
@@ -69,11 +70,11 @@ lm_checks <- check_lm_assumptions(model_lm)
 
 # Look at the different models for the warm events 
 ex_tree_labs <- c(1, 3, 6)
-ex_df <- expand.grid(canopy_snowmelt_dml_labs = sm_dml_labs_seq[sm_dml_labs_seq<5], tree_labs = ex_tree_labs)
+ex_df <- expand.grid(canopy_snowmelt_labs = sm_labs_seq, tree_labs = ex_tree_labs)
 # tau_ex_df$new_predicted_y_nls <- predict(model_nls, newdata = tau_ex_df)
 ex_df$new_predicted_y <- predict(model_lm, newdata = ex_df)
 
-# stopifnot(all(unld_met_smry$canopy_snowmelt_dml_labs %in% ex_sm_labs))
+# stopifnot(all(unld_met_smry$canopy_snowmelt_labs %in% ex_sm_labs))
 
 ### fit a GLS model ---- 
 
@@ -83,20 +84,20 @@ hist(unld_met_smry$q_unl_avg)
 library(car)
 qqPlot(unld_met_smry$q_unl_avg) # not terrible could try both
 
-glmm_model_log <- glmmTMB(q_unl_avg ~ tree_labs + canopy_snowmelt_dml_labs,
-  data = unld_met_smry,
-  family = Gamma(link = "log")
-)
+# glmm_model_log <- glmmTMB(q_unl_avg ~ tree_labs + canopy_snowmelt_labs,
+#   data = unld_met_smry,
+#   family = Gamma(link = "log")
+# )
 
-summary(glmm_model_log)
+# summary(glmm_model_log)
 
-glmm_model_gauss <- glmmTMB(q_unl_avg ~ tree_labs + canopy_snowmelt_dml_labs, data = unld_met_smry)
+# glmm_model_gauss <- glmmTMB(q_unl_avg ~ tree_labs + canopy_snowmelt_labs, data = unld_met_smry)
 
-summary(glmm_model_gauss)
+# summary(glmm_model_gauss)
 
 ## PLOT MODEL ----
 plot_df <- ex_df |> left_join(unld_met_smry) |>
-  pivot_longer(canopy_snowmelt_dml_labs, names_to = 'x_var_name', values_to = 'x_var_value')
+  pivot_longer(canopy_snowmelt_labs, names_to = 'x_var_name', values_to = 'x_var_value')
 
 ggplot(plot_df, aes(x=x_var_value)) +
   # geom_line(aes(tau_labs, new_predicted_y_nls, colour = factor(tree_labs)), linetype = 'dashed') +
@@ -126,7 +127,7 @@ unld_met_smry$pred_q_unl <-
   predict(model_lm, unld_met_smry)
 
 unld_met_smry |> 
-  ggplot(aes(canopy_snowmelt_dml_labs, colour = factor(round(tree_labs)), group = factor(tree_labs))) + 
+  ggplot(aes(canopy_snowmelt_labs, colour = factor(round(tree_labs)), group = factor(tree_labs))) + 
   geom_point(aes(y = q_unl_avg)) +
   geom_line(aes(y = pred_q_unl))
 
@@ -172,8 +173,8 @@ perf_tbl <- q_unl_temp_model_err_tbl |>
 coef_tbl <- tibble(
   Metric = c("Coefficient a", "Significance of a", "Coefficient b", "Significance of b"),
   Value = c(
-    coefs_df$`tree_labs:canopy_snowmelt_dml_labs_Estimate`,
-    coefs_df$`tree_labs:canopy_snowmelt_dml_labs_p_value`,
+    coefs_df$`tree_labs:canopy_snowmelt_labs_Estimate`,
+    coefs_df$`tree_labs:canopy_snowmelt_labs_p_value`,
     NA,
     NA
   )
@@ -185,7 +186,7 @@ man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
 model_type <- tibble(Metric = 'Model', Value = 'OLS')
 eqn <- tibble(
   Metric = 'Equation',
-  Value  = "$q_{unld}^{melt} = L \\cdot \\frac{q_{melt}}{L} \\cdot a$"
+  Value  = "$q_{unld}^{melt} = L \\cdot q_{melt}^{veg} \\cdot a$"
 )
 
 long_tbl <- bind_rows(model_type, eqn) |>

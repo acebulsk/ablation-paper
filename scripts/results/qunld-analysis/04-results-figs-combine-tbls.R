@@ -40,15 +40,22 @@ write.csv(stats_out_all, 'data/results/modelled_combined_wind_tau_others_unloadi
 ## combine melt event stats 
 
 melt_stats <- readRDS('data/results/modelled_melt_unloading_melt_only_error_table.rds') |>
-  rename(`Dimensionless Snowmelt Rate` = Value)
+  rename(`Snowmelt Rate` = Value)
 air_temp_stats <- readRDS('data/results/modelled_melt_unloading_air_temp_error_table.rds') |>
   rename(`Air Temperature` = Value)
 ice_temp_stats <- readRDS('data/results/modelled_melt_unloading_ice_temp_error_table.rds') |>
   rename(`Ice-Bulb Temperature` = Value)
-melt_tau_stats <- readRDS('data/results/modelled_melt_unloading_melt_w_tau_error_table.rds') |>
-  rename(`Dimensionless Snowmelt Rate, Shear Stress` = Value)
 
-melt_stats_out <- left_join(melt_tau_stats, melt_stats, by = 'Metric') |>
+# this one is insignificant
+# melt_tau_stats <- readRDS('data/results/modelled_melt_unloading_melt_w_tau_error_table.rds') |>
+#   rename(`Snowmelt Rate, Shear Stress (additive)` = Value)
+melt_tau_interact_stats <- readRDS('data/results/modelled_melt_unloading_melt_w_tau_interact_error_table.rds') |>
+  rename(`Snowmelt Rate, Shear Stress (multiplicative)` = Value)
+melt_tau_nonmelt_stats <- readRDS('data/results/modelled_melt_unloading_melt_w_tau_from_dry_error_table.rds') |>
+  rename(`Snowmelt Rate, Shear Stress (from non-melt)` = Value)
+
+melt_stats_out <- left_join(melt_stats, melt_tau_nonmelt_stats, by = 'Metric') |>
+  left_join(melt_tau_interact_stats) |> 
   left_join(air_temp_stats) |> 
   left_join(ice_temp_stats) |> 
   filter(Metric != 'Mean Absolute Error (mm/hr)')

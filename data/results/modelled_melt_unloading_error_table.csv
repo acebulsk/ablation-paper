@@ -1,14 +1,14 @@
-"Metric","Dimensionless Snowmelt Rate, Shear Stress","Dimensionless Snowmelt Rate","Air Temperature","Ice-Bulb Temperature"
-"Model","OLS","OLS","OLS","OLS"
-"Equation","$q_{unld}^{melt} = L \cdot \frac{q_{melt}}{L} \cdot a + \tau_{mid} \cdot b$","$q_{unld}^{melt} = L \cdot \frac{q_{melt}}{L} \cdot a$","$q_{unld}^{melt} = L \cdot T_a \cdot a$","$q_{unld}^{melt} = L \cdot T_i \cdot a$"
-"Mean Bias (mm/hr)","0.027","0.099","0.128","0.243"
-"Root Mean Square Error (mm/hr)","0.355","0.39","0.518","0.463"
-"Coefficient of Determination","0.49","0.37","0.1","0.08"
-"Coefficient of Agreement","0.68","0.69","0.55","0.44"
-"Coefficient a","2.21e-01","2.74e-01","1.09e-01","1.42e-01"
-"Significance of a","p < 0.05","p < 0.05","p < 0.05","p < 0.05"
-"Coefficient b","1.54e+01",NA,NA,NA
-"Significance of b","n.s.",NA,NA,NA
-"Homoscedasticity","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)"
-"Normality","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)"
-"Linear/Non-linear Correlation","NA","NA","NA","NA"
+"Metric","Snowmelt Rate","Snowmelt Rate, Shear Stress (from non-melt)","Snowmelt Rate, Shear Stress (multiplicative)","Air Temperature","Ice-Bulb Temperature"
+"Model","OLS","OLS","OLS","OLS","OLS"
+"Equation","$q_{unld}^{melt} = L \cdot q_{melt}^{veg} \cdot a$","$q_{unld}^{melt} = (L \cdot q_{melt}^{veg} \cdot a) + (L \cdot \tau_{mid} \cdot b)$","$q_{unld}^{melt} = L \cdot q_{melt}^{veg} \cdot \tau_{mid} \cdot a$","$q_{unld}^{melt} = L \cdot T_a \cdot a$","$q_{unld}^{melt} = L \cdot T_i \cdot a$"
+"Mean Bias (mm/hr)","0.161","0.171","0.198","0.128","0.243"
+"Root Mean Square Error (mm/hr)","0.501","0.496","0.477","0.518","0.463"
+"Coefficient of Determination","0.32","0.2","0.26","0.1","0.08"
+"Coefficient of Agreement","0.63","0.59","0.6","0.55","0.44"
+"Coefficient a","1.05e-01","9.24e-02","6.46e+00","1.09e-01","1.42e-01"
+"Significance of a","p < 0.05","p < 0.05","p < 0.05","p < 0.05","p < 0.05"
+"Coefficient b",NA,"0.371",NA,NA,NA
+"Significance of b",NA,NA,NA,NA,NA
+"Homoscedasticity","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)"
+"Normality","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)","Pass (n.s.)"
+"Linear/Non-linear Correlation","NA","NA","NA","NA","NA"

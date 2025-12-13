@@ -1,7 +1,12 @@
 # This script analyzes the relationship between observed weighed tree ablation
 # due to mass unloading of snow as it melts with simulated canopy snowmelt.
 # Canopy snow unloading is determined as residual ablation after removing
-# q_subl^veg, q_drip, q_unld^wind
+# q_subl^veg, q_drip
+# wind-driven unloading is also incorporated from the non-melt periods since GLS 
+# cannot handle the offset function we rewrite as:
+# q_unld^melt - q_unld^dry = L * q_melt * a
+# q_unld^melt - (L * tau * 0.371) = L * q_melt * a
+# instead of q_unld^melt = L * q_melt * a + (L * tau * 0.371) (this doesnt work with GLS which we have to use since we have hetero)
 
 options(ggplot2.discrete.colour= c("#DF536B", "#000000"))
 
@@ -9,11 +14,6 @@ options(ggplot2.discrete.colour= c("#DF536B", "#000000"))
 library(tidyverse)
 
 load_suffix <- 'fsd_closed_0.88'
-
-bad_events <- c('2022-06-23',
-                # '2023-06-21',
-                '2022-04-21',
-                '2022-04-23')
 
 good_events <- mod_d_drip_smry_frac |> 
   filter(melt > 0.50,
@@ -55,12 +55,15 @@ obs_mod <- left_join(w_tree_q_unld_15, crhm_output) |>
   # mutate(datetime = ceiling_date(datetime, unit = '1 hour')) |> # ceiling ensures the timestamp corresponds to preeceeding records
   group_by(datetime, event_id) |>
   summarise(tree_mm = last(tree_mm),
+            hru_u = mean(hru_u.1),
+            unld_tau = (hru_u * hru_u * 0.02 * tree_mm * 0.371)/4,# coef is for hourly so divide by 4
+            del_unld_tau = sum(unld_tau),
             dL = sum(dL),
             delsub_veg_int.1 = sum(delsub_veg_int.1),
             delunld_wind_int.1 = sum(delunld_wind_int.1),
             delmelt_veg_int.1 = sum(delmelt_veg_int.1),
             delsub_veg_int.1 = sum(delsub_veg_int.1),
-            est_q_unld_melt = dL - delsub_veg_int.1 - delunld_wind_int.1 - delmelt_veg_int.1,
+            est_q_unld_melt = dL - delsub_veg_int.1 - delmelt_veg_int.1 - delunld_wind_int.1,
             unld_melt_ratio = est_q_unld_melt/delmelt_veg_int.1
             ) |> 
   filter(event_id %in% good_events$event_id)
@@ -154,16 +157,17 @@ obs_mod_fltr_binned <- obs_mod_fltr |>
             unld = sum(est_q_unld_melt),
             unld_melt_ratio = unld/melt,
             unld_melt_ratio_sd = NA,
+            wind = mean(hru_u),
             name = 'CP25') |> 
   filter(unld > 0) |> 
-  select(tree_labs, event_id, unld_melt_ratio, unld_melt_ratio_sd, name) 
+  select(tree_labs, event_id, wind, unld_melt_ratio, unld_melt_ratio_sd, name) 
 
 
 tb_unld_melt_ratio <- 
   readRDS('data/tipping-buckets/tipping_bucket_event_frac_unld_melt.rds') |> 
   mutate(event_id = as.character(event_id))
 
-unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio)
+unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio) 
 
 # option 1b avg over events
 # obs_mod_fltr_binned <- obs_mod_fltr |>
@@ -188,13 +192,14 @@ unld_melt_ratio <- rbind(obs_mod_fltr_binned, tb_unld_melt_ratio)
 #             unld_melt_ratio_lo = (unld_melt_ratio - sd),
 # 
 #             )
+# this just adds in the dry snow unlodaing wind-driven unloading from the shear stress periods
 
 bin_unld_melt_lm <- lm(unld_melt_ratio ~ tree_labs, data = unld_melt_ratio)
 summary(bin_unld_melt_lm)
 saveRDS(bin_unld_melt_lm, 'data/results/lm_q_drip_vs_q_unld_melt.rds')
 
 # Extract the coef of determination (adjusted)
-r2_adj_lm <- summary(bin_unld_melt_lm)$r.squared
+r2_adj_lm <- summary(bin_unld_melt_lm)$adj.r.squared
 
 # check assumptions 
 
@@ -231,6 +236,7 @@ library(nlme)
 #                  weights = varPower(form = ~ fitted(.)))
 
 # varExp: exponential relationship Var(e) ∝ exp(2*delta*fitted)
+
 gls_exp <- gls(unld_melt_ratio ~ tree_labs,
                data = unld_melt_ratio,
                method = "REML",
@@ -424,7 +430,7 @@ man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
 model_type <- tibble(Metric = 'Fit', Value = 'GLS')
 eqn <- tibble(
   Metric = 'Equation',
-  Value  = "$R = a \\cdot L + b$"
+  Value  = "$R = a \\cdot L + b + L $"
 )
 long_tbl <- bind_rows(model_type, eqn) |>
   bind_rows(perf_tbl) |>

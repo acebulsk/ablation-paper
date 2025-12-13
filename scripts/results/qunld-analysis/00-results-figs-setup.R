@@ -364,8 +364,8 @@ pretty_names_vect <- c(
   "Relative Humidity (%)",
   wind_ax_lab,
   "Unloading Rate (mm/hr)",
-  "Sublimation Rate (mm/hr)",
-  "Snowmelt Rate (mm/hr)"
+  "Simulated\n Sublimation Rate (mm/hr)",
+  "Simulated\n Snowmelt Rate (mm/hr)"
 )
 
 var_name_dict <-

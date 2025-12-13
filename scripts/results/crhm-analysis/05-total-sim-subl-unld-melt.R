@@ -8,14 +8,14 @@ model_names <- data.frame(
   full_name = factor(
     c(
       "Observed",
-      "This Study",
+      "New Model",
       "Ellis et al., (2010)",
       "Andreadis et al., (2009)",
       "Roesch et al., (2001)"
     ),
     levels = c(
       "Observed",
-      "This Study",
+      "New Model",
       "Ellis et al., (2010)",
       "Andreadis et al., (2009)",
       "Roesch et al., (2001)"

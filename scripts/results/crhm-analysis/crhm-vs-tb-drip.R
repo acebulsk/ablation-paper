@@ -71,7 +71,8 @@ ggsave(
 tb_d_drip_smry <- tb_d_drip |> 
   filter(!is.na(event_id)) |> 
   group_by(event_id, name) |> 
-  summarise(obs_cml_drip = sum(dU))
+  summarise(obs_cml_drip = sum(dU)) |> 
+  mutate(event_id = as.character(event_id))
 
 tree_dL_smry <- obs_tree |> 
   filter(event_id %in% tb_d_drip_smry$event_id) |> 
@@ -116,7 +117,8 @@ event_frac_unld_melt <- event_stats_indiv_tb |>
   summarise(
     obs_cml_dL = mean(obs_cml_dL),
     mean_ = mean(frac_unld_melt, na.rm = T),
-    sd_ = sd(frac_unld_melt, na.rm = T))
+    sd_ = sd(frac_unld_melt, na.rm = T),
+  wind = mean(event_u))
 
 ggplot(event_frac_unld_melt, aes(obs_cml_dL, mean_)) +
   geom_point() +
@@ -140,6 +142,7 @@ event_frac_unld_melt_out <- event_frac_unld_melt |>
   mutate(name = 'TB') |> 
   select(tree_labs = obs_cml_dL,
          event_id,
+         wind,
          unld_melt_ratio = mean_,
          unld_melt_ratio_sd = sd_,
          name

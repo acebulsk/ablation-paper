@@ -44,14 +44,14 @@ model_names <- data.frame(
   full_name = factor(
     c(
       "Observed",
-      "CP25 (This Study)",
+      "CP25 (new model)",
       "E10",
       "SA09",
       "R01"
     ),
     levels = c(
       "Observed",
-      "CP25 (This Study)",
+      "CP25 (new model)",
       "E10",
       "SA09",
       "R01"
@@ -78,7 +78,7 @@ p_main <- obs_mod_tree_comp |>
   scale_x_datetime(date_labels = "%H") +
   scale_linetype_manual(values = c(
     Observed = "solid",
-    `CP25 (This Study)` = "solid",
+    `CP25 (new model)` = "solid",
      SA09 = "dashed",
      E10 = "dashed",
      R01 = "dashed"
@@ -337,8 +337,8 @@ boot_long <- boot_event_results %>%
 metric_labels <- c(
   MB = "Mean Bias (mm)",
   RMSE = "Root Mean Squared Error (mm)",
-  NSE = "Nash–Sutcliffe Efficiency",
-  KGE = "Kling–Gupta Efficiency"
+  NSE = "Nash-Sutcliffe Efficiency",
+  KGE = "Kling-Gupta Efficiency"
 )
 
 ggplot(boot_long, aes(x = name, y = estimate, color = name)) +

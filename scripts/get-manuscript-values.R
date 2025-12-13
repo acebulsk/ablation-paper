@@ -65,7 +65,7 @@ dry_snow_unld_stats <- readRDS('data/results/modelled_combined_wind_tau_others_u
       Metric == "Significance of a"              ~ "$p$(a)",
       Metric == "Coefficient b"                  ~ "b",
       Metric == "Significance of b"              ~ "$p$(b)",
-      Metric == "Homoscedasticity"               ~ "HS",
+      Metric == "Homoscedasticity"               ~ "HSCD",
       Metric == "Normality"                      ~ "Norm",
       TRUE ~ Metric
     )
@@ -95,17 +95,17 @@ melt_unld_stats <- readRDS('data/results/modelled_melt_unloading_error_table.rds
       Metric == "Significance of a"              ~ "$p$(a)",
       Metric == "Coefficient b"                  ~ "b",
       Metric == "Significance of b"              ~ "$p$(b)",
-      Metric == "Homoscedasticity"               ~ "HS",
+      Metric == "Homoscedasticity"               ~ "HSCD",
       Metric == "Normality"                      ~ "Norm",
       TRUE ~ Metric
     )
   )
 
-q_unld_melt_tau_rmse <- melt_unld_stats$`Dimensionless Snowmelt Rate, Shear Stress`[melt_unld_stats$Metric == "RMSE"]
-q_unld_melt_tau_r2 <- melt_unld_stats$`Dimensionless Snowmelt Rate, Shear Stress`[melt_unld_stats$Metric == "$R^2$"]
+q_unld_melt_tau_rmse <- melt_unld_stats$`Snowmelt Rate, Shear Stress (from non-melt)`[melt_unld_stats$Metric == "RMSE"]
+q_unld_melt_tau_r2 <- melt_unld_stats$`Snowmelt Rate, Shear Stress (from non-melt)`[melt_unld_stats$Metric == "$R^2$"]
 
-q_unld_melt_rmse <- melt_unld_stats$`Dimensionless Snowmelt Rate`[melt_unld_stats$Metric == "RMSE"]
-q_unld_melt_r2 <- melt_unld_stats$`Dimensionless Snowmelt Rate`[melt_unld_stats$Metric == "$R^2$"]
+q_unld_melt_rmse <- melt_unld_stats$`Snowmelt Rate`[melt_unld_stats$Metric == "RMSE"]
+q_unld_melt_r2 <- melt_unld_stats$`Snowmelt Rate`[melt_unld_stats$Metric == "$R^2$"]
 
 q_unld_ta_rmse <- melt_unld_stats$`Air Temperature`[melt_unld_stats$Metric == "RMSE"]
 q_unld_ta_r2 <- melt_unld_stats$`Air Temperature`[melt_unld_stats$Metric == "$R^2$"]
@@ -220,8 +220,8 @@ boot <- read.csv(
           model_run_tag,
           '.csv'))
 
-cp25_boot_nse <- boot$estimate[boot$metric == 'NSE' & boot$name == 'CP25'] |> round(2)
-cp25_boot_kge <- boot$estimate[boot$metric == 'KGE' & boot$name == 'CP25'] |> round(2)
+cp25_boot <- as.list(boot |> filter(name == 'CP25') |> select(metric, estimate) |> tibble::deframe() |> round(2)) 
+not_cp25_boot_kge <- boot |> filter(name != 'CP25', metric == 'KGE') |> select(name, estimate) |> pull(estimate)  |> max()  |> round(2)
 
 other_boot_nse_range <- boot |> 
   filter(name != 'CP25', metric == 'NSE') |>

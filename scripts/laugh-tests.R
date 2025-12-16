@@ -239,7 +239,7 @@ cowplot::plot_grid(
                    rel_widths = c(0.41, 0.59))
 
 ggsave(
-  'figs/final/figureS1.png',
+  'figs/supplement/figureS1.png',
   # 'figs/examples/unloading_wind_load_r01_hp98.png',
   device = png,
   width = 8,
@@ -368,7 +368,7 @@ ggplot(plot_unld_temp, aes(Ta, q_ablate, colour = canopy_load, group = canopy_lo
   theme(legend.position = 'right')
 
 ggsave(
-  'figs/final/figureS2.png',
+  'figs/supplement/figureS2.png',
   # 'figs/examples/unloading_drip_hp98_rw01.png',
   device = png,
   width = 7.5,

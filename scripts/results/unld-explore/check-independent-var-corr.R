@@ -79,7 +79,7 @@ cor_combined[upper.tri(cor_combined)] <- cor_pear[upper.tri(cor_pear)]
 
 # Plot
 png(
-  "figs/final/figureS3.png",
+  "figs/supplement/figureS4.png",
   width = 8,          # in inches
   height = 7,         # in inches
   units = "in",       # important!
@@ -156,7 +156,7 @@ p.mat <- abs(cor_combined) <= p_mat_th
 
 # Plot
 png(
-  "figs/final/figureS4.png",
+  "figs/supplement/figureS5.png",
   width = 8,          # in inches
   height = 7,         # in inches
   units = "in",       # important!

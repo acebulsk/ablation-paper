@@ -98,7 +98,7 @@ ggsave(
   #   run_tag_updt,
   #   '.png'
   # ),
-  'figs/final/figure9.png',
+  'figs/final/figure7.png',
   width = 8.5,
   height = 9,
   device = png
@@ -237,7 +237,7 @@ ggsave(
   #   run_tag_updt,
   #   '.png'
   # ),
-  'figs/final/figure10.png',
+  'figs/final/figure8.png',
   width = 8,
   height = 4,
   device = png
@@ -360,7 +360,7 @@ ggplot(boot_long, aes(x = name, y = estimate, color = name)) +
   )
 
 ggsave(
-  'figs/final/figure10a.png',
+  'figs/final/figure9.png',
   width = 8,
   height = 6,
   device = png

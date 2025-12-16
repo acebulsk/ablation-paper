@@ -110,7 +110,7 @@ event_df_long |>
     colour = 'Event Type'
   )
 
-ggsave('figs/final/figure4a.png', width = 6, height = 5, device = png)
+ggsave('figs/final/figure2.png', width = 6, height = 5, device = png)
 
 # V different number of obs so doesnt make sense to show couts 
 event_df_long |>

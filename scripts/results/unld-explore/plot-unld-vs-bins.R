@@ -117,4 +117,4 @@ ggplot(bins_df,
 
 
 # ggsave('figs/results/explore/scl_q_unld_vs_bins.png', width = 6.1, height = 5)
-ggsave('figs/final/figure4.png', width = 6.5, height = 5)
+ggsave('figs/supplement/figureS3.png', width = 6.5, height = 5)

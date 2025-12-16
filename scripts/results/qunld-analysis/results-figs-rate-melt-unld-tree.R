@@ -311,7 +311,7 @@ ggplot(unld_melt_ratio,
   theme(legend.position = 'bottom')
 
 ggsave(
-  'figs/final/figure6.png',
+  'figs/final/figure4.png',
   # 'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png',
   width = 5,
   height = 4,
@@ -412,10 +412,10 @@ coefs_df_gls <- gls_tab |>
 # intercept is insig. but keeping because makes sense to have no unloading at snow loads above 0
 coef_tbl <- tibble(
   Metric = c(
-    "Coefficient a",
-    "Significance of a",
-    "Coefficient b",
-    "Significance of b"
+    "Coefficient m",
+    "Significance of m",
+    "Coefficient w",
+    "Significance of w"
   ),
   Value = c(
     coefs_df_gls$Estimate[coefs_df_gls$term == "tree_labs"],
@@ -430,7 +430,7 @@ man_corr_test <- tibble(Metric = "Linear/Non-linear Correlation", Value = "NA")
 model_type <- tibble(Metric = 'Fit', Value = 'GLS')
 eqn <- tibble(
   Metric = 'Equation',
-  Value  = "$R = a \\cdot L + b + L $"
+  Value  = "$R = m \\cdot L + w$"
 )
 long_tbl <- bind_rows(model_type, eqn) |>
   bind_rows(perf_tbl) |>

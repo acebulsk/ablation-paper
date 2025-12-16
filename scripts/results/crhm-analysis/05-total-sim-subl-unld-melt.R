@@ -125,7 +125,7 @@ ggplot(
   )
 
 ggsave(#'figs/crhm-analysis/partitioning/ablation_partition_atmosphere_ground_by_event_type.png',
-       'figs/final/figure11.png',
+       'figs/final/figure10.png',
        width = 6,
        height = 2.5,
 )

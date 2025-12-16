@@ -86,13 +86,13 @@ png(
   res = 300           # high resolution
 )
 
-png(
-  paste0("figs/results/corplot_dry_snow_", hours, ".png"),
-  width = 8,          # in inches
-  height = 7,         # in inches
-  units = "in",       # important!
-  res = 300           # high resolution
-)
+# png(
+#   paste0("figs/results/corplot_dry_snow_", hours, ".png"),
+#   width = 8,          # in inches
+#   height = 7,         # in inches
+#   units = "in",       # important!
+#   res = 300           # high resolution
+# )
 
 par(mar = c(2, 2, 4, 2))       # inner plot margins
 par(oma = c(0, 0, 3, 0))       # outer margins for title
@@ -125,15 +125,14 @@ melt_met <- met_agg |> filter(q_melt != 0)
 
 melt_met$q_melt_diml <- ifelse(melt_met$q_melt_diml > 5, NA, melt_met$q_melt_diml)
 
-predictors <- melt_met[, c("tree_mm", "tau", "u", "t", "t_ice_bulb", "q_melt", "q_melt_diml")] # moderate linear correlation between tau and subl
+predictors <- melt_met[, c("tree_mm", "tau", "u", "t", "t_ice_bulb", "q_melt")] # moderate linear correlation between tau and subl
 colnames(predictors) <- c(
   "Snow Load", 
   "Shear Stress", 
   "Wind Speed", 
   "Air Temp", 
   "Ice-bulb Temp.", 
-  "Snowmelt",
-  "Diml. Snowmelt"
+  "Snowmelt"
 )
 
 # Pearson
@@ -164,13 +163,13 @@ png(
   res = 300           # high resolution
 )
 
-png(
-  paste0("figs/results/corplot_melt_", hours, ".png"),
-  width = 8,          # in inches
-  height = 7,         # in inches
-  units = "in",       # important!
-  res = 300           # high resolution
-)
+# png(
+#   paste0("figs/results/corplot_melt_", hours, ".png"),
+#   width = 8,          # in inches
+#   height = 7,         # in inches
+#   units = "in",       # important!
+#   res = 300           # high resolution
+# )
 
 par(mar = c(2, 2, 4, 2))       # inner plot margins
 par(oma = c(0, 0, 3, 0))       # outer margins for title

@@ -270,7 +270,7 @@ kge <- function(obs, sim) {
 # not a huge diff between event and hourly resampling ... event shows greater range in model perforamnce 
 # bootstrapping uses stochastic resampling and likely better for this application than jackknife 
 # this function computes the error stats by selectively resampling from the 17 events
-bootstrap_event <- function(df, n_boot = 1000) {
+bootstrap_event <- function(df, n_boot = 5000) {
 
   df %>%
     filter(!is.na(observed) & !is.na(value)) %>%

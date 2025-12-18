@@ -242,7 +242,7 @@ ggplot(subl_plot_df, aes(x=x_var_value)) +
   labs(colour = 'Canopy Snow\nLoad (mm)') # avoids large space using regular way
 
 # ggsave(
-#   'figs/final/figure5.png',
+#   'figure5.png',
 #   width = 6,
 #   height = 4,
 #   device = png

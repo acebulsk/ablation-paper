@@ -311,7 +311,7 @@ ggplot(unld_melt_ratio,
   theme(legend.position = 'bottom')
 
 ggsave(
-  'figs/final/figure4.png',
+  'figure4.png',
   # 'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin.png',
   width = 5,
   height = 4,
@@ -340,7 +340,7 @@ ggplot(unld_melt_ratio |> filter(name == 'CP25'),
   theme(legend.position = 'none')
 
 ggsave(
-  # 'figs/final/figure6.png',
+  # 'figure6.png',
   'figs/results/modelled_melt_unloading_ratio_vs_snow_load_bin_noTB.png',
   width = 5,
   height = 4,

@@ -61,7 +61,7 @@ ggsave(
   #   # format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),
   #   '.png'
   # ),
-  'figs/final/figur5.png',
+  'figur5.png',
   width = 6,
   height = 8
   )

@@ -32,7 +32,7 @@ event_df_long |>
     strip.placement = 'outside')
 
 ggsave(#'figs/crhm-analysis/met-figs/box_plot_event_met_by_event_type.png',
-       'figs/final/figure6.png',
+       'figure6.png',
        width = 4, height = 6, device = png)
 
 # bar graph of process fraction ----

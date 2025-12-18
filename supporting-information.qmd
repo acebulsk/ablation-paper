@@ -18,7 +18,7 @@ format:
      \renewcommand{\thetable}{S.\arabic{table}}
      \setcounter{table}{0}
 editor: source
-bibliography: ../../papers/bibtex/library.bib
+bibliography: ../../papers/bibtex/better-bibtex.bib
 csl: '../../papers/bibtex/csl-styles/apa-disable-disambiguate-add-names.csl'
 ---
 
@@ -37,7 +37,6 @@ John W. Pomeroy^1^ (ORCID ID - 0000-0002-4782-7457)
 ```{r, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, fig.align='center')
 
-source('scripts/results/qunld-analysis/00-results-figs-setup.R')
 source('scripts/get-manuscript-values.R')
 ```
 
@@ -51,7 +50,7 @@ Parameterisations for predicting unloading of intercepted snow due to snow load 
 
 Existing unloading relationships associated with air and ice-bulb temperatures are shown in @fig-unl-ex-temp.
 
-![The @Ellis2010 and @Floyd2012b (E10) model of unloading and drip rate (left) and the @Roesch2001 (R01) model of unloading rate (right) with increasing air temperature. Wind speed for the R01 parameterisation was set to zero.](figs/supplement/figureS2.png){#fig-unl-ex-temp}
+![The @Ellis2010 and @Floyd2012 (E10) model of unloading and drip rate (left) and the @Roesch2001 (R01) model of unloading rate (right) with increasing air temperature. Wind speed for the R01 parameterisation was set to zero.](figs/supplement/figureS2.png){#fig-unl-ex-temp}
 
 ## Unloading Relationships
 
@@ -94,7 +93,7 @@ dry_snow_unld_stats |>
 ```
 :::
 
-# Melt Driven Unloading 
+## Melt Driven Unloading 
 
 ![Spearman and Pearson correlations of differing combinations of snow load, shear stress, wind speed, air temperature, ice-bulb temperature depression (air temperature subtracted by ice-bulb temperature), and canopy snowmelt rate. Pearson correlations are shown in the upper triangle; Spearman correlations in the lower triangle over periods with simulated canopy snowmelt. Bold values indicate |r| > 0.7.](figs/supplement/figureS5.png){#fig-non-melt-cor width=100%}
 

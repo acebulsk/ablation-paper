@@ -89,7 +89,7 @@ event_df_long |>
     colour = 'Event Type'
   )
 
-# ggsave('figs/final/figure4a', width = 6, height = 5, device = png)
+# ggsave('figure4a', width = 6, height = 5, device = png)
 
 event_df_long |>
   ggplot(aes(x = value, colour = event_type)) +
@@ -110,7 +110,7 @@ event_df_long |>
     colour = 'Event Type'
   )
 
-ggsave('figs/final/figure2.png', width = 6, height = 5, device = png)
+ggsave('figure2.png', width = 6, height = 5, device = png)
 
 # V different number of obs so doesnt make sense to show couts 
 event_df_long |>

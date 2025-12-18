@@ -214,7 +214,7 @@ ins_vp <- viewport(
 
 tmap::tmap_save(
   main_map,
-  filename = 'figs/final/figure1.png',
+  filename = 'figure1.png',
   # filename = 'figs/study-site/site_map_inset.png',
   # width = 6,
   height = 6,

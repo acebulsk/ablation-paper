@@ -121,7 +121,7 @@ Observations were collected in the Fortress Mountain Research Basin (FMRB), Albe
 
 ## The Cold Regions Hydrological Model Platform
 
-The Cold Regions Hydrological Model Platform (CRHM) was used to implement calculations of the canopy snow energy and mass budget. A full description of the CRHM platform is described in @Pomeroy2022, and the source code is available at https://github.com/srlabUsask/crhmcode. The climate forcing data used to run CRHM were provided from station-based fifteen-minute interval measurements of air temperature, relative humidity, wind speed, precipitation, and incoming solar radiation from the station measurements. CRHM incorporates a flexible modular design allowing the user to select various parameterisations that represent hydrological processes. The phase of atmospheric precipitation was determined from the energy balance of falling hydrometeors [@Harder2013]. A new CRHM module was created here to simulate the coupled mass and energy balance of snow intercepted in the canopy. The energy balance is described in detail in @sec-ebal, and the updates to the mass balance through revisions to the canopy snow unloading functions are presented in @sec-dry-unld and @sec-melt-unld. Due to uncertainties in estimating model forcing data and measuring canopy snow ablation at varying canopy heights, a single-layer canopy snow model was implemented in CRHM.
+The Cold Regions Hydrological Model Platform (CRHM) was used to implement calculations of the canopy snow energy and mass budget. A full description of the CRHM platform is described in @Pomeroy2022, and the source code is available from @CRHM2025. The climate forcing data used to run CRHM were provided from station-based fifteen-minute interval measurements of air temperature, relative humidity, wind speed, precipitation, and incoming solar radiation from the station measurements. CRHM incorporates a flexible modular design allowing the user to select various parameterisations that represent hydrological processes. The phase of atmospheric precipitation was determined from the energy balance of falling hydrometeors [@Harder2013]. A new CRHM module was created here to simulate the coupled mass and energy balance of snow intercepted in the canopy. The energy balance is described in detail in @sec-ebal, and the updates to the mass balance through revisions to the canopy snow unloading functions are presented in @sec-dry-unld and @sec-melt-unld. Due to uncertainties in estimating model forcing data and measuring canopy snow ablation at varying canopy heights, a single-layer canopy snow model was implemented in CRHM.
 
 ## Canopy Snow Mass Balance {#sec-mbal}
 
@@ -144,7 +144,7 @@ In addition to the updated canopy snow model presented in this study, also refer
 #| tbl-colwidths: [6, 20, 34, 38]
 
 
-tbl <- read.csv("table1.csv")
+tbl <- read.csv("figs/final/table1.csv")
 
 tbl |> knitr::kable(
     col.names = c(
@@ -456,13 +456,17 @@ A new canopy snow ablation model that incorporates an updated canopy snow mass a
 
 Amongst the models tested, the largest errors occurred during cold, humid, and windy unloading events, though performance improved when incorporating a shear stress-based unloading parameterisation. Model partitioning of intercepted snow between the ground and atmosphere differed most during cold weather events, where neglected dry-snow unloading processes greatly overestimated canopy snow sublimation. Observations at this sub-alpine site were collected over a wide range of weather conditions that characterised typical weather ranging from cold boreal to temperate maritime climates, with air temperatures from -30.5°C to +6.7°C and wind speeds from calm to 5.3 m s^-1^. Some processes, such as rime-ice and frost deposition, were not observed. The study was conducted in a sparse forest of mature fir and spruce, so unloading rates and process emergence may differ in forests with other species, densities, and ages due to differences in branch elasticity, structure, and associated impacts on the canopy snow mass and energy balance. Incorporating the updated unloading schemes developed here could improve the representation of canopy snow ablation and, by extension, the partitioning of precipitation between surface accumulation and vapour exchange with the atmosphere and through more accurate snow load estimation and thus canopy albedo in hydrological and land surface models. Nonetheless, further testing is needed across various climate and forest compositions to assess model transferability.
 
+# Conflict of Interest Statement
+
+The authors declare there are no conflicts of interest for this manuscript.
+
 # Acknowledgements 
 
 We acknowledge financial support from the University of Saskatchewan Dean’s Scholarship, the Natural Sciences and Engineering Research Council of Canada's Discovery Grants, the Canada First Research Excellence Fund's Global Water Futures Programme, Environment and Climate Change Canada, Alberta Innovates Water Innovation Program, the Canada Foundation for Innovation's Global Water Futures Observatories facility, and the Canada Research Chairs Programme. We thank Madison Harasyn, Hannah Koslowsky, Kieran Lehan, Lindsey Langs, and Fortress Mountain Resort for their help in the field, and Tom Brown and Logan Fang for their support of the CRHM platform. The authors thank Dr. Cherie Westbrook, Dr. Martyn Clark, and Dr. Warren Helgason for their valuable feedback on this manuscript.
 
-# Data & Software Availability Statement
+# Open Research
 
-The Cold Regions Hydrological Model Platform (CRHM) source code is available at https://github.com/srlabUsask/crhmcode. Model forcing data, model outputs, validation data, processed data, and scripts are available at https://doi.org/10.5281/zenodo.16898881. 
+The Cold Regions Hydrological Model Platform (CRHM) source code used in this study is preserved at https://doi.org/10.5281/zenodo.17981431 [@CRHM2025], available under the GPL-3.0 license, and developed openly at https://github.com/srlabUsask/crhmcode. The model forcing data, model outputs, validation data, processed data, and scripts are available at https://doi.org/10.5281/zenodo.16898881 [@CebulskiAblationData2025] with GPL-3.0 license access conditions. 
 
 \pagebreak
 

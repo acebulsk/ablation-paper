@@ -283,7 +283,7 @@ al., 2020) of snowfall reaching the ground. Therefore, forest-snow
 interactions are crucial to understand for informed ecological, land
 management, and water resource decision-making. Needleleaf canopies are
 particularly effective at intercepting snowfall (Cebulski \& Pomeroy,
-2025b; Hedstrom \& Pomeroy, 1998; Pomeroy \& Schmidt, 1993; Storck et
+2025c; Hedstrom \& Pomeroy, 1998; Pomeroy \& Schmidt, 1993; Storck et
 al., 2002) and expose intercepted snow to increased energy inputs
 relative to the subcanopy snowpacks, leading to increased rates of melt,
 unloading, and/or sublimation (Parviainen \& Pomeroy, 2000; Pomeroy et
@@ -321,19 +321,19 @@ predicting forest snowpacks in hydrological model intercomparisons
 (Krinner et al., 2018; Rutter et al., 2009). Recent studies have
 emphasised the importance of distinguishing between initial snow
 interception and subsequent ablation processes (Cebulski \& Pomeroy,
-2025a, 2025b). This separation required explicit parameterisations of
+2025b, 2025c). This separation required explicit parameterisations of
 distinct processes, which improves process representation and is well
 suited for the modular design of contemporary models, thereby supporting
 broader applicability across diverse environments and model approaches
 (Clark et al., 2015; Pomeroy et al., 2022). In addition, Lundquist et
-al. (2021) and Cebulski \& Pomeroy (2025b) demonstrated that canopy snow
+al. (2021) and Cebulski \& Pomeroy (2025c) demonstrated that canopy snow
 processes can be more accurately represented without the concept of a
 maximum canopy snow load, which has been assumed to be an important
 parameter in existing initial accumulation parameterisations (Andreadis
 et al., 2009; Hedstrom \& Pomeroy, 1998). Moreover, existing canopy snow
 accumulation parameterisations often implicitly incorporate snow
 ablation, likely because ablation is included in measurements of initial
-interception efficiency (Cebulski \& Pomeroy, 2025a; Hedstrom \&
+interception efficiency (Cebulski \& Pomeroy, 2025b; Hedstrom \&
 Pomeroy, 1998; Katsushima et al., 2023; Schmidt \& Gluns, 1991). For
 example, the field experiments of Hedstrom \& Pomeroy (1998) in the
 boreal forest showed that interception efficiency declined as the canopy
@@ -342,16 +342,16 @@ coastal forests suggested a constant interception efficiency of 0.6,
 capped by a maximum canopy snow load. Consequently, both the Hedstrom \&
 Pomeroy (1998) and Storck et al. (2002) parameterisations have
 significantly lower interception efficiencies---prior to canopy snow
-ablation---compared to the observations by Cebulski \& Pomeroy (2025b).
+ablation---compared to the observations by Cebulski \& Pomeroy (2025c).
 Working in high snowfall, cold continental climate mountain basins,
-Staines \& Pomeroy (2023) and Cebulski \& Pomeroy (2025b) show that
+Staines \& Pomeroy (2023) and Cebulski \& Pomeroy (2025c) show that
 interception efficiency is best predicted by canopy density
 alone---consistent with recent rainfall interception parameterisations
 (e.g., Valante et al., 1997; Zhong et al., 2022)---and that snow load
 has a small influence on canopy density, challenging the Hedstrom \&
 Pomeroy (1998) and Storck et al. (2002) theories regarding the influence
 of a maximum snow load on initial snow interception. Together, these
-studies (Cebulski \& Pomeroy, 2025a, 2025b; Lundquist et al., 2021)
+studies (Cebulski \& Pomeroy, 2025b, 2025c; Lundquist et al., 2021)
 emphasise the need to revisit existing canopy snow ablation
 parameterisations.
 
@@ -390,7 +390,7 @@ heat flux from snow intercepted in the canopy as the canopy fills up
 with snow and its specific surface area decreases, thereby relying on
 the maximum canopy snow load. Recent measurements of canopy snow load in
 high snowfall environments have not reached a maximum value (Cebulski \&
-Pomeroy, 2025b; Lundquist et al., 2021; Storck et al., 2002) and the
+Pomeroy, 2025c; Lundquist et al., 2021; Storck et al., 2002) and the
 observations exceed previous estimates of maximum canopy snow load
 (Hedstrom \& Pomeroy, 1998; Schmidt \& Gluns, 1991).
 
@@ -430,7 +430,7 @@ this study.
 The objective of this study is to better understand and predict the
 influences of meteorology and snow load on intercepted snow ablation.
 This study specifically examines canopy snow ablation following snowfall
-and initial interception. Cebulski \& Pomeroy (2025b) has addressed
+and initial interception. Cebulski \& Pomeroy (2025c) has addressed
 processes governing the initial interception of snow in the canopy.
 
 The specific research questions this research aims to address include:
@@ -470,7 +470,7 @@ Tower station. The CSAT3 was occasionally snow-covered during the
 analysis period, and thus to provide a continuous record of shear
 stress, a linear relationship was established between shear stress
 derived from the CSAT3 and the square of wind speed measured at a 4.3 m
-height on the Forest Tower station (\emph{R\textsuperscript{2}} = 0.71,
+height on the Forest Tower station (\emph{R\textsuperscript{2}} = 0.6,
 \emph{p} \textless{} 0.05). This relationship was then used to fill gaps
 in shear stress measurements during periods when the CSAT3 was
 snow-covered. The precipitation rate was measured by an Alter-shielded
@@ -499,7 +499,7 @@ TB4MM---were installed along a 15 m transect adjacent to the dense
 canopy subcanopy weighed snow bucket to quantify sub-canopy drip from
 melting intercepted snow. Additional details on this study site and the
 meteorological and weighed snow bucket measurements have been described
-in Cebulski \& Pomeroy (2025b).
+in Cebulski \& Pomeroy (2025c).
 
 \begin{figure}[htbp]
 
@@ -523,27 +523,26 @@ Platform}\label{the-cold-regions-hydrological-model-platform}
 The Cold Regions Hydrological Model Platform (CRHM) was used to
 implement calculations of the canopy snow energy and mass budget. A full
 description of the CRHM platform is described in Pomeroy et al. (2022),
-and the source code is available at
-https://github.com/srlabUsask/crhmcode. The climate forcing data used to
-run CRHM were provided from station-based fifteen-minute interval
-measurements of air temperature, relative humidity, wind speed,
-precipitation, and incoming solar radiation from the station
-measurements. CRHM incorporates a flexible modular design allowing the
-user to select various parameterisations that represent hydrological
-processes. The phase of atmospheric precipitation was determined from
-the energy balance of falling hydrometeors (Harder \& Pomeroy, 2013). A
-new CRHM module was created here to simulate the coupled mass and energy
-balance of snow intercepted in the canopy. The energy balance is
-described in detail in Section~\ref{sec-ebal}, and the updates to the
-mass balance through revisions to the canopy snow unloading functions
-are presented in Section~\ref{sec-dry-unld} and
+and the source code is available from Pomeroy et al. (2025). The climate
+forcing data used to run CRHM were provided from station-based
+fifteen-minute interval measurements of air temperature, relative
+humidity, wind speed, precipitation, and incoming solar radiation from
+the station measurements. CRHM incorporates a flexible modular design
+allowing the user to select various parameterisations that represent
+hydrological processes. The phase of atmospheric precipitation was
+determined from the energy balance of falling hydrometeors (Harder \&
+Pomeroy, 2013). A new CRHM module was created here to simulate the
+coupled mass and energy balance of snow intercepted in the canopy. The
+energy balance is described in detail in Section~\ref{sec-ebal}, and the
+updates to the mass balance through revisions to the canopy snow
+unloading functions are presented in Section~\ref{sec-dry-unld} and
 Section~\ref{sec-melt-unld}. Due to uncertainties in estimating model
 forcing data and measuring canopy snow ablation at varying canopy
 heights, a single-layer canopy snow model was implemented in CRHM.
 
 \subsection{Canopy Snow Mass Balance}\label{sec-mbal}
 
-The following mass balance, as described in Cebulski \& Pomeroy (2025a)
+The following mass balance, as described in Cebulski \& Pomeroy (2025b)
 was implemented as a module in CRHM to track the state of canopy snow
 load (\(L\), mm) over time:
 
@@ -568,7 +567,7 @@ snowmelt (\(q_{melt}^{veg}\), mm s\textsuperscript{-1}),
 volume (mm s\textsuperscript{-1}), and \(q_{sub}^{veg}\) is the
 intercepted snow sublimation rate (mm s\textsuperscript{-1}) which also
 includes evaporation of liquid water in the canopy. Figure 1 in Cebulski
-\& Pomeroy (2025a) presents a visual representation of this mass
+\& Pomeroy (2025b) presents a visual representation of this mass
 balance.
 
 \subsection{Mass Balance
@@ -684,7 +683,7 @@ and \(Q_{h}\) (W m\textsuperscript{-2}), are the turbulent fluxes of
 latent heat and sensible heat respectively (positive towards canopy
 snow), and \(C_p^{ice}\) (J kg\textsuperscript{-1}
 K\textsuperscript{-1}) is the specific heat capacity of ice. Figure 2 in
-Cebulski \& Pomeroy (2025a) illustrates this energy balance.
+Cebulski \& Pomeroy (2025b) illustrates this energy balance.
 
 \subsection{Energy Balance
 Parameterisations}\label{energy-balance-parameterisations}
@@ -692,7 +691,7 @@ Parameterisations}\label{energy-balance-parameterisations}
 The E10 and R01 parameterisations relied on physically guided
 relationships to simulate sublimation and melt of intercepted and are
 described in full detail in their respective articles and summarised in
-Cebulski \& Pomeroy (2025a). The following section describes the energy
+Cebulski \& Pomeroy (2025b). The following section describes the energy
 balance parameterisations implemented in the CP25 and SA09 models.
 
 \(Q_{sw}\) was determined as:
@@ -796,7 +795,7 @@ calculated following the concept of how full the canopy is with snow as
 introduced by Pomeroy \& Schmidt (1993), with modifications to
 incorporate a larger maximum canopy snow load capacity of 50 mm based on
 observations by Storck et al. (2002), Floyd (2012), and Cebulski \&
-Pomeroy (2025b).
+Pomeroy (2025c).
 
 The above sensible and latent heat flux equations assume neutral
 atmospheric stability conditions, which is supported by the uncertainty
@@ -1315,7 +1314,7 @@ q_{tf} = [(1 - C_p) \alpha] q_{sf}
 }\end{equation}
 
 and \(C_p\) is the leaf contact area calculated using Equation 10 in
-Cebulski \& Pomeroy (2025b) and \(\alpha\) is an efficiency constant.
+Cebulski \& Pomeroy (2025c) and \(\alpha\) is an efficiency constant.
 
 Since \(q_{melt}^{veg}\) can only occur whilst intercepted snow is
 melting, and wind-induced unloading was found to be representable across
@@ -1610,7 +1609,7 @@ of the R01 parameterisation using above canopy albedo as a proxy for
 canopy snow unloading (Bartlett \& Verseghy, 2015; Roesch et al., 2001).
 This approach would have included both unloading and sublimation
 processes, in addition to greater measurement uncertainties (Cebulski \&
-Pomeroy, 2025a), and may have contributed to R01 overestimating
+Pomeroy, 2025b), and may have contributed to R01 overestimating
 wind-driven unloading (Figure~\ref{fig-mb-boxplot}). Conversely, the
 measurements collected here provided a more direct quantification of
 canopy snow unloading rates. Additional factors not considered in the
@@ -1786,7 +1785,7 @@ in maritime environments.
 This study implemented a single-layer snow model for snow intercepted in
 the canopy. The unloading relationships developed here, along with the
 parameterisation for initial interception presented in Cebulski \&
-Pomeroy (2025b), are expected to be applicable to multi-layer canopy
+Pomeroy (2025c), are expected to be applicable to multi-layer canopy
 snow models (e.g., Clark et al., 2015; Essery et al., 2025), with
 modifications to the energy balance calculations described in
 Section~\ref{sec-ebal}. However, uncertainties in generating forcing
@@ -1805,7 +1804,7 @@ is essential for determining the fraction and phase of snow reaching the
 ground, and the duration that the canopy is snow covered, an important
 factor for land-surface albedo calculations (Cai et al., 2025; Henderson
 et al., 2018; Thackeray et al., 2014). Whilst separating initial
-interception and ablation processes (Cebulski \& Pomeroy, 2025a, 2025b)
+interception and ablation processes (Cebulski \& Pomeroy, 2025b, 2025c)
 improves process representations, these routines still need to be
 evaluated together against additional field observations across
 different sites, climates, forest types, and spatial scales to assess
@@ -1878,6 +1877,12 @@ estimation and thus canopy albedo in hydrological and land surface
 models. Nonetheless, further testing is needed across various climate
 and forest compositions to assess model transferability.
 
+\section{Conflict of Interest
+Statement}\label{conflict-of-interest-statement}
+
+The authors declare there are no conflicts of interest for this
+manuscript.
+
 \section{Acknowledgements}\label{acknowledgements}
 
 We acknowledge financial support from the University of Saskatchewan
@@ -1893,13 +1898,15 @@ Fang for their support of the CRHM platform. The authors thank
 Dr.~Cherie Westbrook, Dr.~Martyn Clark, and Dr.~Warren Helgason for
 their valuable feedback on this manuscript.
 
-\section{Data \& Software Availability
-Statement}\label{data-software-availability-statement}
+\section{Open Research}\label{open-research}
 
-The Cold Regions Hydrological Model Platform (CRHM) source code is
-available at https://github.com/srlabUsask/crhmcode. Model forcing data,
-model outputs, validation data, processed data, and scripts are
-available at https://doi.org/10.5281/zenodo.16898881.
+The Cold Regions Hydrological Model Platform (CRHM) source code used in
+this study is preserved at https://doi.org/10.5281/zenodo.17981431
+(Pomeroy et al., 2025), available under the GPL-3.0 license, and
+developed openly at https://github.com/srlabUsask/crhmcode. The model
+forcing data, model outputs, validation data, processed data, and
+scripts are available at https://doi.org/10.5281/zenodo.16898881
+(Cebulski \& Pomeroy, 2025a) with GPL-3.0 license access conditions.
 
 \pagebreak
 
@@ -1944,14 +1951,19 @@ cover change since 2000 contributes to cold winters in {Eurasia}.
 \emph{Npj Climate and Atmospheric Science}, \emph{8}(1), 337.
 \url{https://doi.org/10.1038/s41612-025-01219-1}
 
+\bibitem[\citeproctext]{ref-CebulskiAblationData2025}
+Cebulski, A. C., \& Pomeroy, J. W. (2025a). \emph{Processes governing
+the ablation of intercepted snow {[}dataset{]}}. Zenodo.
+\url{https://doi.org/10.5281/zenodo.16898881}
+
 \bibitem[\citeproctext]{ref-Cebulski2025}
-Cebulski, A. C., \& Pomeroy, J. W. (2025a). Theoretical underpinnings of
+Cebulski, A. C., \& Pomeroy, J. W. (2025b). Theoretical underpinnings of
 snow interception and canopy snow ablation parameterisations.
 \emph{WIREs Water}, \emph{12}, e70010.
 \url{https://doi.org/10.1002/wat2.70010}
 
 \bibitem[\citeproctext]{ref-Cebulski2025a}
-Cebulski, A. C., \& Pomeroy, J. W. (2025b). Snow interception
+Cebulski, A. C., \& Pomeroy, J. W. (2025c). Snow interception
 relationships with meteorology and canopy density. \emph{Hydrological
 Processes}, \emph{39}(4), e70135.
 \url{https://doi.org/10.1002/hyp.70135}
@@ -2184,6 +2196,14 @@ Moreno, J. I. L. (2022). The cold regions hydrological modelling
 platform for hydrological diagnosis and prediction based on process
 understanding. \emph{Journal of Hydrology}, \emph{615}(128711), 1--25.
 \url{https://doi.org/10.1016/j.jhydrol.2022.128711}
+
+\bibitem[\citeproctext]{ref-CRHM2025}
+Pomeroy, J. W., Brown, T., Fang, X., Shook, K. R., Pradhananga, D.,
+Armstrong, R., Harder, P., Marsh, C., Costa, D., Krogh, S. A.,
+Aubry-Wake, C., Annand, H., Lawford, P., He, Z., Kompanizare, M.,
+Moreno, J. I. L., \& Cebulski, A. C. (2025). \emph{The cold regions
+hydrological modelling platform {[}software{]}}. Zenodo.
+\url{https://doi.org/10.5281/zenodo.17981431}
 
 \bibitem[\citeproctext]{ref-Pomeroy1995}
 Pomeroy, J. W., \& Gray, D. M. (1995). \emph{Snowcover {Accumulation},
